@@ -5,6 +5,7 @@
 //
 //=============================================================================
 #include "renderer.h"
+#include "manager.h"
 #include "object.h"
 
 #include <assert.h>
@@ -24,7 +25,7 @@ CRenderer::CRenderer()
 //=============================================================================
 CRenderer::~CRenderer()
 {
-	assert(GetRenderer() != nullptr);
+	assert(CManager::GetRenderer() != nullptr);
 }
 
 //=============================================================================

@@ -5,6 +5,7 @@
 //
 //=============================================================================
 #include "object2D.h"
+#include "manager.h"
 #include "renderer.h"
 
 #include <assert.h>
@@ -56,7 +57,7 @@ CObject2D::~CObject2D()
 HRESULT CObject2D::Init()
 {
 	//デバイスの取得
-	LPDIRECT3DDEVICE9 pD3DDevice = GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	//テクスチャの読み込み
 	D3DXCreateTextureFromFile(pD3DDevice, "data/TEXTURE/test001.png", &m_pTexture);
@@ -153,8 +154,8 @@ void CObject2D::Uninit()
 //=============================================================================
 void CObject2D::Update()
 {
-	m_fLength += sinf(m_fRot) * 2.0f;
 	m_fRot += -D3DX_PI * 0.01f;
+	m_fLength += sinf(m_fRot) * 2.0f;
 
 	VERTEX_2D *pVtx;
 
@@ -200,7 +201,7 @@ void CObject2D::Update()
 void CObject2D::Draw()
 {
 	//デバイスの取得
-	LPDIRECT3DDEVICE9 pD3DDevice = GetRenderer()->GetDevice();
+	LPDIRECT3DDEVICE9 pD3DDevice = CManager::GetRenderer()->GetDevice();
 
 	//頂点バッファをデータストリームに設定
 	pD3DDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_2D));
@@ -228,6 +229,7 @@ CObject2D *CObject2D::Create()
 		pObject2D->Init();
 		return pObject2D;
 	}
+
 	assert(false);
 	return pObject2D;
 }

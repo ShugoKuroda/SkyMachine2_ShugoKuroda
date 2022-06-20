@@ -13,8 +13,7 @@
 #include <d3dx9.h>
 
 #include "main.h"
-#include "renderer.h"
-#include "object2D.h"
+#include "manager.h"
 
 //*****************************************************************************
 // 定数定義
@@ -23,6 +22,7 @@ namespace
 {
 	// ウインドウのクラス名
 	LPCTSTR CLASS_NAME = _T("AppClass");
+
 	// ウインドウのキャプション名
 	LPCTSTR WINDOW_NAME = _T("ポリゴンの描画");
 }
@@ -35,8 +35,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-// レンダリングクラスのインスタンス生成
-CRenderer *g_pRenderer = nullptr;
 #ifdef _DEBUG
 // FPSカウンタ
 int g_nCountFPS;
@@ -84,19 +82,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 		hInstance,
 		NULL);
 
-	// レンダリングクラスのインスタンス生成
-	g_pRenderer = new CRenderer;
+	// マネージャークラスのインスタンス生成
+	CManager *pManager = new CManager;
 
 	// 初期化処理
-	if (FAILED(g_pRenderer->Init(hWnd, TRUE)))
+	if (FAILED(pManager->Init(hInstance, hWnd, TRUE)))
 	{//初期化が失敗した場合
 		return -1;
 	}
-
-	CObject2D* pObject = CObject2D::Create();
-	pObject->Uninit();
-	CObject2D::Create();
-	CObject2D::Create();
 
 	// 分解能を設定
 	timeBeginPeriod(1);
@@ -150,10 +143,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 				dwExecLastTime = dwCurrentTime;
 
 				// 更新処理
-				g_pRenderer->Update();
+				pManager->Update();
 
 				// 描画処理
-				g_pRenderer->Draw();
+				pManager->Draw();
 #ifdef _DEBUG
 				dwFrameCount++;
 #endif // _DEBUG
@@ -161,16 +154,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 		}
 	}
 
-	//リリース処理
-	CObject::ReleaseAll();
-
-	// レンダラーインスタンスの破棄
-	if (g_pRenderer != nullptr)
+	// インスタンスの破棄
+	if (pManager != nullptr)
 	{
 		// 終了処理
-		g_pRenderer->Uninit();
-		delete g_pRenderer;
-		g_pRenderer = nullptr;
+		pManager->Uninit();
+		delete pManager;
+		pManager = nullptr;
 	}
 
 	// ウィンドウクラスの登録を解除
@@ -224,7 +214,4 @@ int GetCounterFPS(void)
 //=============================================================================
 //	レンダラークラスの取得
 //=============================================================================
-CRenderer *GetRenderer()
-{
-	return g_pRenderer;
-}
+

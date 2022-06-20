@@ -152,6 +152,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="input_joypad.cpp" />
+    <ClCompile Include="input_keyboard.cpp" />
+    <ClCompile Include="input_mouse.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
     <ClCompile Include="object.cpp" />
@@ -159,6 +163,10 @@
     <ClCompile Include="renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="input.h" />
+    <ClInclude Include="input_joypad.h" />
+    <ClInclude Include="input_keyboard.h" />
+    <ClInclude Include="input_mouse.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="object.h" />

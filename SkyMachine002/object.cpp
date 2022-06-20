@@ -49,8 +49,6 @@ void CObject::ReleaseAll()
 		{
 			// I—¹ˆ—
 			m_apObject[nCntUninit]->Uninit();
-			delete m_apObject[nCntUninit];
-			m_apObject[nCntUninit] = nullptr;
 		}
 	}
 }
