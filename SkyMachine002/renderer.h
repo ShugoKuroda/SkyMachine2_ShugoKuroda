@@ -7,7 +7,15 @@
 #ifndef _RENDERER_
 #define _RENDERER_
 
-#include "main.h"
+//*****************************************************************************
+//	ヘッダファイルのインクルード
+//*****************************************************************************
+#include <d3dx9.h>		// 描画処理に必要
+
+//*****************************************************************************
+//	ライブラリファイルのリンク
+//*****************************************************************************
+#pragma comment(lib,"d3d9.lib")   // 描画処理に必要
 
 //*****************************************************************************
 // クラス定義
@@ -19,10 +27,11 @@ public:
 	~CRenderer();
 
 	HRESULT Init(HWND hWnd, bool bWindow);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
-	LPDIRECT3DDEVICE9 GetDevice();
+	void Uninit();
+	void Update();
+	void Draw();
+
+	LPDIRECT3DDEVICE9 GetDevice() { return m_pD3DDevice; }
 
 #ifdef _DEBUG
 	void DrawFPS();

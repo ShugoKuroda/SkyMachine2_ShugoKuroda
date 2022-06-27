@@ -18,6 +18,38 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="bullet.cpp" />
+    <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="explosion.cpp" />
+    <ClCompile Include="input.cpp" />
+    <ClCompile Include="input_joypad.cpp" />
+    <ClCompile Include="input_keyboard.cpp" />
+    <ClCompile Include="input_mouse.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="manager.cpp" />
+    <ClCompile Include="object.cpp" />
+    <ClCompile Include="object2D.cpp" />
+    <ClCompile Include="player.cpp" />
+    <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="sound.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bullet.h" />
+    <ClInclude Include="enemy.h" />
+    <ClInclude Include="explosion.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="input_joypad.h" />
+    <ClInclude Include="input_keyboard.h" />
+    <ClInclude Include="input_mouse.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="manager.h" />
+    <ClInclude Include="object.h" />
+    <ClInclude Include="object2D.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="renderer.h" />
+    <ClInclude Include="sound.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E29EA20B-F132-4F3A-88E1-3D7372A7368B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -151,28 +183,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="input.cpp" />
-    <ClCompile Include="input_joypad.cpp" />
-    <ClCompile Include="input_keyboard.cpp" />
-    <ClCompile Include="input_mouse.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="manager.cpp" />
-    <ClCompile Include="object.cpp" />
-    <ClCompile Include="object2D.cpp" />
-    <ClCompile Include="renderer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="input.h" />
-    <ClInclude Include="input_joypad.h" />
-    <ClInclude Include="input_keyboard.h" />
-    <ClInclude Include="input_mouse.h" />
-    <ClInclude Include="main.h" />
-    <ClInclude Include="manager.h" />
-    <ClInclude Include="object.h" />
-    <ClInclude Include="object2D.h" />
-    <ClInclude Include="renderer.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

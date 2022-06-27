@@ -73,7 +73,7 @@ HRESULT CInputMouse::Init(HINSTANCE hInstance, HWND hWnd)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void CInputMouse::Uninit(void)
+void CInputMouse::Uninit()
 {
 	// CInputの終了処理
 	CInput::Uninit();
@@ -82,7 +82,7 @@ void CInputMouse::Uninit(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void CInputMouse::Update(void)
+void CInputMouse::Update()
 {
 	HRESULT hr;
 
@@ -129,12 +129,12 @@ bool CInputMouse::GetRelese(int nButton)
 	return false;
 }
 
-D3DXVECTOR2 CInputMouse::GetMouseMove(void)
+D3DXVECTOR2 CInputMouse::GetMouseMove()
 {
 	return D3DXVECTOR2((float)m_CurrentMouseState.lX, (float)m_CurrentMouseState.lY);
 }
 
-float CInputMouse::GetMouseWheel(void)
+float CInputMouse::GetMouseWheel()
 {
 	return (float)m_CurrentMouseState.lZ;
 }

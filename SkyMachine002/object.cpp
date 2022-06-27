@@ -11,7 +11,6 @@
 //*****************************************************************************
 CObject* CObject::m_apObject[CObject::MAX_OBJECT] = { nullptr };
 int CObject::m_nNumAll = 0;
-int CObject::m_nID = 0;
 
 //=============================================================================
 // トコンストラクタ
@@ -22,9 +21,12 @@ CObject::CObject()
 	{
 		if (m_apObject[nCntObject] == nullptr)
 		{
+			// オブジェクト情報を格納
 			m_apObject[nCntObject] = this;
-			m_nNumAll++;
+			// オブジェクト番号の保存
 			m_nID = nCntObject;
+			// 合計オブジェクト数を加算
+			m_nNumAll++;
 			break;
 		}
 	}
@@ -47,8 +49,12 @@ void CObject::ReleaseAll()
 		// オブジェクトインスタンスの破棄
 		if (m_apObject[nCntUninit] != nullptr)
 		{
-			// 終了処理
+			// オブジェクトの終了処理
 			m_apObject[nCntUninit]->Uninit();
+
+			// メモリの開放
+			delete m_apObject[nCntUninit];
+			m_apObject[nCntUninit] = nullptr;
 		}
 	}
 }
@@ -95,6 +101,6 @@ void CObject::Release()
 		int nID = m_nID;
 		delete m_apObject[nID];
 		m_apObject[nID] = nullptr;
-		//m_nNumAll--;
+		m_nNumAll--;
 	}
 }

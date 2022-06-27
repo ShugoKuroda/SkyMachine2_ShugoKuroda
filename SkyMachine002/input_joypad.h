@@ -7,16 +7,26 @@
 #ifndef _INPUTJOYPAD_H_		//このマクロ定義がされなかったら
 #define _INPUTJOYPAD_H_		//2重インクルード防止のマクロ定義
 
-//----------------------------------------------------------------------------
+//*****************************************************************************
 //	インクルード
-//----------------------------------------------------------------------------
+//*****************************************************************************
 #include "input.h"
+#include "renderer.h"
+#include <Xinput.h>
 
-//----------------------------------------------------------------------------
+//*****************************************************************************
+//	ライブラリファイルのリンク
+//*****************************************************************************
+#pragma comment (lib,"xinput.lib")
+
+//*****************************************************************************
 //	ジョイパッド列挙型
-//----------------------------------------------------------------------------
+//*****************************************************************************
 class CInputJoypad
 {
+private:
+	static const int MAX_CONTROLLER = 2;
+
 public:
 	enum JOYKEY
 	{
@@ -44,7 +54,7 @@ public:
 	CInputJoypad();
 	~CInputJoypad();
 
-	HRESULT Init(HINSTANCE hinstance, HWND hWnd);
+	HRESULT Init();
 	void Uninit();
 	void Update();
 	bool GetPress(JOYKEY Key, int nPlayer);
@@ -54,16 +64,13 @@ public:
 	void Vibration(int nTime, WORD nStrength, int nPlayer);
 
 private:
-	//最大プレイヤー人数
-	static const int MAX_PLAYER = 4;
-
-	XINPUT_STATE g_JoyKeyState[MAX_PLAYER];				//ジョイパットのプレス情報
-	XINPUT_STATE g_JoyKeyStateTrigger[MAX_PLAYER];		//ジョイパットのトリガー情報
-	D3DXVECTOR3 g_JoyStickPos[MAX_PLAYER];				//ジョイスティックの傾き
-	XINPUT_VIBRATION g_JoyMoter[MAX_PLAYER];			//ジョイパッドのモーター
-	int g_nTime[MAX_PLAYER];							//振動持続時間
-	int g_nStrength[MAX_PLAYER];						//振動の強さ (0 - 65535)
-}
+	XINPUT_STATE m_JoyKeyState[MAX_CONTROLLER];				//ジョイパットのプレス情報
+	XINPUT_STATE g_JoyKeyStateTrigger[MAX_CONTROLLER];		//ジョイパットのトリガー情報
+	D3DXVECTOR3 g_JoyStickPos[MAX_CONTROLLER];				//ジョイスティックの傾き
+	XINPUT_VIBRATION g_JoyMoter[MAX_CONTROLLER];			//ジョイパッドのモーター
+	int g_nTime[MAX_CONTROLLER];							//振動持続時間
+	int g_nStrength[MAX_CONTROLLER];						//振動の強さ (0 - 65535)
+};
 
 #endif
 

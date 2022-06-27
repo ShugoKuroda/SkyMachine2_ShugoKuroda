@@ -4,6 +4,9 @@
 // Author : SHUGO KURODA
 //
 //=============================================================================
+#include <tchar.h> // _T
+
+#include "main.h"		//スクリーンサイズの取得
 #include "renderer.h"
 #include "manager.h"
 #include "object.h"
@@ -107,7 +110,7 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 //=============================================================================
 // 終了処理
 //=============================================================================
-void CRenderer::Uninit(void)
+void CRenderer::Uninit()
 {
 #ifdef _DEBUG
 	// デバッグ情報表示用フォントの破棄
@@ -136,7 +139,7 @@ void CRenderer::Uninit(void)
 //=============================================================================
 // 更新処理
 //=============================================================================
-void CRenderer::Update(void)
+void CRenderer::Update()
 {
 	//オブジェクトの更新処理
 	CObject::UpdateAll();
@@ -145,7 +148,7 @@ void CRenderer::Update(void)
 //=============================================================================
 // 描画処理
 //=============================================================================
-void CRenderer::Draw(void)
+void CRenderer::Draw()
 {
 	// バックバッファ＆Ｚバッファのクリア
 	m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
@@ -186,11 +189,3 @@ void CRenderer::DrawFPS()
 	m_pFont->DrawText(NULL, str, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
 }
 #endif // _DEBUG
-
-//=======================================================
-//	デバイスの取得
-//=======================================================
-LPDIRECT3DDEVICE9 CRenderer::GetDevice()
-{
-	return m_pD3DDevice;
-}
