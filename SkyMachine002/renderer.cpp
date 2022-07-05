@@ -5,11 +5,13 @@
 //
 //=============================================================================
 #include <tchar.h> // _T
+#include <stdio.h>
 
 #include "main.h"		//スクリーンサイズの取得
 #include "renderer.h"
 #include "manager.h"
 #include "object.h"
+#include "object2D.h"
 
 #include <assert.h>
 
@@ -87,8 +89,8 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 	//サンプラーステートの設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
 	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 
@@ -180,12 +182,32 @@ void CRenderer::Draw()
 void CRenderer::DrawFPS()
 {
 	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-	TCHAR str[256];
+	RECT rectObj[CObject::MAX_OBJECT];
+	char str[256];
+	char strObj[CObject::MAX_OBJECT][256];
+
 	int nCntFPS = GetCounterFPS();
-
 	wsprintf(str, _T("FPS : %d\n"), nCntFPS);
+	// FPS描画
+	m_pFont->DrawTextA(NULL, str, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
 
-	// テキスト描画
-	m_pFont->DrawText(NULL, str, -1, &rect, DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
+	//オブジェクト情報の取得
+	for (int nCntObj = 0; nCntObj < CObject::MAX_OBJECT; nCntObj++)
+	{
+		CObject *pObject = CObject::GetObject(nCntObj);
+		if (pObject != nullptr)
+		{
+			rectObj[nCntObj] = { 0, 20 * (nCntObj + 1), SCREEN_WIDTH, SCREEN_HEIGHT };
+
+			D3DXVECTOR3 pos = ((CObject2D*)pObject)->GetPosition();
+
+			sprintf(strObj[nCntObj], _T("OBJ[%d] : X=%.2f Y=%.2f Z=%.2f\n"), nCntObj, pos.x, pos.y, pos.z);
+
+			//オブジェクトの位置描画
+			m_pFont->DrawTextA(NULL, strObj[nCntObj], -1, &rectObj[nCntObj], DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
+		}
+	}
+
+	
 }
 #endif // _DEBUG

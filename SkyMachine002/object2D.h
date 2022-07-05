@@ -33,28 +33,30 @@ public:
 	//CObject2D(CObject2D* pObject);
 	virtual ~CObject2D() override;
 
-	virtual HRESULT Init(const D3DXVECTOR3& pos) override;
+	virtual HRESULT Init() override;
 	virtual void Uninit() override;
 	virtual void Update() override;
 	virtual void Draw() override;
-	void SetPosition(const D3DXVECTOR3& pos) override;
-	void SetSize(float fSizeX, float fSizeY) override;
-	void SetRot(float fRot) override;
+	void SetPosition(const D3DXVECTOR3& pos) { m_pos = pos; }
+	void SetSize(D3DXVECTOR2 size);
+	void SetRot(float fRot) { m_fRot = fRot; }
 
 	void SetVertex();
 	void SetColor(D3DXCOLOR col);
 	void SetAnimation(int nAnimU, int nAnimV, int nPartU, int nPartV);
 
-	//static CObject2D *Create();
-
 	// 位置の取得
-	const D3DXVECTOR3& GetPosition() const override;
+	const D3DXVECTOR3& GetPosition() const { return m_pos; }
 	// 向きの取得
-	const float& GetRot() const;
+	const float& GetRot() const { return m_fRot; }
+	//サイズの取得
+	const D3DXVECTOR2& GetSize() const { return m_size; }
+	//対角線の長さ取得
+	const float& GetLength() const { return m_fLength; }
 
 protected:
 	// テクスチャの設定
-	void BindTexture(LPDIRECT3DTEXTURE9 Texture);
+	void BindTexture(LPDIRECT3DTEXTURE9 Texture) { m_pTexture = Texture; }
 
 private:	//メンバ変数
 	//頂点バッファへのポインター
@@ -63,6 +65,8 @@ private:	//メンバ変数
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	//位置
 	D3DXVECTOR3 m_pos;
+	//サイズ
+	D3DXVECTOR2 m_size;
 	//向き
 	float m_fRot;
 	//対角線の長さ

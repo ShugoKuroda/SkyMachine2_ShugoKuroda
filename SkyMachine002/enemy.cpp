@@ -14,12 +14,14 @@
 #include "explosion.h"
 
 //-----------------------------------------------------------------------------------------------
-// 変数変数
+// 定数変数
 //-----------------------------------------------------------------------------------------------
+// 体力
+const int CEnemy::LIFE = 50;
 // 幅
-const float CEnemy::MOVE_DEFAULT = 4.0f;
+const float CEnemy::SIZE_WIDTH = 50.0f;
 // 高さ
-const float CEnemy::SIZE = 50.0f;
+const float CEnemy::SIZE_HEIGHT = 50.0f;
 
 //-----------------------------------------------------------------------------------------------
 // 静的メンバ変数
@@ -33,7 +35,7 @@ LPDIRECT3DTEXTURE9 CEnemy::m_pTexture = nullptr;
 CEnemy::CEnemy() :
 	m_move(0.0f, 0.0f, 0.0f), m_nLife(0)
 {
-	SetObjectType(EObject::TYPE_ENEMY);
+	SetObjectType(EObject::OBJ_ENEMY);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -47,15 +49,18 @@ CEnemy::~CEnemy()
 //-----------------------------------------------------------------------------------------------
 // 生成
 //-----------------------------------------------------------------------------------------------
-CEnemy* CEnemy::Create(const D3DXVECTOR3& pos)
+CEnemy *CEnemy::Create(const D3DXVECTOR3& pos)
 {
 	// ポインタクラスを宣言
 	CEnemy* pEnemy = new CEnemy;
 
 	if (pEnemy != nullptr)
-	{// もしnullptrではなかったら
+	{
+		//位置設定
+		pEnemy->SetPosition(pos);
+
 		// 初期化
-		pEnemy->Init(pos);
+		pEnemy->Init();
 
 		// テクスチャの設定
 		pEnemy->BindTexture(m_pTexture);
@@ -96,16 +101,16 @@ void CEnemy::Unload()
 //-----------------------------------------------------------------------------------------------
 // 初期化
 //-----------------------------------------------------------------------------------------------
-HRESULT CEnemy::Init(const D3DXVECTOR3& pos)
+HRESULT CEnemy::Init()
 {
 	// 移動量
-	m_move.x = MOVE_DEFAULT;
+	m_move.x = 4.0f;
 	// 寿命
 	m_nLife = LIFE;
 	// サイズ
-	CObject2D::SetSize(SIZE, SIZE);
+	CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
 
-	CObject2D::Init(pos);
+	CObject2D::Init();
 
 	return S_OK;
 }
@@ -132,7 +137,7 @@ void CEnemy::Update()
 	pos += m_move;
 	fRot += 0.1f;
 
-	if (m_nLife == 0)
+	if (m_nLife <= 0)
 	{// ライフが0
 		// 爆発の生成
 		CExplosion::Create(pos);
@@ -145,6 +150,8 @@ void CEnemy::Update()
 		CObject2D::SetRot(fRot);
 		// 位置の更新
 		CObject2D::SetPosition(pos);
+		//頂点座標の設定
+		CObject2D::SetVertex();
 	}
 }
 
@@ -154,4 +161,12 @@ void CEnemy::Update()
 void CEnemy::Draw()
 {
 	CObject2D::Draw();
+}
+
+//-----------------------------------------------------------------------------------------------
+// ダメージ処理
+//-----------------------------------------------------------------------------------------------
+void CEnemy::Damage()
+{
+	m_nLife -= 20;
 }

@@ -13,7 +13,7 @@
 // 前方宣言
 //*****************************************************************************
 class CRenderer;
-//class CBase;
+class CBase;
 class CSound;				// サウンドクラス
 //class CFade;				// フェードクラス
 class CInputKeyboard;		// キーボードクラス
@@ -26,16 +26,16 @@ class CInputMouse;			// マウスクラス
 class CManager
 {
 public:
-	//// モードの種類
-	//enum MODE
-	//{
-	//	MODE_TITLE = 0,		// タイトル
-	//	MODE_TUTORIAL,		// チュートリアル
-	//	MODE_GAME,			// ゲーム
-	//	MODE_RESULT,		// リザルト
-	//	MODE_RANKING,		// ランキング
-	//	MODE_MAX,
-	//};
+	// モードの種類
+	enum MODE
+	{
+		MODE_TITLE = 0,		// タイトル
+		MODE_TUTORIAL,		// チュートリアル
+		MODE_GAME,			// ゲーム
+		MODE_RESULT,		// リザルト
+		MODE_RANKING,		// ランキング
+		MODE_MAX,
+	};
 
 	CManager();
 	~CManager();
@@ -44,6 +44,9 @@ public:
 	void Uninit();
 	void Update();
 	void Draw();
+	
+	static void SetMode(MODE mode);
+	static MODE GetMode() { return m_mode; }
 
 	static CRenderer *GetRenderer() { return m_pRenderer; }
 	//static CBase *GetBase(void) { return m_pBase; }
@@ -53,9 +56,6 @@ public:
 	static CInputKeyboard *GetInputKeyboard() { return m_pInputKeyboard; }
 	static CInputJoypad *GetInputJoypad() { return m_pInputJoypad; }
 	static CInputMouse *GetInputMouse() { return m_pInputMouse; }
-
-	//CBase *SetMode(void);
-	//static void SetMode(CBase *pBase);
 
 private:
 	// テクスチャ読み込み
@@ -68,11 +68,9 @@ private:
 	static CInputJoypad *m_pInputJoypad;		// ジョイパッド情報のポインタ
 	static CInputMouse *m_pInputMouse;			// マウス情報のポインタ
 	static CSound *m_pSound;					// サウンド情報のポインタ
-
-	//static CBase *m_pBase;						// ベースシーン情報のポインタ
+	static CBase *m_pBase;						// ベースシーン情報のポインタ
 	//static CFade *m_pFade;
-
-	//static MODE m_mode;							// モード情報
+	static MODE m_mode;							// モード情報
 };
 
 #endif // _MANAGER_

@@ -13,20 +13,20 @@
 #include "renderer.h"		// レンダリング
 
 //-----------------------------------------------------------------------------------------------
-// 変数変数
+// 定数宣言
 //-----------------------------------------------------------------------------------------------
 // 幅
-const float CExplosion::SIZE_WIDTH = 40.0f;
+const float CExplosion::SIZE_WIDTH = 100.0f;
 // 高さ
-const float CExplosion::SIZE_HEIGHT = 40.0f;
+const float CExplosion::SIZE_HEIGHT = 100.0f;
 // アニメーション間隔
-const int CExplosion::ANIM_INTERVAL = 4;
+const int CExplosion::ANIM_INTERVAL = 5;
 // アニメーション最大数
-const int CExplosion::ANIM_MAXANIM = 7;
-// U座標の最大分割数
-const int CExplosion::DIVISION_U = 8;
-// V座標の最大分割数
-const int CExplosion::DIVISION_V = 1;
+const int CExplosion::MAX_ANIM = 8;
+// U座標(X方向)の最大分割数
+const int CExplosion::DIVISION_U = 4;
+// V座標(Y方向)の最大分割数
+const int CExplosion::DIVISION_V = 2;
 
 //-----------------------------------------------------------------------------------------------
 // 静的メンバ変数
@@ -38,9 +38,9 @@ LPDIRECT3DTEXTURE9 CExplosion::m_pTexture = nullptr;
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CExplosion::CExplosion()
-	:m_nCntAnim(0), m_nPatterAnim(0)
+	:m_nCntAnim(0), m_nPatternAnim(0), m_nPatterAnimV(0)
 {
-
+	SetObjectType(EObject::OBJ_EXPLOSION);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -63,8 +63,12 @@ CExplosion* CExplosion::Create(const D3DXVECTOR3& pos)
 
 	if (pExplosion != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pExplosion->Init(pos);
+
+		// 位置設定
+		pExplosion->SetPosition(pos);
+
+		// 初期化
+		pExplosion->Init();
 
 		// テクスチャの設定
 		pExplosion->BindTexture(m_pTexture);
@@ -83,7 +87,7 @@ HRESULT CExplosion::Load()
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/back001.png",
+		"data/TEXTURE/explosion000.png",
 		&m_pTexture);
 
 	return S_OK;
@@ -107,12 +111,16 @@ void CExplosion::Unload()
 //
 //const D3DXVECTOR3& pos → 最初に表示する位置
 //-----------------------------------------------------------------------------------------------
-HRESULT CExplosion::Init(const D3DXVECTOR3& pos)
+HRESULT CExplosion::Init()
 {
 	// サイズ
-	CObject2D::SetSize(SIZE_WIDTH, SIZE_HEIGHT);
+	CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
 
-	CObject2D::Init(pos);
+	//初期化
+	CObject2D::Init();
+
+	// テクスチャ更新
+	CObject2D::SetAnimation(m_nPatternAnim, 2, DIVISION_U, DIVISION_V);
 
 	return S_OK;
 }
@@ -136,18 +144,25 @@ void CExplosion::Update()
 	if (m_nCntAnim % ANIM_INTERVAL == 0)
 	{
 		// 今のアニメーションを1つ進める
-		m_nPatterAnim++;
+		m_nPatternAnim++;
 	}
 
-	if (m_nPatterAnim == ANIM_MAXANIM)
+	if (m_nPatternAnim == MAX_ANIM)
 	{// アニメーションが終わったら
-	 // 終了する
+		// 終了する
 		Uninit();
 	}
 	else
 	{
+		if (m_nPatternAnim >= DIVISION_U && m_nPatterAnimV <= 0)
+		{
+			m_nPatterAnimV++;
+		}
+		//頂点座標の設定
+		CObject2D::SetVertex();
+
 		// テクスチャ更新
-		CObject2D::SetAnimation(DIVISION_U, DIVISION_V, m_nPatterAnim, 0);
+		CObject2D::SetAnimation(m_nPatternAnim, m_nPatterAnimV, DIVISION_U, DIVISION_V);
 	}
 }
 

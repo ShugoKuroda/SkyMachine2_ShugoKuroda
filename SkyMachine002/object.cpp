@@ -64,7 +64,7 @@ void CObject::ReleaseAll()
 //=============================================================================
 void CObject::UpdateAll()
 {
-	for (int nCntUpdate = 0; nCntUpdate < m_nNumAll; nCntUpdate++)
+	for (int nCntUpdate = 0; nCntUpdate < MAX_OBJECT; nCntUpdate++)
 	{
 		if (m_apObject[nCntUpdate] != nullptr)
 		{
@@ -79,7 +79,7 @@ void CObject::UpdateAll()
 //=============================================================================
 void CObject::DrawAll()
 {
-	for (int nCntDraw = 0; nCntDraw < m_nNumAll; nCntDraw++)
+	for (int nCntDraw = 0; nCntDraw < MAX_OBJECT; nCntDraw++)
 	{
 		if (m_apObject[nCntDraw] != nullptr)
 		{

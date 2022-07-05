@@ -11,6 +11,9 @@
 #include "bullet.h"
 #include "manager.h"
 #include "renderer.h"
+
+#include "player.h"
+#include "enemy.h"
 #include "explosion.h"
 
 //-----------------------------------------------------------------------------------------------
@@ -21,7 +24,15 @@ const float CBullet::SIZE_WIDTH = 30.0f;
 // 高さ
 const float CBullet::SIZE_HEIGHT = 30.0f;
 // 基本移動量
-const float CBullet::MOVE_DEFAULT = 4.0f;
+const float CBullet::MOVE_DEFAULT = 15.0f;
+// アニメーション間隔
+const int CBullet::ANIM_INTERVAL = 5;
+// アニメーション最大数
+const int CBullet::MAX_ANIM = 4;
+// U座標の最大分割数
+const int CBullet::DIVISION_U = 4;
+// V座標の最大分割数
+const int CBullet::DIVISION_V = 1;
 
 //-----------------------------------------------------------------------------------------------
 // 静的メンバ変数
@@ -33,9 +44,9 @@ LPDIRECT3DTEXTURE9 CBullet::m_pTexture = nullptr;
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CBullet::CBullet() :
-	m_move(0.0f, 0.0f, 0.0f), m_nLife(0)
+	m_move(0.0f, 0.0f, 0.0f), m_nLife(0), m_nCntAnim(0), m_nPatternAnim(0)
 {
-	SetObjectType(EObject::TYPE_BULLET);
+	SetObjectType(EObject::OBJ_BULLET);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -56,8 +67,11 @@ CBullet* CBullet::Create(const D3DXVECTOR3& pos)
 
 	if (pBullet != nullptr)
 	{// もしnullptrではなかったら
-	 // 初期化
-		pBullet->Init(pos);
+		// 位置設定
+		pBullet->SetPosition(pos);
+
+		// 初期化
+		pBullet->Init();
 
 		// テクスチャの設定
 		pBullet->BindTexture(m_pTexture);
@@ -98,16 +112,16 @@ void CBullet::Unload()
 //-----------------------------------------------------------------------------------------------
 // 初期化
 //-----------------------------------------------------------------------------------------------
-HRESULT CBullet::Init(const D3DXVECTOR3& pos)
+HRESULT CBullet::Init()
 {
 	// 移動量
 	m_move.x = MOVE_DEFAULT;
 	// 寿命
 	m_nLife = LIFE;
 	// サイズ
-	CObject2D::SetSize(SIZE_WIDTH, SIZE_HEIGHT);
+	CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
 
-	CObject2D::Init(pos);
+	CObject2D::Init();
 
 	return S_OK;
 }
@@ -128,8 +142,6 @@ void CBullet::Update()
 	// 位置の取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
 
-	// 当たり判定
-
 	// 移動量の更新
 	pos += m_move;
 
@@ -145,21 +157,36 @@ void CBullet::Update()
 	}
 	else
 	{
-		for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
+		//当たり判定(球体)
+		bool bHit = CollisionSphere(pos);
+
+		if (!bHit)
 		{
-			CObject *pObject = CObject::GetObject(nCntObject);
-			if (pObject != nullptr)
+			// 位置の更新
+			CObject2D::SetPosition(pos);
+
+			// カウントを増やす
+			m_nCntAnim++;
+			if (m_nCntAnim % ANIM_INTERVAL == 0)
 			{
-				CObject::EObject objType = pObject->GetObjType();
-				if (objType == TYPE_ENEMY)
-				{
-					D3DXVECTOR3 posObj = pObject->GetPosition();
-				}
+				// 今のアニメーションを1つ進める
+				m_nPatternAnim++;
+			}
+
+			if (m_nPatternAnim == MAX_ANIM)
+			{// アニメーションが終わったら
+			 // 終了する
+				m_nPatternAnim = 0;
+			}
+			else
+			{
+				//頂点座標の設定
+				CObject2D::SetVertex();
+
+				//テクスチャアニメーション
+				CObject2D::SetAnimation(m_nPatternAnim, 1, DIVISION_U, DIVISION_V);
 			}
 		}
-
-		// 位置の更新
-		CObject2D::SetPosition(pos);
 	}
 }
 
@@ -172,19 +199,45 @@ void CBullet::Draw()
 }
 
 //-----------------------------------------------------------------------------------------------
-// 当たり判定
+// 当たり判定(球体)
 //-----------------------------------------------------------------------------------------------
-bool CBullet::Collision(D3DXVECTOR3 posStart, D3DXVECTOR3 posEnd, int StartLength, int EndLength)
+bool CBullet::CollisionSphere(D3DXVECTOR3 posStart)
 {
-	//2つの座標差分を求める
-	D3DXVECTOR3 Length = posStart - posEnd;
+	//弾のサイズ取得
+	float fStartLength = GetLength();
+	int nMaxObj = CObject::GetObjectNumAll();
 
-	//座標差分から距離を求める
-	float fLength = D3DXVec3Length(&Length);
+	for (int nCntObject = 0; nCntObject < nMaxObj; nCntObject++)
+	{
+		CObject *pObject = CObject::GetObject(nCntObject);
+		if (pObject != nullptr)
+		{
+			CObject::EObject objType = pObject->GetObjType();
+			if (objType == OBJ_ENEMY && m_nType == TYPE_PLAYER)
+			{
+				CEnemy *pEnemy = (CEnemy*)pObject;
 
-	if (StartLength + EndLength >= fLength)
-	{//お互いの球体サイズの合計より距離が小さかったら
-		return true;	//当たった
+				//判定先の位置,サイズの取得
+				D3DXVECTOR3 posEnd = pEnemy->GetPosition();
+				float fEndLength = pEnemy->GetLength();
+
+				//2つの座標差分を求める
+				D3DXVECTOR3 Length = posStart - posEnd;
+
+				//座標差分から距離を求める
+				float fLength = D3DXVec3Length(&Length);
+
+				if (fStartLength + fEndLength > fLength)
+				{//お互いの球体サイズの合計より距離が小さかったら
+
+					//ダメージ処理
+					pEnemy->Damage();
+					// 弾の破棄
+					Uninit();
+					return true;	//当たった
+				}
+			}
+		}
 	}
 
 	return false;		//当たってない

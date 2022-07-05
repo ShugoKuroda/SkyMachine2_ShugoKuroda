@@ -18,14 +18,14 @@
 class CExplosion : public CObject2D
 {
 private:		// 定数
-				// 幅
+	// 幅
 	static const float SIZE_WIDTH;
 	// 高さ
 	static const float SIZE_HEIGHT;
 	// アニメーション間隔
 	static const int ANIM_INTERVAL;
 	// アニメーション最大数
-	static const int ANIM_MAXANIM;
+	static const int MAX_ANIM;
 	// U座標の最大分割数
 	static const int DIVISION_U;
 	// V座標の最大分割数
@@ -45,7 +45,7 @@ public:
 	static void Unload();
 
 	// 初期化
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	// 終了
 	void Uninit() override;
 	// 更新
@@ -59,7 +59,9 @@ private:
 	// アニメーション用カウンター
 	int m_nCntAnim;
 	// 現在のアニメーション番号
-	int m_nPatterAnim;
+	int m_nPatternAnim;
+	// 現在のアニメーションV番号
+	int m_nPatterAnimV;
 };
 
 #endif		// _EXPLOSION_H_

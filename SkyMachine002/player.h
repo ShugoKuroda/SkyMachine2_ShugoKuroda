@@ -23,6 +23,14 @@ private:
 	static const float SIZE_Y;
 	//プレイヤーの基本移動量
 	static const float MOVE_DEFAULT;
+	// アニメーション間隔
+	static const int ANIM_INTERVAL;
+	// アニメーション最大数
+	static const int MAX_ANIM;
+	// U座標の最大分割数
+	static const int DIVISION_U;
+	// V座標の最大分割数
+	static const int DIVISION_V;
 
 public:
 	//プレイヤーの状態
@@ -33,6 +41,14 @@ public:
 		STATE_MAX
 	};
 
+	enum ROTTYPE
+	{
+		TYPE_NEUTRAL = 0,
+		TYPE_UP,
+		TYPE_DOWN,
+		TYPE_MAX
+	};
+
 	CPlayer();
 	~CPlayer() override;
 
@@ -41,24 +57,34 @@ public:
 	static HRESULT Load();		// テクスチャの読み込み
 	static void Unload();		// テクスチャの削除
 
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
+	D3DXVECTOR3 Move(D3DXVECTOR3 pos);
 	void Damage();
 	void Die();
 
-private:
+private:	//メンバ変数
 	// テクスチャのポインタ
 	static LPDIRECT3DTEXTURE9 m_pTexture[2];
 
-	//メンバ変数
-	D3DXVECTOR3 m_move;				//移動量
-	STATE m_state;					//状態
-	int m_nCntState;				//状態カウンター
-	int m_nCntAttack;				//攻撃カウンター
-	int m_nCounterAnimPlayer;		//アニメーションカウンター
-	int m_nPatternAnimPlayer;		//アニメーションのパターンNo.
+	//移動量
+	D3DXVECTOR3 m_move;
+	//状態
+	STATE m_state;
+	//状態カウンター
+	int m_nCntState;
+	//攻撃カウンター
+	int m_nCntAttack;
+	//アニメーションカウンター
+	int m_nCntAnim;
+	//アニメーションのパターンNo.
+	int m_nPatternAnim;
+	// 現在のアニメーションV番号
+	int m_nPatterAnimV;
+	//テクスチャアニメーションの種類
+	ROTTYPE m_nTexRotType;
 };
 
 #endif //_PLAYER_H_

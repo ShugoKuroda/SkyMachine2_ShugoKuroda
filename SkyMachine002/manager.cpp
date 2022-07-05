@@ -6,11 +6,16 @@
 //=============================================================================
 #include "manager.h"
 #include "renderer.h"
+#include "base.h"
 #include "sound.h"
 
 #include "input_keyboard.h"
 #include "input_joypad.h"
 #include "input_mouse.h"
+
+#include "title.h"
+#include "game.h"
+#include "result.h"
 
 #include "object.h"
 #include "player.h"
@@ -21,6 +26,8 @@
 //*****************************************************************************
 // 静的メンバ変数宣言
 //*****************************************************************************
+CBase *CManager::m_pBase = nullptr;
+CManager::MODE CManager::m_mode = MODE_TITLE;
 CRenderer *CManager::m_pRenderer = nullptr;
 CInputKeyboard *CManager::m_pInputKeyboard = nullptr;
 CInputJoypad *CManager::m_pInputJoypad = nullptr;
@@ -78,14 +85,22 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		m_pInputMouse->Init(hInstance, hWnd);
 	}
 
-	// オブジェクトの初期化
-	CObject::ReleaseAll();
+	// サウンドの初期化処理
+	m_pSound = new CSound;
+
+	if (m_pSound != nullptr)
+	{
+		m_pSound->Init(hWnd);
+	}
+
+	// モードの設定
+	SetMode(MODE_TITLE);
 
 	// テクスチャの読み込み
 	CManager::LoadAll();
 
 	// プレイヤー生成
-	CPlayer::Create(D3DXVECTOR3(300.0f, 300.0f, 300.0f));
+	CPlayer::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f));
 	//敵生成
 	CEnemy::Create(D3DXVECTOR3(0.0f, 400.0f, 0.0f));
 
@@ -97,6 +112,36 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 //=============================================================================
 void CManager::Uninit(void)
 {
+	// サウンドの終了処理
+	if (m_pSound != nullptr)
+	{
+		m_pSound->Uninit();
+		delete m_pSound;
+		m_pSound = nullptr;
+	}
+
+	// レンダラの終了処理
+	if (m_pRenderer != nullptr)
+	{
+		m_pRenderer->Uninit();
+		delete m_pRenderer;
+		m_pRenderer = nullptr;
+	}
+
+	// オブジェクトの終了処理
+	CObject::ReleaseAll();
+
+	//テクスチャの破棄
+	CManager::UnloadAll();
+
+	// ベースの破棄
+	if (m_pBase != nullptr)
+	{
+		m_pBase->Uninit();
+		delete m_pBase;
+		m_pBase = nullptr;
+	}
+
 	// キーボードの終了処理
 	if (m_pInputKeyboard != nullptr)
 	{
@@ -119,20 +164,6 @@ void CManager::Uninit(void)
 		m_pInputMouse->Uninit();
 		delete m_pInputMouse;
 		m_pInputMouse = nullptr;
-	}
-
-	// オブジェクトの終了処理
-	CObject::ReleaseAll();
-
-	//テクスチャの破棄
-	CManager::UnloadAll();
-
-	// レンダラの終了処理
-	if (m_pRenderer != nullptr)
-	{
-		m_pRenderer->Uninit();
-		delete m_pRenderer;
-		m_pRenderer = nullptr;
 	}
 }
 
@@ -159,6 +190,12 @@ void CManager::Update(void)
 		m_pInputMouse->Update();
 	}
 
+	// ベースの更新処理
+	if (m_pBase != nullptr)
+	{
+		m_pBase->Update();
+	}
+
 	// レンダラの更新処理
 	if (m_pRenderer != nullptr)
 	{
@@ -171,6 +208,12 @@ void CManager::Update(void)
 //=============================================================================
 void CManager::Draw(void)
 {
+	// ベースの描画処理
+	if (m_pBase != nullptr)
+	{
+		m_pBase->Draw();
+	}
+
 	// レンダラの描画処理
 	if (m_pRenderer != nullptr)
 	{
@@ -211,51 +254,34 @@ void CManager::UnloadAll()
 //=============================================================================
 // モードの設定
 //=============================================================================
-//void CManager::SetMode(CBase *pBase)
-//{
-//	// オブジェクトの削除
-//	CObject::ReleaseAll();
-//
-//	// ベースの破棄
-//	if (m_pBase != NULL)
-//	{
-//		m_pBase->Uninit();
-//		delete m_pBase;
-//		m_pBase = NULL;
-//	}
-//
-//	// モードの移行
-//	m_pBase = pBase;
-//
-//	//シーンの初期化
-//	if (m_pBase != NULL)
-//	{
-//		m_pBase->Init(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f));
-//	}
-//}
+void CManager::SetMode(MODE mode)
+{
+	// オブジェクトの削除
+	CObject::ReleaseAll();
 
-//=============================================================================
-// モードの確定
-//=============================================================================
-//CBase *CManager::SetMode(void)
-//{
-//	CBase *pBase = NULL;
-//
-//	// モードの確定
-//	switch (m_mode)
-//	{
-//	case MODE_TITLE:
-//		pBase = new CTitle;
-//		break;
-//
-//	case MODE_GAME:
-//		pBase = new CGame;
-//		break;
-//
-//	case MODE_RESULT:
-//		pBase = new CResult;
-//		break;
-//	}
-//
-//	return pBase;
-//}
+	if (m_pBase != nullptr)
+	{// 現在の画面を破棄
+		m_pBase->Uninit();
+		delete m_pBase;
+		m_pBase = nullptr;
+	}
+
+	// モードの設定
+	m_mode = mode;
+
+	// モードの確定
+	switch (m_mode)
+	{
+	case MODE_TITLE:
+		m_pBase = new CTitle;
+		break;
+
+	case MODE_GAME:
+		m_pBase = new CGame;
+		break;
+
+	case MODE_RESULT:
+		m_pBase = new CResult;
+		break;
+	}
+}

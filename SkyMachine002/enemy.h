@@ -15,16 +15,22 @@
 class CEnemy : public CObject2D
 {
 private:
-	static const EObject TYPE = EObject::TYPE_ENEMY;
-
 	// 寿命
-	static const int LIFE = 50;
-	//プレイヤーのサイズ(X)
-	static const float SIZE;
-	//プレイヤーの基本移動量
-	static const float MOVE_DEFAULT;
+	static const int LIFE;
+	// 幅
+	static const float SIZE_WIDTH;
+	// 高さ
+	static const float SIZE_HEIGHT;
 
 public:
+	//敵の状態
+	typedef enum
+	{
+		STATE_NORMAL = 0,		//通常
+		STATE_DAMAGE,			//ダメージ状態
+		STATE_MAX
+	}STATE;
+
 	CEnemy();
 	~CEnemy() override;
 
@@ -33,10 +39,12 @@ public:
 	static HRESULT Load();		//テクスチャの読み込み
 	static void Unload();		//テクスチャの削除
 
-	HRESULT Init(const D3DXVECTOR3& pos) override;
+	HRESULT Init() override;
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
+	void Damage();
+	void SetMove(D3DXVECTOR3 move) { m_move = move; }
 
 private:
 	//メンバ変数

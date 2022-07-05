@@ -15,6 +15,12 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="base.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="result.cpp" />
+    <ClCompile Include="title.cpp" />
+    <ClCompile Include="rank.cpp" />
+    <ClCompile Include="bg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -31,5 +37,11 @@
     <ClInclude Include="bullet.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="enemy.h" />
+    <ClInclude Include="base.h" />
+    <ClInclude Include="game.h" />
+    <ClInclude Include="result.h" />
+    <ClInclude Include="title.h" />
+    <ClInclude Include="rank.h" />
+    <ClInclude Include="bg.h" />
   </ItemGroup>
 </Project>

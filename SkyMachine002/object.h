@@ -16,36 +16,32 @@ class CObject
 {
 public:		// 定数
 	// オブジェクトの最大数
-	static const int MAX_OBJECT = 30;
+	static const int MAX_OBJECT = 20;
 
 public:
 	enum EObject
 	{//オブジェクトの種類
-		TYPE_PLAYER = 0,
-		TYPE_ENEMY,
-		TYPE_BULLET,
-		TYPE_EXPLOSION,
-		TYPE_MAX
+		OBJ_PLAYER = 0,
+		OBJ_ENEMY,
+		OBJ_BULLET,
+		OBJ_EXPLOSION,
+		OBJ_MAX
 	};
 
 	CObject();
 	virtual ~CObject();
 
-	virtual HRESULT Init(const D3DXVECTOR3& pos) = 0;
+	virtual HRESULT Init() = 0;
 	virtual void Uninit() = 0;
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
-	virtual void SetPosition(const D3DXVECTOR3& pos) = 0;
-	virtual void SetSize(float fSizeX, float fSizeY) = 0;
-	virtual void SetRot(float fRot) = 0;
-	// 位置の取得
-	virtual const D3DXVECTOR3& GetPosition() const = 0;
 
 	static void ReleaseAll();
 	static void UpdateAll();
 	static void DrawAll();
 
 	static CObject* GetObject(int nCnt) { return m_apObject[nCnt]; }
+	static int GetObjectNumAll() { return m_nNumAll; }
 	void SetObjectType(EObject type) { m_nType = type; }
 	EObject GetObjType() { return m_nType; }
 

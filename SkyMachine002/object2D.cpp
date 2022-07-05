@@ -29,12 +29,8 @@ CObject2D::~CObject2D()
 //-----------------------------------------------------------------------------
 // 初期化処理
 //-----------------------------------------------------------------------------
-HRESULT CObject2D::Init(const D3DXVECTOR3& pos)
+HRESULT CObject2D::Init()
 {
-	//メンバ変数の初期化
-	m_pos = pos;
-	m_fRot = 0.0f;
-
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -52,20 +48,20 @@ HRESULT CObject2D::Init(const D3DXVECTOR3& pos)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
-	pVtx[0].pos.x = m_pos.x + sinf(m_fRot + (-D3DX_PI + m_fAngle))*m_fLength;
-	pVtx[0].pos.y = m_pos.y + cosf(m_fRot + (-D3DX_PI + m_fAngle))*m_fLength;
+	pVtx[0].pos.x = m_pos.x + sinf(m_fRot + (-D3DX_PI + m_fAngle)) * m_fLength;
+	pVtx[0].pos.y = m_pos.y + cosf(m_fRot + (-D3DX_PI + m_fAngle)) * m_fLength;
 	pVtx[0].pos.z = 0.0f;
 
-	pVtx[1].pos.x = m_pos.x + sinf(m_fRot + (D3DX_PI - m_fAngle))*m_fLength;
-	pVtx[1].pos.y = m_pos.y + cosf(m_fRot + (D3DX_PI - m_fAngle))*m_fLength;
+	pVtx[1].pos.x = m_pos.x + sinf(m_fRot + (D3DX_PI - m_fAngle)) * m_fLength;
+	pVtx[1].pos.y = m_pos.y + cosf(m_fRot + (D3DX_PI - m_fAngle)) * m_fLength;
 	pVtx[1].pos.z = 0.0f;
 
-	pVtx[2].pos.x = m_pos.x + sinf(m_fRot + (0.0f - m_fAngle))*m_fLength;
-	pVtx[2].pos.y = m_pos.y + cosf(m_fRot + (0.0f - m_fAngle))*m_fLength;
+	pVtx[2].pos.x = m_pos.x + sinf(m_fRot + (0.0f - m_fAngle)) * m_fLength;
+	pVtx[2].pos.y = m_pos.y + cosf(m_fRot + (0.0f - m_fAngle)) * m_fLength;
 	pVtx[2].pos.z = 0.0f;
 
-	pVtx[3].pos.x = m_pos.x + sinf(m_fRot + (0.0f + m_fAngle))*m_fLength;
-	pVtx[3].pos.y = m_pos.y + cosf(m_fRot + (0.0f + m_fAngle))*m_fLength;
+	pVtx[3].pos.x = m_pos.x + sinf(m_fRot + (0.0f + m_fAngle)) * m_fLength;
+	pVtx[3].pos.y = m_pos.y + cosf(m_fRot + (0.0f + m_fAngle)) * m_fLength;
 	pVtx[3].pos.z = 0.0f;
 
 	//rhwの設定
@@ -137,34 +133,15 @@ void CObject2D::Draw()
 }
 
 //-----------------------------------------------------------------------------
-// 位置の設定
-//-----------------------------------------------------------------------------
-void CObject2D::SetPosition(const D3DXVECTOR3 & pos)
-{
-	//位置の設定
-	m_pos = pos;
-
-	//頂点座標の設定
-	SetVertex();
-}
-
-//-----------------------------------------------------------------------------
 // サイズの設定
 //-----------------------------------------------------------------------------
-void CObject2D::SetSize(float fSizeX, float fSizeY)
+void CObject2D::SetSize(D3DXVECTOR2 size)
 {
+	m_size = size;
 	//対角線の長さを算出
-	m_fLength = sqrtf(fSizeX * fSizeX + fSizeY * fSizeY) / 2.0f;
+	m_fLength = sqrtf(size.x * size.x + size.y * size.y) / 2.0f;
 	//対角線の角度を算出する
-	m_fAngle = atan2f(fSizeX, fSizeY);
-}
-
-//-----------------------------------------------------------------------------
-// サイズの設定
-//-----------------------------------------------------------------------------
-void CObject2D::SetRot(float fRot)
-{
-	m_fRot = fRot;
+	m_fAngle = atan2f(size.x, size.y);
 }
 
 //-----------------------------------------------------------------------------
@@ -174,6 +151,7 @@ void CObject2D::SetVertex()
 {
 	VERTEX_2D *pVtx;
 
+	//頂点バッファの設定
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
@@ -193,6 +171,7 @@ void CObject2D::SetVertex()
 	pVtx[3].pos.y = m_pos.y + cosf(m_fRot + (0.0f + m_fAngle))*m_fLength;
 	pVtx[3].pos.z = 0.0f;
 
+	//頂点バッファの解放
 	m_pVtxBuff->Unlock();
 }
 
@@ -229,27 +208,6 @@ void CObject2D::SetAnimation(int nAnimU, int nAnimV, int nPartU, int nPartV)
 	pVtx[3].tex = D3DXVECTOR2((1.0f / nPartU) * (nAnimU + 1), (1.0f / nPartV) * (nAnimV + 1));
 
 	m_pVtxBuff->Unlock();
-}
-
-//-----------------------------------------------------------------------------
-//　位置の取得
-//-----------------------------------------------------------------------------
-const D3DXVECTOR3 & CObject2D::GetPosition() const
-{
-	return m_pos;
-}
-
-const float & CObject2D::GetRot() const
-{
-	return m_fRot;
-}
-
-//-----------------------------------------------------------------------------
-//　テクスチャの設定
-//-----------------------------------------------------------------------------
-void CObject2D::BindTexture(LPDIRECT3DTEXTURE9 Texture)
-{
-	m_pTexture = Texture;
 }
 
 //-----------------------------------------------------------------------------

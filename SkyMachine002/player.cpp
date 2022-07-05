@@ -13,9 +13,17 @@
 //*****************************************************************************
 // 定数宣言
 //*****************************************************************************
-const float CPlayer::SIZE_X = 40.0f;
-const float CPlayer::SIZE_Y = 20.0f;
+const float CPlayer::SIZE_X = 80.0f;
+const float CPlayer::SIZE_Y = 40.0f;
 const float CPlayer::MOVE_DEFAULT = 10.0f;
+// アニメーション間隔
+const int CPlayer::ANIM_INTERVAL = 5;
+// アニメーション最大数
+const int CPlayer::MAX_ANIM = 2;
+// U座標の最大分割数
+const int CPlayer::DIVISION_U = 2;
+// V座標の最大分割数
+const int CPlayer::DIVISION_V = 4;
 
 //*****************************************************************************
 // 静的メンバ変数宣言
@@ -27,11 +35,11 @@ LPDIRECT3DTEXTURE9 CPlayer::m_pTexture[2] = { nullptr };
 // コンストラクタ
 //-----------------------------------------------------------------------------
 CPlayer::CPlayer()
-	:m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_nCntState(0), m_nCntAttack(0), 
-	m_nCounterAnimPlayer(0), m_nPatternAnimPlayer(0)
+	:m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_nCntState(0), m_nCntAttack(0),
+	m_nCntAnim(0), m_nPatternAnim(0), m_nTexRotType(TYPE_NEUTRAL)
 {
 	//オブジェクトの種類設定
-	SetObjectType(EObject::TYPE_PLAYER);
+	SetObjectType(EObject::OBJ_PLAYER);
 }
 
 //-----------------------------------------------------------------------------
@@ -47,18 +55,21 @@ CPlayer::~CPlayer()
 CPlayer *CPlayer::Create(const D3DXVECTOR3& pos)
 {
 	//インスタンス生成
-	CPlayer *pCPlayer = new CPlayer;
+	CPlayer *pPlayer = new CPlayer;
 
-	if (pCPlayer != nullptr)
+	if (pPlayer != nullptr)
 	{
+		//位置設定
+		pPlayer->SetPosition(pos);
+
 		//生成処理
-		pCPlayer->Init(pos);
+		pPlayer->Init();
 
 		// テクスチャの設定
-		pCPlayer->BindTexture(m_pTexture[0]);
+		pPlayer->BindTexture(m_pTexture[0]);
 	}
 
-	return pCPlayer;
+	return pPlayer;
 }
 
 //-----------------------------------------------------------------------------
@@ -99,11 +110,15 @@ void CPlayer::Unload()
 //-----------------------------------------------------------------------------
 // 初期化処理
 //-----------------------------------------------------------------------------
-HRESULT CPlayer::Init(const D3DXVECTOR3& pos)
+HRESULT CPlayer::Init()
 {
-	CObject2D::SetSize(SIZE_X, SIZE_Y);
+	CObject2D::SetSize(D3DXVECTOR2(SIZE_X, SIZE_Y));
 
-	CObject2D::Init(pos);
+	CObject2D::Init();
+
+	//テクスチャアニメーション
+	CObject2D::SetAnimation(m_nPatternAnim, m_nTexRotType, DIVISION_U, DIVISION_V);
+
 	return S_OK;
 }
 
@@ -123,63 +138,19 @@ void CPlayer::Update()
 	// 位置情報を取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
 
+	//移動処理
+	pos = Move(pos);
+
 	// キーボード情報の取得
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
-
-	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_LEFT) == true)
-	{//Aキーが押された
-		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
-		{
-			pos.x += sinf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
-			pos.y += cosf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
-		}
-		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
-		{
-			pos.x += sinf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
-			pos.y += cosf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
-		}
-		else
-		{
-			pos.x += sinf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
-			pos.y += cosf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
-		}
-	}
-	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_RIGHT) == true)
-	{//Dキーが押された
-		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
-		{
-			pos.x += sinf(D3DX_PI *0.75f) * MOVE_DEFAULT;
-			pos.y += cosf(D3DX_PI *0.75f) * MOVE_DEFAULT;
-		}
-		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
-		{
-			pos.x += sinf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
-			pos.y += cosf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
-		}
-		else
-		{
-			pos.x += sinf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
-			pos.y += cosf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
-		}
-	}
-	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
-	{//Wキーが押された
-		pos.x += sinf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
-		pos.y += cosf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
-	}
-	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
-	{//Sキーが押された
-		pos.x += sinf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
-		pos.y += cosf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
-	}
 
 	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_ATTACK) == true)
 	{//SPACEキーを押された
 		m_nCntAttack++;		//攻撃間隔のカウンター
-		if (m_nCntAttack > 10)
+		if (m_nCntAttack > 5)
 		{
 			//弾の設定
-			CBullet::Create(pos);
+			CBullet::Create(pos)->SetType(CBullet::EType::TYPE_PLAYER);
 			m_nCntAttack = 0;
 
 			//サウンド再生
@@ -193,12 +164,31 @@ void CPlayer::Update()
 
 	//位置情報更新
 	CObject2D::SetPosition(pos);
-
+	
 	//サイズ更新
 	//CObject2D::SetSize(m_Scale.x, m_Scale.y);
 
-	//テクスチャアニメーション
-	//CObject2D::SetAnimation();
+	// カウントを増やす
+	m_nCntAnim++;
+	if (m_nCntAnim % ANIM_INTERVAL == 0)
+	{
+		// 今のアニメーションを1つ進める
+		m_nPatternAnim++;
+	}
+
+	if (m_nPatternAnim == MAX_ANIM)
+	{// アニメーションが終わったら
+		// 終了する
+		m_nPatternAnim = 0;
+	}
+	else
+	{
+		//頂点座標の設定
+		CObject2D::SetVertex();
+
+		//テクスチャアニメーション
+		CObject2D::SetAnimation(m_nPatternAnim, m_nTexRotType, DIVISION_U, DIVISION_V);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -210,10 +200,81 @@ void CPlayer::Draw()
 }
 
 //-----------------------------------------------------------------------------
+// 移動処理
+//-----------------------------------------------------------------------------
+D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
+{
+	// キーボード情報の取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+
+	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_LEFT) == true)
+	{//Aキーが押された
+		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
+		{
+			pos.x += sinf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
+			pos.y += cosf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
+			m_nTexRotType = TYPE_UP;
+		}
+		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
+		{
+			pos.x += sinf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
+			pos.y += cosf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
+			m_nTexRotType = TYPE_DOWN;
+		}
+		else
+		{
+			pos.x += sinf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
+			pos.y += cosf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
+			m_nTexRotType = TYPE_NEUTRAL;
+		}
+	}
+	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_RIGHT) == true)
+	{//Dキーが押された
+		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
+		{
+			pos.x += sinf(D3DX_PI *0.75f) * MOVE_DEFAULT;
+			pos.y += cosf(D3DX_PI *0.75f) * MOVE_DEFAULT;
+			m_nTexRotType = TYPE_UP;
+		}
+		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
+		{
+			pos.x += sinf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
+			pos.y += cosf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
+			m_nTexRotType = TYPE_DOWN;
+		}
+		else
+		{
+			pos.x += sinf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
+			pos.y += cosf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
+			m_nTexRotType = TYPE_NEUTRAL;
+		}
+	}
+	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
+	{//Wキーが押された
+		pos.x += sinf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
+		pos.y += cosf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
+		m_nTexRotType = TYPE_UP;
+	}
+	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
+	{//Sキーが押された
+		pos.x += sinf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
+		pos.y += cosf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
+		m_nTexRotType = TYPE_DOWN;
+	}
+	else
+	{
+		m_nTexRotType = TYPE_NEUTRAL;
+	}
+
+	return pos;
+}
+
+//-----------------------------------------------------------------------------
 // ダメージ処理
 //-----------------------------------------------------------------------------
 void CPlayer::Damage()
 {
+	m_move.x += 123.0f;
 }
 
 //-----------------------------------------------------------------------------
