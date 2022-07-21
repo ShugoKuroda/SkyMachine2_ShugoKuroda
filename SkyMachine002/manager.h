@@ -49,7 +49,7 @@ public:
 	static MODE GetMode() { return m_mode; }
 
 	static CRenderer *GetRenderer() { return m_pRenderer; }
-	//static CBase *GetBase(void) { return m_pBase; }
+	static CBase *GetBase(void) { return m_pBase; }
 	//static CFade *GetFade(void) { return m_pFade; }
 	//static MODE GetMode(void) { return m_mode; }
 	static CSound *GetSound(void) { return m_pSound; }
@@ -58,11 +58,6 @@ public:
 	static CInputMouse *GetInputMouse() { return m_pInputMouse; }
 
 private:
-	// テクスチャ読み込み
-	static void LoadAll();
-	// テクスチャ破棄
-	static void UnloadAll();
-
 	static CRenderer *m_pRenderer;
 	static CInputKeyboard *m_pInputKeyboard;	// キーボード情報のポインタ
 	static CInputJoypad *m_pInputJoypad;		// ジョイパッド情報のポインタ

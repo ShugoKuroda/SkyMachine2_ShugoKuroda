@@ -20,7 +20,14 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="rank.cpp" />
+    <ClCompile Include="load.cpp" />
     <ClCompile Include="bg.cpp" />
+    <ClCompile Include="logo.cpp" />
+    <ClCompile Include="library.cpp" />
+    <ClCompile Include="cloud.cpp" />
+    <ClCompile Include="ui.cpp" />
+    <ClCompile Include="bubble.cpp" />
+    <ClCompile Include="spray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -43,5 +50,14 @@
     <ClInclude Include="title.h" />
     <ClInclude Include="rank.h" />
     <ClInclude Include="bg.h" />
+    <ClInclude Include="load.h" />
+    <ClInclude Include="logo.h" />
+    <ClInclude Include="library.h" />
+    <ClInclude Include="cloud.h" />
+    <ClInclude Include="enemy_data.h" />
+    <ClInclude Include="ui.h" />
+    <ClInclude Include="bubble.h" />
+    <ClInclude Include="cloud_data.h" />
+    <ClInclude Include="spray.h" />
   </ItemGroup>
 </Project>

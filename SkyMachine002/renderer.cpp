@@ -18,11 +18,11 @@
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CRenderer::CRenderer()
+CRenderer::CRenderer() :m_pD3D(nullptr), m_pD3DDevice(nullptr)
 {
-	m_pD3D = nullptr;
-	m_pD3DDevice = nullptr;
+#ifdef _DEBUG
 	m_pFont = nullptr;
+#endif // _DEBUG
 }
 
 //=============================================================================
@@ -83,22 +83,21 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	}
 
 	//レンダーステートの設定
-	m_pD3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);			//カリング
-	m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	m_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	m_pD3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);					//カリング
+	m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);					// αブレンドを行う
+	m_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);			// αソースカラーの指定
+	m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);		// αデスティネーションカラー
 
 	//サンプラーステートの設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);			// テクスチャU値の繰り返し設定
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);			// テクスチャV値の繰り返し設定
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);		// テクスチャ拡大時の補間設定
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);		// テクスチャ縮小時の補間設定
 
 	//テクスチャステージステートパラメータの設定
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);		//αブレンディング処理設定
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);		//最初のα引数
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);		//２番目のα引数
-
 
 #ifdef _DEBUG
 	// デバッグ情報表示用フォントの生成
@@ -159,13 +158,13 @@ void CRenderer::Draw()
 	if (SUCCEEDED(m_pD3DDevice->BeginScene()))
 	{//描画開始が成功した場合
 
+		//オブジェクトの描画処理
+		CObject::DrawAll();
+
 #ifdef _DEBUG
 		// FPS表示
 		DrawFPS();
 #endif // _DEBUG
-
-		//オブジェクトの描画処理
-		CObject::DrawAll();
 
 		//描画終了
 		m_pD3DDevice->EndScene();
@@ -197,11 +196,18 @@ void CRenderer::DrawFPS()
 		CObject *pObject = CObject::GetObject(nCntObj);
 		if (pObject != nullptr)
 		{
-			rectObj[nCntObj] = { 0, 20 * (nCntObj + 1), SCREEN_WIDTH, SCREEN_HEIGHT };
+			if (nCntObj > 35)
+			{
+				rectObj[nCntObj] = { 300, 20 * (nCntObj - 35), SCREEN_WIDTH, SCREEN_HEIGHT };
+			}
+			else
+			{
+				rectObj[nCntObj] = { 0, 20 * (nCntObj + 1), SCREEN_WIDTH, SCREEN_HEIGHT };
+			}
 
 			D3DXVECTOR3 pos = ((CObject2D*)pObject)->GetPosition();
 
-			sprintf(strObj[nCntObj], _T("OBJ[%d] : X=%.2f Y=%.2f Z=%.2f\n"), nCntObj, pos.x, pos.y, pos.z);
+			sprintf(strObj[nCntObj], _T("OBJ[%d] : X=%.2f Y=%.2f Z=%.2f"), nCntObj, pos.x, pos.y, pos.z);
 
 			//オブジェクトの位置描画
 			m_pFont->DrawTextA(NULL, strObj[nCntObj], -1, &rectObj[nCntObj], DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));

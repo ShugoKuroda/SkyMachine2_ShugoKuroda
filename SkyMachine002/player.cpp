@@ -5,15 +5,19 @@
 //
 //=============================================================================
 #include "manager.h"
+#include "input_keyboard.h"
+#include "input_joypad.h"
+#include "sound.h"
+
+#include "library.h"
+
 #include "bullet.h"
 #include "player.h"
-#include "input_keyboard.h"
-#include "sound.h"
 
 //*****************************************************************************
 // 定数宣言
 //*****************************************************************************
-const float CPlayer::SIZE_X = 80.0f;
+const float CPlayer::SIZE_X = 90.0f;
 const float CPlayer::SIZE_Y = 40.0f;
 const float CPlayer::MOVE_DEFAULT = 10.0f;
 // アニメーション間隔
@@ -29,14 +33,14 @@ const int CPlayer::DIVISION_V = 4;
 // 静的メンバ変数宣言
 //*****************************************************************************
 // テクスチャのポインタ
-LPDIRECT3DTEXTURE9 CPlayer::m_pTexture[2] = { nullptr };
+LPDIRECT3DTEXTURE9 CPlayer::m_apTexture[2] = { nullptr };
 
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
-CPlayer::CPlayer()
-	:m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_nCntState(0), m_nCntAttack(0),
-	m_nCntAnim(0), m_nPatternAnim(0), m_nTexRotType(TYPE_NEUTRAL)
+CPlayer::CPlayer() :
+	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_nCntState(0), m_nCntAttack(0),
+	m_nCntAnim(0), m_nPatternAnim(0), m_nCntAnimMove(0), m_nTexRotType(TYPE_NEUTRAL), m_nPlayerNum(0)
 {
 	//オブジェクトの種類設定
 	SetObjectType(EObject::OBJ_PLAYER);
@@ -66,7 +70,7 @@ CPlayer *CPlayer::Create(const D3DXVECTOR3& pos)
 		pPlayer->Init();
 
 		// テクスチャの設定
-		pPlayer->BindTexture(m_pTexture[0]);
+		pPlayer->BindTexture(m_apTexture[0]);
 	}
 
 	return pPlayer;
@@ -83,10 +87,10 @@ HRESULT CPlayer::Load()
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/player000.png",
-		&m_pTexture[0]);
+		&m_apTexture[0]);
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/player001.png",
-		&m_pTexture[1]);
+		&m_apTexture[1]);
 
 	return S_OK;
 }
@@ -99,10 +103,10 @@ void CPlayer::Unload()
 	for (int nCnt = 0; nCnt < MAX_TEX; nCnt++)
 	{
 		// テクスチャの破棄
-		if (m_pTexture[nCnt] != nullptr)
+		if (m_apTexture[nCnt] != nullptr)
 		{
-			m_pTexture[nCnt]->Release();
-			m_pTexture[nCnt] = nullptr;
+			m_apTexture[nCnt]->Release();
+			m_apTexture[nCnt] = nullptr;
 		}
 	}
 }
@@ -143,6 +147,7 @@ void CPlayer::Update()
 
 	// キーボード情報の取得
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+	CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
 	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_ATTACK) == true)
 	{//SPACEキーを押された
@@ -150,7 +155,7 @@ void CPlayer::Update()
 		if (m_nCntAttack > 5)
 		{
 			//弾の設定
-			CBullet::Create(pos)->SetType(CBullet::EType::TYPE_PLAYER);
+			CBullet::Create(D3DXVECTOR3(pos.x, pos.y, pos.z), 5)->SetType(CBullet::EType::TYPE_PLAYER);
 			m_nCntAttack = 0;
 
 			//サウンド再生
@@ -161,6 +166,9 @@ void CPlayer::Update()
 	{
 		m_nCntAttack = 10;
 	}
+
+	//可動範囲を画面内に制限
+	LibrarySpace::SteyInScreen2D(&pos, CObject2D::GetSize());
 
 	//位置情報更新
 	CObject2D::SetPosition(pos);
@@ -206,26 +214,32 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 {
 	// キーボード情報の取得
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+	// ジョイパッド情報の取得
+	CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_LEFT) == true)
+	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_LEFT) == true /*||
+		pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).x*/)
 	{//Aキーが押された
 		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
 		{
 			pos.x += sinf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
 			pos.y += cosf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
-			m_nTexRotType = TYPE_UP;
+			SetAnimNum(TYPE_DOWN,TYPE_UP);
+			m_nCntAnimMove++;
 		}
 		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
 		{
 			pos.x += sinf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
 			pos.y += cosf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
-			m_nTexRotType = TYPE_DOWN;
+			SetAnimNum(TYPE_UP, TYPE_DOWN);
+			m_nCntAnimMove++;
 		}
 		else
 		{
 			pos.x += sinf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
 			pos.y += cosf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
 			m_nTexRotType = TYPE_NEUTRAL;
+			m_nCntAnimMove = 0;
 		}
 	}
 	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_RIGHT) == true)
@@ -234,39 +248,61 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 		{
 			pos.x += sinf(D3DX_PI *0.75f) * MOVE_DEFAULT;
 			pos.y += cosf(D3DX_PI *0.75f) * MOVE_DEFAULT;
-			m_nTexRotType = TYPE_UP;
+			SetAnimNum(TYPE_DOWN, TYPE_UP);
+			m_nCntAnimMove++;
 		}
 		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
 		{
 			pos.x += sinf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
 			pos.y += cosf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
-			m_nTexRotType = TYPE_DOWN;
+			SetAnimNum(TYPE_UP, TYPE_DOWN);
+			m_nCntAnimMove++;
 		}
 		else
 		{
 			pos.x += sinf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
 			pos.y += cosf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
 			m_nTexRotType = TYPE_NEUTRAL;
+			m_nCntAnimMove = 0;
 		}
 	}
 	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
 	{//Wキーが押された
 		pos.x += sinf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
 		pos.y += cosf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
-		m_nTexRotType = TYPE_UP;
+		SetAnimNum(TYPE_DOWN, TYPE_UP);
+		m_nCntAnimMove++;
 	}
 	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
 	{//Sキーが押された
 		pos.x += sinf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
 		pos.y += cosf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
-		m_nTexRotType = TYPE_DOWN;
+		SetAnimNum(TYPE_UP, TYPE_DOWN);
+		m_nCntAnimMove++;
 	}
 	else
 	{
+		m_nCntAnimMove = 0;
 		m_nTexRotType = TYPE_NEUTRAL;
 	}
 
 	return pos;
+}
+
+//-----------------------------------------------------------------------------
+// アニメーション番号の設定
+//-----------------------------------------------------------------------------
+void CPlayer::SetAnimNum(ANIMTYPE AnimIn, ANIMTYPE AnimOut)
+{
+	if (m_nTexRotType == AnimIn)
+	{
+		m_nTexRotType = TYPE_NEUTRAL;
+		m_nCntAnimMove = 0;
+	}
+	else if (m_nCntAnimMove >= 10)
+	{
+		m_nTexRotType = AnimOut;
+	}
 }
 
 //-----------------------------------------------------------------------------

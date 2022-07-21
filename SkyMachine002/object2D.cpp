@@ -11,12 +11,37 @@
 
 #include <assert.h>
 
+//*****************************************************************************
+// テンプレート関数                       
+//*****************************************************************************
+
+//*****************************************************************************
+// 割り算
+//
+// 引数   :data0,data1はデータ
+// 戻り値 :計算結果
+//*****************************************************************************
+template<class T> T Divide(const T data0, const T data1)
+{
+	T answer = data0 / data1;
+	return answer;
+}
+
+//-----------------------------------------------------------------------------
+// デフォルトコンストラクタ
+//-----------------------------------------------------------------------------
+CObject2D::CObject2D()
+	: m_pTexture(nullptr), m_pVtxBuff(nullptr), m_pos(0.0f, 0.0f, 0.0f), m_fRot(0.0f), m_fLength(0.0f), m_fAngle(0.0f), m_col(0.0f, 0.0f, 0.0f, 0.0f), m_nCounterAnim(0), m_nPatternAnim(0)
+{
+}
+
 //-----------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------
-CObject2D::CObject2D()
-	: m_pTexture(nullptr), m_pVtxBuff(nullptr), m_pos(0.0f, 0.0f, 0.0f), m_fRot(0.0f), m_fLength(0.0f), m_fAngle(0.0f)
+CObject2D::CObject2D(EObject type)
 {
+	//オブジェクトの種類設定
+	SetObjectType(type);
 }
 
 //-----------------------------------------------------------------------------
@@ -31,6 +56,9 @@ CObject2D::~CObject2D()
 //-----------------------------------------------------------------------------
 HRESULT CObject2D::Init()
 {
+	//カラーの設定
+	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -71,10 +99,10 @@ HRESULT CObject2D::Init()
 	pVtx[3].rhw = 1.0f;
 
 	//頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[0].col = D3DXCOLOR(m_col);
+	pVtx[1].col = D3DXCOLOR(m_col);
+	pVtx[2].col = D3DXCOLOR(m_col);
+	pVtx[3].col = D3DXCOLOR(m_col);
 
 	//テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -137,6 +165,7 @@ void CObject2D::Draw()
 //-----------------------------------------------------------------------------
 void CObject2D::SetSize(D3DXVECTOR2 size)
 {
+	//大きさの設定
 	m_size = size;
 	//対角線の長さを算出
 	m_fLength = sqrtf(size.x * size.x + size.y * size.y) / 2.0f;
@@ -180,16 +209,21 @@ void CObject2D::SetVertex()
 //-----------------------------------------------------------------------------
 void CObject2D::SetColor(D3DXCOLOR col)
 {
+	// カラーの設定
+	m_col = col;
+
 	VERTEX_2D *pVtx;
 
+	//頂点バッファの設定
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(col);
-	pVtx[1].col = D3DXCOLOR(col);
-	pVtx[2].col = D3DXCOLOR(col);
-	pVtx[3].col = D3DXCOLOR(col);
+	pVtx[0].col = D3DXCOLOR(m_col);
+	pVtx[1].col = D3DXCOLOR(m_col);
+	pVtx[2].col = D3DXCOLOR(m_col);
+	pVtx[3].col = D3DXCOLOR(m_col);
 
+	//頂点バッファの解放
 	m_pVtxBuff->Unlock();
 }
 
@@ -200,30 +234,56 @@ void CObject2D::SetAnimation(int nAnimU, int nAnimV, int nPartU, int nPartV)
 {
 	VERTEX_2D *pVtx;
 
+	//頂点バッファの設定
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
+	//頂点座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f + (1.0f / nPartU) * nAnimU, 0.0f + (1.0f / nPartV) * nAnimV);
 	pVtx[1].tex = D3DXVECTOR2((1.0f / nPartU) * (nAnimU + 1), 0.0f + (1.0f / nPartV) * nAnimV);
 	pVtx[2].tex = D3DXVECTOR2(0.0f + (1.0f / nPartU) * nAnimU, (1.0f / nPartV) * (nAnimV + 1));
 	pVtx[3].tex = D3DXVECTOR2((1.0f / nPartU) * (nAnimU + 1), (1.0f / nPartV) * (nAnimV + 1));
 
+	//頂点バッファの解放
 	m_pVtxBuff->Unlock();
 }
 
 //-----------------------------------------------------------------------------
-// 生成処理
+// 背景アニメーション処理
 //-----------------------------------------------------------------------------
-//CObject2D *CObject2D::Create()
-//{
-//	CObject2D* pObject2D = nullptr;
-//	pObject2D = new CObject2D;
-//
-//	if (pObject2D != nullptr)
-//	{
-//		pObject2D->Init();
-//		return pObject2D;
-//	}
-//
-//	assert(false);
-//	return pObject2D;
-//}
+void CObject2D::SetAnimBg(int nSpeed, int nPattern, bool bRightToLeft)
+{
+	// アニメーション
+	m_nCounterAnim++;	//カウンタ加算
+
+	if (m_nCounterAnim == nSpeed)//速さ
+	{
+		// オーバーフロー防止
+		m_nCounterAnim = 0;  // カウンタを0に戻す
+
+		// アニメーションを切り替える
+		m_nPatternAnim = (m_nPatternAnim + 1) % nPattern;  // 枚数
+	}
+
+	// 何等分するか計算
+	float fEqualDivision = Divide(1.0f, (float)nPattern);
+
+	// 左から右なら、-1をかける
+	if (bRightToLeft == false)
+	{
+		fEqualDivision *= -1;
+	}
+
+	VERTEX_2D *pVtx;	// 頂点情報へのポインタ
+
+	// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	// テクスチャの座標を反映
+	pVtx[0].tex = D3DXVECTOR2(m_nPatternAnim * fEqualDivision, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(m_nPatternAnim * fEqualDivision + 1.0f, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(m_nPatternAnim * fEqualDivision, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(m_nPatternAnim * fEqualDivision + 1.0f, 1.0f);
+
+	//頂点バッファの解放
+	m_pVtxBuff->Unlock();
+}

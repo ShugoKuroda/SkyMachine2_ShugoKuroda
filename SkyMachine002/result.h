@@ -18,10 +18,9 @@ public:
 	CResult();
 	~CResult();
 
-	HRESULT Init(D3DXVECTOR3 pos, D3DXVECTOR2 size);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
+	HRESULT Init() override;
+	void Uninit() override;
+	void Update() override;
 };
 
 #endif

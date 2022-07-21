@@ -151,19 +151,19 @@ void CExplosion::Update()
 	{// アニメーションが終わったら
 		// 終了する
 		Uninit();
+		return;
 	}
-	else
-	{
-		if (m_nPatternAnim >= DIVISION_U && m_nPatterAnimV <= 0)
-		{
-			m_nPatterAnimV++;
-		}
-		//頂点座標の設定
-		CObject2D::SetVertex();
 
-		// テクスチャ更新
-		CObject2D::SetAnimation(m_nPatternAnim, m_nPatterAnimV, DIVISION_U, DIVISION_V);
+	if (m_nPatternAnim >= DIVISION_U && m_nPatterAnimV <= 0)
+	{
+		m_nPatterAnimV++;
 	}
+
+	//頂点座標の設定
+	CObject2D::SetVertex();
+
+	// テクスチャ更新
+	CObject2D::SetAnimation(m_nPatternAnim, m_nPatterAnimV, DIVISION_U, DIVISION_V);
 }
 
 //-----------------------------------------------------------------------------------------------

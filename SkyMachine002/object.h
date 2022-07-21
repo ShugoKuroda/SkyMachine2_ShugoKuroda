@@ -16,15 +16,19 @@ class CObject
 {
 public:		// 定数
 	// オブジェクトの最大数
-	static const int MAX_OBJECT = 20;
+	static const int MAX_OBJECT = 100;
 
 public:
 	enum EObject
-	{//オブジェクトの種類
-		OBJ_PLAYER = 0,
+	{//オブジェクトの種類(下から描画を優先)
+		OBJ_BG = 0,
+		OBJ_CLOUD,
+		OBJ_SEA_OTHER,
+		OBJ_PLAYER,
 		OBJ_ENEMY,
 		OBJ_BULLET,
 		OBJ_EXPLOSION,
+		OBJ_BUBBLE,
 		OBJ_MAX
 	};
 
@@ -41,7 +45,6 @@ public:
 	static void DrawAll();
 
 	static CObject* GetObject(int nCnt) { return m_apObject[nCnt]; }
-	static int GetObjectNumAll() { return m_nNumAll; }
 	void SetObjectType(EObject type) { m_nType = type; }
 	EObject GetObjType() { return m_nType; }
 

@@ -15,8 +15,6 @@
 class CBullet : public CObject2D
 {
 private:
-	// 寿命
-	static const int LIFE = 50;
 	//プレイヤーのサイズ(X)
 	static const float SIZE_WIDTH;
 	//プレイヤーのサイズ(Y)
@@ -44,7 +42,7 @@ public:
 	~CBullet() override;
 
 	//メンバ関数
-	static CBullet *Create(const D3DXVECTOR3& pos);	//インスタンス生成処理
+	static CBullet *Create(const D3DXVECTOR3& pos, const int& nDamage);	//インスタンス生成処理
 	static HRESULT Load();		//テクスチャの読み込み
 	static void Unload();		//テクスチャの削除
 
@@ -54,13 +52,13 @@ public:
 	void Draw() override;
 
 	void SetType(EType type) { m_nType = type; }
-	bool CollisionSphere(D3DXVECTOR3 posStart);
+	bool Collision(D3DXVECTOR3 posStart);
 
 private:
 	//メンバ変数
-	static LPDIRECT3DTEXTURE9 m_pTexture;	//テクスチャのポインタ
+	static LPDIRECT3DTEXTURE9 m_apTexture;	//テクスチャのポインタ
 	D3DXVECTOR3 m_move;				//移動量
-	int m_nLife;					//寿命
+	int m_nDamage;					//弾のダメージ
 	int m_nCntAnim;					//アニメーションカウンター
 	int m_nPatternAnim;				//アニメーションのパターンNo.
 	EType m_nType;					//弾の生成元の種類

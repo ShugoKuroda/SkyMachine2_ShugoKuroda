@@ -77,8 +77,8 @@ void CInputJoypad::Update()
 		}
 
 		//ジョイパッドの振動
-		g_JoyMoter[nCnt].wLeftMotorSpeed = g_nStrength[nCnt];
-		g_JoyMoter[nCnt].wRightMotorSpeed = g_nStrength[nCnt];
+		g_JoyMoter[nCnt].wLeftMotorSpeed = (WORD)g_nStrength[nCnt];
+		g_JoyMoter[nCnt].wRightMotorSpeed = (WORD)g_nStrength[nCnt];
 		XInputSetState(nCnt, &g_JoyMoter[nCnt]);
 
 		if (g_nTime[nCnt] > 0)

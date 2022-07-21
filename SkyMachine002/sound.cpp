@@ -246,6 +246,7 @@ HRESULT CSound::Play(SOUND_LABEL label)
 
 	// ó‘Ôæ“¾
 	m_apSourceVoice[label]->GetState(&xa2state);
+
 	if(xa2state.BuffersQueued != 0)
 	{// Ä¶’†
 		// ˆê’â~

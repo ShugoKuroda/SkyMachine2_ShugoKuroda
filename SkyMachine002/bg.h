@@ -8,7 +8,11 @@
 #define _BG_H_
 
 #include "object.h"
-#include "object2D.h"
+
+//*****************************************************************************
+// 前方宣言
+//*****************************************************************************
+class CObject2D;
 
 //*******************************************************************
 //	背景クラスの定義
@@ -33,33 +37,39 @@ private:
 	// V座標の最大分割数
 	static const int DIVISION_V;
 
-	//最大背景数
-	static const int MAX_BG = 5;
 public:
 	// 背景のセット
-	enum SET
+	enum ESet
 	{
-		SET_NONE = 0,	// なし
-		SET_a,			// α
-		SET_b,			// β
-		SET_r,			// γ
+		SET_NONE = 0,
+		SET_TITLE,		// タイトル
+		SET_A,			// ZONE_A
+		SET_B,			// ZONE_B
+		SET_C,			// ZONE_C
 		SET_MAX			// セットの最大数
 	};
 
-	enum EType
+	enum EZone_A
 	{//背景の種類
-		TYPE_PLAYER = 0,
-		TYPE_ENEMY,
-		TYPE_MAX
+		BG_A_SKY = 0,		// 空
+		BG_A_UNDERWATER,	// 海中
+		BG_A_SEA,			// 海面
+		BG_A_WAVE1,			// 波1
+		BG_A_WAVE2,			// 波2
+		BG_A_WAVE3,			// 波3
+		BG_A_FLOOR,			// 海中の床
+		BG_A_ROCK,			// 岩
+		BG_A_SEA_OTHER,		// 海の裏側(海中からみた海面)
+		BG_A_MAX			// 背景の最大数
 	};
 
 	CBg();
 	~CBg() override;
 
 	//メンバ関数
-	static CBg *Create(SET set);	//インスタンス生成処理
-	static HRESULT Load();		//テクスチャの読み込み
-	static void Unload();		//テクスチャの削除
+	static HRESULT Load(void);		//テクスチャの読み込み
+	static void Unload(void);		//テクスチャの削除
+	static CBg *Create(ESet set);	//インスタンス生成処理
 
 	HRESULT Init() override;
 	void Uninit() override;
@@ -68,12 +78,10 @@ public:
 
 private:
 	//メンバ変数
-	static LPDIRECT3DTEXTURE9 m_pTexture[TYPE_MAX];		//テクスチャのポインタ
-	CObject2D *m_apObject2D[MAX_BG];					// 2Dポリゴンへのポインタ
-	D3DXVECTOR3 m_move;			//移動量
-	int m_nLife;				//寿命
-	int m_nCntAnim;				//アニメーションカウンター
-	int m_nPatternAnim;			//アニメーションのパターンNo.
+	static LPDIRECT3DTEXTURE9 m_apTexture[BG_A_MAX];	//テクスチャのポインタ
+	CObject2D *m_apObject2D[BG_A_MAX - 1];				//2Dポリゴンへのポインタ
+	ESet m_set;					//描画する背景(ZONE)
+	int m_nCntBgChange;			//次の背景が描画されるまでのカウンター
 };
 
 #endif		// _BG_H_

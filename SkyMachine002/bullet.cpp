@@ -12,12 +12,14 @@
 #include "manager.h"
 #include "renderer.h"
 
+#include "library.h"
+
 #include "player.h"
 #include "enemy.h"
 #include "explosion.h"
 
 //-----------------------------------------------------------------------------------------------
-// 変数変数
+// 定数定義
 //-----------------------------------------------------------------------------------------------
 // 幅
 const float CBullet::SIZE_WIDTH = 30.0f;
@@ -38,13 +40,13 @@ const int CBullet::DIVISION_V = 1;
 // 静的メンバ変数
 //-----------------------------------------------------------------------------------------------
 // テクスチャのポインタ
-LPDIRECT3DTEXTURE9 CBullet::m_pTexture = nullptr;
+LPDIRECT3DTEXTURE9 CBullet::m_apTexture = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CBullet::CBullet() :
-	m_move(0.0f, 0.0f, 0.0f), m_nLife(0), m_nCntAnim(0), m_nPatternAnim(0)
+	m_move(0.0f, 0.0f, 0.0f), m_nDamage(0), m_nCntAnim(0), m_nPatternAnim(0)
 {
 	SetObjectType(EObject::OBJ_BULLET);
 }
@@ -60,7 +62,7 @@ CBullet::~CBullet()
 //-----------------------------------------------------------------------------------------------
 // 生成
 //-----------------------------------------------------------------------------------------------
-CBullet* CBullet::Create(const D3DXVECTOR3& pos)
+CBullet* CBullet::Create(const D3DXVECTOR3& pos, const int& nDamage)
 {
 	// ポインタクラスを宣言
 	CBullet* pBullet = new CBullet;
@@ -70,11 +72,14 @@ CBullet* CBullet::Create(const D3DXVECTOR3& pos)
 		// 位置設定
 		pBullet->SetPosition(pos);
 
+		//弾のダメージ量の設定
+		pBullet->m_nDamage = nDamage;
+
 		// 初期化
 		pBullet->Init();
 
 		// テクスチャの設定
-		pBullet->BindTexture(m_pTexture);
+		pBullet->BindTexture(m_apTexture);
 	}
 
 	return pBullet;
@@ -91,9 +96,14 @@ HRESULT CBullet::Load()
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/bullet000.png",
-		&m_pTexture);
+		&m_apTexture);
 
-	return S_OK;
+	if (m_apTexture != nullptr)
+	{
+		return S_OK;
+	}
+
+	return S_FALSE;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -102,10 +112,10 @@ HRESULT CBullet::Load()
 void CBullet::Unload()
 {
 	// テクスチャの破棄
-	if (m_pTexture != nullptr)
+	if (m_apTexture != nullptr)
 	{
-		m_pTexture->Release();
-		m_pTexture = nullptr;
+		m_apTexture->Release();
+		m_apTexture = nullptr;
 	}
 }
 
@@ -116,8 +126,6 @@ HRESULT CBullet::Init()
 {
 	// 移動量
 	m_move.x = MOVE_DEFAULT;
-	// 寿命
-	m_nLife = LIFE;
 	// サイズ
 	CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
 
@@ -145,47 +153,39 @@ void CBullet::Update()
 	// 移動量の更新
 	pos += m_move;
 
-	// ライフを減らしていく
-	m_nLife--;
-
-	if (m_nLife == 0)
-	{// ライフが0
-		// 爆発の生成
-		CExplosion::Create(pos);
+	if (LibrarySpace::OutScreen2D(&pos, CObject2D::GetSize()))
+	{//画面外
 		// 弾の破棄
 		Uninit();
+		return;
 	}
-	else
+
+	//当たり判定(球体)
+	if (!Collision(pos))
 	{
-		//当たり判定(球体)
-		bool bHit = CollisionSphere(pos);
+		// 位置の更新
+		CObject2D::SetPosition(pos);
 
-		if (!bHit)
+		// カウントを増やす
+		m_nCntAnim++;
+		if (m_nCntAnim % ANIM_INTERVAL == 0)
 		{
-			// 位置の更新
-			CObject2D::SetPosition(pos);
+			// 今のアニメーションを1つ進める
+			m_nPatternAnim++;
+		}
 
-			// カウントを増やす
-			m_nCntAnim++;
-			if (m_nCntAnim % ANIM_INTERVAL == 0)
-			{
-				// 今のアニメーションを1つ進める
-				m_nPatternAnim++;
-			}
+		if (m_nPatternAnim == MAX_ANIM)
+		{// アニメーションが終わったら
+			// 終了する
+			m_nPatternAnim = 0;
+		}
+		else
+		{
+			//頂点座標の設定
+			CObject2D::SetVertex();
 
-			if (m_nPatternAnim == MAX_ANIM)
-			{// アニメーションが終わったら
-			 // 終了する
-				m_nPatternAnim = 0;
-			}
-			else
-			{
-				//頂点座標の設定
-				CObject2D::SetVertex();
-
-				//テクスチャアニメーション
-				CObject2D::SetAnimation(m_nPatternAnim, 1, DIVISION_U, DIVISION_V);
-			}
+			//テクスチャアニメーション
+			CObject2D::SetAnimation(m_nPatternAnim, 1, DIVISION_U, DIVISION_V);
 		}
 	}
 }
@@ -199,15 +199,14 @@ void CBullet::Draw()
 }
 
 //-----------------------------------------------------------------------------------------------
-// 当たり判定(球体)
+// 当たり判定
 //-----------------------------------------------------------------------------------------------
-bool CBullet::CollisionSphere(D3DXVECTOR3 posStart)
+bool CBullet::Collision(D3DXVECTOR3 posStart)
 {
 	//弾のサイズ取得
 	float fStartLength = GetLength();
-	int nMaxObj = CObject::GetObjectNumAll();
 
-	for (int nCntObject = 0; nCntObject < nMaxObj; nCntObject++)
+	for (int nCntObject = 0; nCntObject < CObject::MAX_OBJECT; nCntObject++)
 	{
 		CObject *pObject = CObject::GetObject(nCntObject);
 		if (pObject != nullptr)
@@ -217,21 +216,11 @@ bool CBullet::CollisionSphere(D3DXVECTOR3 posStart)
 			{
 				CEnemy *pEnemy = (CEnemy*)pObject;
 
-				//判定先の位置,サイズの取得
-				D3DXVECTOR3 posEnd = pEnemy->GetPosition();
-				float fEndLength = pEnemy->GetLength();
-
-				//2つの座標差分を求める
-				D3DXVECTOR3 Length = posStart - posEnd;
-
-				//座標差分から距離を求める
-				float fLength = D3DXVec3Length(&Length);
-
-				if (fStartLength + fEndLength > fLength)
-				{//お互いの球体サイズの合計より距離が小さかったら
+				if (LibrarySpace::SphereCollision2D(posStart, pEnemy->GetPosition(), fStartLength, pEnemy->GetLength()))
+				{//弾と当たったら(球体の当たり判定)
 
 					//ダメージ処理
-					pEnemy->Damage();
+					pEnemy->Damage(m_nDamage);
 					// 弾の破棄
 					Uninit();
 					return true;	//当たった

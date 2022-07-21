@@ -32,6 +32,7 @@ private:
 	// V座標の最大分割数
 	static const int DIVISION_V;
 
+
 public:
 	//プレイヤーの状態
 	enum STATE
@@ -41,7 +42,7 @@ public:
 		STATE_MAX
 	};
 
-	enum ROTTYPE
+	enum ANIMTYPE
 	{
 		TYPE_NEUTRAL = 0,
 		TYPE_UP,
@@ -62,12 +63,13 @@ public:
 	void Update() override;
 	void Draw() override;
 	D3DXVECTOR3 Move(D3DXVECTOR3 pos);
+	void SetAnimNum(ANIMTYPE AnimIn, ANIMTYPE AnimOut);
 	void Damage();
 	void Die();
 
 private:	//メンバ変数
 	// テクスチャのポインタ
-	static LPDIRECT3DTEXTURE9 m_pTexture[2];
+	static LPDIRECT3DTEXTURE9 m_apTexture[2];
 
 	//移動量
 	D3DXVECTOR3 m_move;
@@ -81,10 +83,14 @@ private:	//メンバ変数
 	int m_nCntAnim;
 	//アニメーションのパターンNo.
 	int m_nPatternAnim;
-	// 現在のアニメーションV番号
+	//アニメーション遷移までの硬直カウンター
+	int m_nCntAnimMove;
+	//現在のアニメーションV番号
 	int m_nPatterAnimV;
 	//テクスチャアニメーションの種類
-	ROTTYPE m_nTexRotType;
+	ANIMTYPE m_nTexRotType;
+	//プレイヤーの番号
+	int m_nPlayerNum;
 };
 
 #endif //_PLAYER_H_

@@ -30,7 +30,7 @@ public:
 
 public:
 	CObject2D();
-	//CObject2D(CObject2D* pObject);
+	CObject2D(EObject type);
 	virtual ~CObject2D() override;
 
 	virtual HRESULT Init() override;
@@ -44,19 +44,20 @@ public:
 	void SetVertex();
 	void SetColor(D3DXCOLOR col);
 	void SetAnimation(int nAnimU, int nAnimV, int nPartU, int nPartV);
+	void SetAnimBg(int nSpeed, int nPattern, bool bRightToLeft);
+	// テクスチャの設定
+	void BindTexture(LPDIRECT3DTEXTURE9 Texture) { m_pTexture = Texture; }
 
 	// 位置の取得
 	const D3DXVECTOR3& GetPosition() const { return m_pos; }
 	// 向きの取得
 	const float& GetRot() const { return m_fRot; }
-	//サイズの取得
+	// サイズの取得
 	const D3DXVECTOR2& GetSize() const { return m_size; }
-	//対角線の長さ取得
+	// 対角線の長さ取得
 	const float& GetLength() const { return m_fLength; }
-
-protected:
-	// テクスチャの設定
-	void BindTexture(LPDIRECT3DTEXTURE9 Texture) { m_pTexture = Texture; }
+	// 色の取得
+	const D3DXCOLOR& GetColor() const { return m_col; }
 
 private:	//メンバ変数
 	//頂点バッファへのポインター
@@ -73,8 +74,12 @@ private:	//メンバ変数
 	float m_fLength;
 	//対角線の角度
 	float m_fAngle;
-	//頂点カラーの設定
+	//頂点カラー
 	D3DXCOLOR m_col;
+	//アニメーションカウンター
+	int m_nCounterAnim;
+	//アニメーションパターン
+	int m_nPatternAnim;
 };
 
 #endif // _OBJECT_2D_

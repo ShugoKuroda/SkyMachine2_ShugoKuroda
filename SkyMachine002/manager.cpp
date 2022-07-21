@@ -8,49 +8,48 @@
 #include "renderer.h"
 #include "base.h"
 #include "sound.h"
+#include "load.h"
 
 #include "input_keyboard.h"
 #include "input_joypad.h"
 #include "input_mouse.h"
 
+#include "object.h"
 #include "title.h"
 #include "game.h"
 #include "result.h"
 
-#include "object.h"
-#include "player.h"
-#include "enemy.h"
-#include "bullet.h"
-#include "explosion.h"
+#include <time.h>
 
 //*****************************************************************************
 // 静的メンバ変数宣言
 //*****************************************************************************
 CBase *CManager::m_pBase = nullptr;
-CManager::MODE CManager::m_mode = MODE_TITLE;
 CRenderer *CManager::m_pRenderer = nullptr;
 CInputKeyboard *CManager::m_pInputKeyboard = nullptr;
 CInputJoypad *CManager::m_pInputJoypad = nullptr;
 CInputMouse *CManager::m_pInputMouse = nullptr;
 CSound *CManager::m_pSound = nullptr;					// サウンド情報のポインタ
 
-//=============================================================================
-// CManagerのコンストラクタ
-//=============================================================================
+CManager::MODE CManager::m_mode = MODE_TITLE;
+
+//-----------------------------------------------------------------------------
+// コンストラクタ
+//-----------------------------------------------------------------------------
 CManager::CManager()
 {
 }
 
-//=============================================================================
-// CManagerのデストラクタ
-//=============================================================================
+//-----------------------------------------------------------------------------
+// デストラクタ
+//-----------------------------------------------------------------------------
 CManager::~CManager()
 {
 }
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 // 初期化処理
-//=============================================================================
+//-----------------------------------------------------------------------------
 HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 {
 	// レンダラーの初期化処理
@@ -93,25 +92,31 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		m_pSound->Init(hWnd);
 	}
 
+	//敵配置情報のロード
+	LoadSpace::LoadEnemy(hWnd);
+
 	// モードの設定
 	SetMode(MODE_TITLE);
-
-	// テクスチャの読み込み
-	CManager::LoadAll();
-
-	// プレイヤー生成
-	CPlayer::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f));
-	//敵生成
-	CEnemy::Create(D3DXVECTOR3(0.0f, 400.0f, 0.0f));
 
 	return S_OK;
 }
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 // 終了処理
-//=============================================================================
+//-----------------------------------------------------------------------------
 void CManager::Uninit(void)
 {
+	// ベースの破棄
+	if (m_pBase != nullptr)
+	{
+		m_pBase->Uninit();
+		delete m_pBase;
+		m_pBase = nullptr;
+	}
+
+	// オブジェクトの終了処理
+	CObject::ReleaseAll();
+
 	// サウンドの終了処理
 	if (m_pSound != nullptr)
 	{
@@ -126,20 +131,6 @@ void CManager::Uninit(void)
 		m_pRenderer->Uninit();
 		delete m_pRenderer;
 		m_pRenderer = nullptr;
-	}
-
-	// オブジェクトの終了処理
-	CObject::ReleaseAll();
-
-	//テクスチャの破棄
-	CManager::UnloadAll();
-
-	// ベースの破棄
-	if (m_pBase != nullptr)
-	{
-		m_pBase->Uninit();
-		delete m_pBase;
-		m_pBase = nullptr;
 	}
 
 	// キーボードの終了処理
@@ -167,9 +158,9 @@ void CManager::Uninit(void)
 	}
 }
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 // 更新処理
-//=============================================================================
+//-----------------------------------------------------------------------------
 void CManager::Update(void)
 {
 	// キーボードの更新処理(※最初に行う)
@@ -203,17 +194,11 @@ void CManager::Update(void)
 	}
 }
 
-//=============================================================================
+//-----------------------------------------------------------------------------
 // 描画処理
-//=============================================================================
+//-----------------------------------------------------------------------------
 void CManager::Draw(void)
 {
-	// ベースの描画処理
-	if (m_pBase != nullptr)
-	{
-		m_pBase->Draw();
-	}
-
 	// レンダラの描画処理
 	if (m_pRenderer != nullptr)
 	{
@@ -221,50 +206,20 @@ void CManager::Draw(void)
 	}
 }
 
-//-------------------------------------------
-//	テクスチャ読み込み
-//-------------------------------------------
-void CManager::LoadAll()
-{
-	// プレイヤー
-	CPlayer::Load();
-	//敵
-	CEnemy::Load();
-	// 弾
-	CBullet::Load();
-	// 爆発
-	CExplosion::Load();
-}
-
-//-------------------------------------------
-//	テクスチャ破棄
-//-------------------------------------------
-void CManager::UnloadAll()
-{
-	// プレイヤー
-	CPlayer::Unload();
-	//敵
-	CEnemy::Unload();
-	// 弾
-	CBullet::Unload();
-	// 爆発
-	CExplosion::Unload();
-}
-
-//=============================================================================
+//-----------------------------------------------------------------------------
 // モードの設定
-//=============================================================================
+//-----------------------------------------------------------------------------
 void CManager::SetMode(MODE mode)
 {
-	// オブジェクトの削除
-	CObject::ReleaseAll();
-
 	if (m_pBase != nullptr)
 	{// 現在の画面を破棄
 		m_pBase->Uninit();
 		delete m_pBase;
 		m_pBase = nullptr;
 	}
+
+	// オブジェクトの削除
+	CObject::ReleaseAll();
 
 	// モードの設定
 	m_mode = mode;
@@ -283,5 +238,10 @@ void CManager::SetMode(MODE mode)
 	case MODE_RESULT:
 		m_pBase = new CResult;
 		break;
+	}
+
+	if (m_pBase != nullptr)
+	{//初期化処理
+		m_pBase->Init();
 	}
 }

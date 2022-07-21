@@ -1,0 +1,32 @@
+﻿  base.cpp
+  bg.cpp
+  bullet.cpp
+  cloud.cpp
+  enemy.cpp
+  explosion.cpp
+  game.cpp
+  input.cpp
+  input_joypad.cpp
+  input_keyboard.cpp
+  input_mouse.cpp
+  library.cpp
+  load.cpp
+  logo.cpp
+  main.cpp
+  manager.cpp
+  object.cpp
+  object2D.cpp
+  player.cpp
+  rank.cpp
+  コンパイル中...
+  renderer.cpp
+  result.cpp
+  sound.cpp
+  title.cpp
+  コード生成しています。
+  0 of 220 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  コード生成が終了しました。
+  SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\SkyMachine2_ShugoKuroda\SkyMachine002\SkyMachine002.exe
+  SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\SkyMachine2_ShugoKuroda\SkyMachine002\SkyMachine002.pdb (Full PDB)

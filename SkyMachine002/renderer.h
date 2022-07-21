@@ -22,6 +22,12 @@
 //*****************************************************************************
 class CRenderer
 {
+public:	//定数
+	// スクリーンの幅
+	static const int SCREEN_WIDTH = 1280;
+	// スクリーンの高さ
+	static const int SCREEN_HEIGHT = 720;
+
 public:
 	CRenderer();
 	~CRenderer();
