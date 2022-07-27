@@ -23,12 +23,13 @@ public:
 	{//オブジェクトの種類(下から描画を優先)
 		OBJ_BG = 0,
 		OBJ_CLOUD,
-		OBJ_SEA_OTHER,
 		OBJ_PLAYER,
 		OBJ_ENEMY,
 		OBJ_BULLET,
 		OBJ_EXPLOSION,
 		OBJ_BUBBLE,
+		OBJ_TITLE,
+		OBJ_FADE_WHITE,
 		OBJ_MAX
 	};
 

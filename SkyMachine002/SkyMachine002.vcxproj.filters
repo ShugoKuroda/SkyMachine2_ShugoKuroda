@@ -28,6 +28,7 @@
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="bubble.cpp" />
     <ClCompile Include="spray.cpp" />
+    <ClCompile Include="fade_white.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -59,5 +60,6 @@
     <ClInclude Include="bubble.h" />
     <ClInclude Include="cloud_data.h" />
     <ClInclude Include="spray.h" />
+    <ClInclude Include="fade_white.h" />
   </ItemGroup>
 </Project>

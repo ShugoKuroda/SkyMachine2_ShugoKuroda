@@ -58,7 +58,7 @@ public:
 	static CInputMouse *GetInputMouse() { return m_pInputMouse; }
 
 private:
-	static CRenderer *m_pRenderer;
+	static CRenderer *m_pRenderer;				// レンダラー情報のポインタ
 	static CInputKeyboard *m_pInputKeyboard;	// キーボード情報のポインタ
 	static CInputJoypad *m_pInputJoypad;		// ジョイパッド情報のポインタ
 	static CInputMouse *m_pInputMouse;			// マウス情報のポインタ

@@ -12,7 +12,10 @@
 #include "manager.h"
 #include "renderer.h"
 
+#include "game.h"
 #include "library.h"
+
+#include "player.h"
 #include "explosion.h"
 
 //-----------------------------------------------------------------------------------------------
@@ -35,7 +38,7 @@ LPDIRECT3DTEXTURE9 CEnemy::m_apTexture[TYPE_MAX] = { nullptr };
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CEnemy::CEnemy() :
-	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_nLife(0), m_nCntState(0), m_nCntAnim(0), m_nPatternAnim(0)
+	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_nLife(0), m_nCntState(0), m_nCntAnim(0), m_nPatternAnim(0), m_nCounterAnim(0)
 {
 	SetObjectType(EObject::OBJ_ENEMY);
 }
@@ -85,14 +88,15 @@ HRESULT CEnemy::Load()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/enemy000.png", &m_apTexture[TYPE_STARFISH]);			// ヒトデ型の敵
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/enemy001.png", &m_apTexture[TYPE_MOSQUITO]);			// 羽虫型の敵
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/enemy002.png", &m_apTexture[TYPE_SPHERE]);				// 球体型の敵
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/enemy003.png", &m_apTexture[TYPE_ASSAULT]);			// 突撃型の敵(バトミントンの玉みたいな敵)
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/enemy004.png", &m_apTexture[TYPE_SEAURCHIN]);			// ウニ型の敵
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/enemy005.png", &m_apTexture[TYPE_ROWLING]);			// 回転型の敵
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/enemy006.png", &m_apTexture[TYPE_FREEFALL]);			// 自由落下型の敵
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/enemy007.png", &m_apTexture[TYPE_SHOT]);				// 射撃型の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy000.png", &m_apTexture[TYPE_STARFISH]);			// ヒトデ型の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy001.png", &m_apTexture[TYPE_MOSQUITO]);			// 羽虫型の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy002.png", &m_apTexture[TYPE_SPHERE]);				// 球体型の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy003.png", &m_apTexture[TYPE_ASSAULT]);			// 突撃型の敵(バトミントンの玉みたいな敵)
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy004.png", &m_apTexture[TYPE_SEAURCHIN]);			// ウニ型の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy005.png", &m_apTexture[TYPE_ROWLING]);			// 回転型の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy006.png", &m_apTexture[TYPE_FREEFALL]);			// 自由落下型の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy007.png", &m_apTexture[TYPE_SHOT]);				// 射撃型の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy008.png", &m_apTexture[TYPE_SENTRY_GUN]);			// 固定砲台の敵
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/EnemyBoss000.png", &m_apTexture[TYPE_RING_BOSS]);		// リング型の中ボス
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/EnemyBoss001.png", &m_apTexture[TYPE_DARK_BOSS]);		// 大ボス
 
@@ -149,8 +153,6 @@ void CEnemy::Update()
 {
 	// 位置の取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
-	//向きの取得
-	float fRot = CObject2D::GetRot();
 	//移動量の設定
 	m_move = (m_pMoveInfo->posEnd - pos) / (float)m_nRestTime;
 	//移動までの時間を減少
@@ -158,7 +160,6 @@ void CEnemy::Update()
 
 	// 移動量の更新
 	pos += m_move;
-	fRot += 0.1f;
 
 	if (m_nLife <= 0)
 	{// ライフが0
@@ -181,10 +182,10 @@ void CEnemy::Update()
 		SetMove();
 	}
 
+	//アニメーション処理
+	SetAnim();
 	//状態処理
 	State();
-	//向きの更新
-	CObject2D::SetRot(fRot);
 	// 位置の更新
 	CObject2D::SetPosition(pos);
 	//頂点座標の設定
@@ -220,6 +221,77 @@ void CEnemy::SetMove()
 {
 	m_pMoveInfo++;
 	m_nRestTime = m_pMoveInfo->nFrameMove;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 敵ごとにアニメーション(動き方)を設定
+//-----------------------------------------------------------------------------------------------
+void CEnemy::SetAnim()
+{
+	//向きの取得
+	float fRot = CObject2D::GetRot();
+	// 位置の取得
+	D3DXVECTOR3 pos = CObject2D::GetPosition();
+
+	switch (m_type)
+	{
+	case CEnemy::TYPE_STARFISH:
+	case CEnemy::TYPE_ROWLING:
+
+		fRot += 0.1f;
+		//向きの更新
+		CObject2D::SetRot(fRot);
+		break;
+
+	case CEnemy::TYPE_MOSQUITO:
+		m_nCounterAnim++;
+		if (m_nCounterAnim >= 2)
+		{
+			m_nPatternAnim++;
+			m_nCounterAnim = 0;
+
+			if (m_nPatternAnim >= 2)
+			{
+				m_nPatternAnim = 0;
+			}
+			CObject2D::SetAnimation(m_nPatternAnim, 0, 2, 1);
+		}
+		break;
+
+	case CEnemy::TYPE_ASSAULT:
+	{
+		// プレイヤー情報の取得
+		CPlayer *pPlayer = CGame::GetPlayer();
+		//常にプレイヤーの方向を向く
+		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
+		D3DXVECTOR3 vec = posPlayer - pos;
+		float fAngle = atan2f(vec.x, vec.y);
+		CObject2D::SetRot(fAngle);
+		CObject2D::SetVertex();
+	}
+	break;
+
+	case CEnemy::TYPE_SPHERE:
+		break;
+
+	case CEnemy::TYPE_SEAURCHIN:
+		break;
+
+	case CEnemy::TYPE_FREEFALL:
+		break;
+
+	case CEnemy::TYPE_SHOT:
+		break;
+
+	case CEnemy::TYPE_RING_BOSS:
+		break;
+
+	case CEnemy::TYPE_DARK_BOSS:
+		break;
+
+	default:
+		break;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

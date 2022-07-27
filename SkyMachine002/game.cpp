@@ -23,6 +23,7 @@
 //-----------------------------------------------------------------------------------------------
 bool CGame::m_bCreateCloud = true;
 bool CGame::m_bCreateBubble = false;
+CPlayer *CGame::m_pPlayer = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
@@ -54,7 +55,7 @@ HRESULT CGame::Init()
 	// テクスチャ読み込み
 	LoadAll();
 	// プレイヤー生成
-	CPlayer::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f));
+	m_pPlayer = CPlayer::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f));
 	// 背景の生成
 	CBg::Create(CBg::SET_A);
 

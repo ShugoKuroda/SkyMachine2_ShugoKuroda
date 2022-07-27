@@ -52,6 +52,9 @@ CManager::~CManager()
 //-----------------------------------------------------------------------------
 HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 {
+	// 現在時刻によってランダムに設定する
+	srand((unsigned)time(NULL));
+
 	// レンダラーの初期化処理
 	m_pRenderer = new CRenderer;
 
@@ -104,8 +107,11 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 //-----------------------------------------------------------------------------
 // 終了処理
 //-----------------------------------------------------------------------------
-void CManager::Uninit(void)
+void CManager::Uninit()
 {
+	// オブジェクトの終了処理
+	CObject::ReleaseAll();
+
 	// ベースの破棄
 	if (m_pBase != nullptr)
 	{
@@ -113,9 +119,6 @@ void CManager::Uninit(void)
 		delete m_pBase;
 		m_pBase = nullptr;
 	}
-
-	// オブジェクトの終了処理
-	CObject::ReleaseAll();
 
 	// サウンドの終了処理
 	if (m_pSound != nullptr)
@@ -161,7 +164,7 @@ void CManager::Uninit(void)
 //-----------------------------------------------------------------------------
 // 更新処理
 //-----------------------------------------------------------------------------
-void CManager::Update(void)
+void CManager::Update()
 {
 	// キーボードの更新処理(※最初に行う)
 	if (m_pInputKeyboard != nullptr)
@@ -197,7 +200,7 @@ void CManager::Update(void)
 //-----------------------------------------------------------------------------
 // 描画処理
 //-----------------------------------------------------------------------------
-void CManager::Draw(void)
+void CManager::Draw()
 {
 	// レンダラの描画処理
 	if (m_pRenderer != nullptr)

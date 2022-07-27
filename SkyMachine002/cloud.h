@@ -36,9 +36,13 @@ public:
 
 	//メンバ関数
 	static CCloud *Create();	//インスタンス生成処理
+	static CCloud *Create(D3DXVECTOR3 pos);	//インスタンス生成処理
+
+	static D3DXVECTOR2 SetRandSize();	//サイズをランダムに決める
 	static HRESULT Load();		//テクスチャの読み込み
 	static void Unload();		//テクスチャの削除
-	static void AddPos(float fMul) { m_fCloudPos += 0.5f * fMul; }		//位置の加算
+	static void AddPos(float fMul) { m_fCreatePos += 0.5f * fMul; }		//位置の加算
+	static void MoveCloud(float fMove);		//雲の移動処理
 
 	HRESULT Init() override;
 	void Uninit() override;
@@ -48,7 +52,7 @@ public:
 private:
 	//メンバ変数
 	static LPDIRECT3DTEXTURE9 m_apTexture[MAX_TEX];	//テクスチャのポインタ
-	static float m_fCloudPos;		// 雲の生成位置
+	static float m_fCreatePos;		// 雲の生成位置
 	D3DXVECTOR3 m_move;				// 移動量
 };
 

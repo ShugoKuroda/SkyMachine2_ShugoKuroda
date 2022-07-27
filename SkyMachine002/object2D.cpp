@@ -31,7 +31,7 @@ template<class T> T Divide(const T data0, const T data1)
 // デフォルトコンストラクタ
 //-----------------------------------------------------------------------------
 CObject2D::CObject2D()
-	: m_pTexture(nullptr), m_pVtxBuff(nullptr), m_pos(0.0f, 0.0f, 0.0f), m_fRot(0.0f), m_fLength(0.0f), m_fAngle(0.0f), m_col(0.0f, 0.0f, 0.0f, 0.0f), m_nCounterAnim(0), m_nPatternAnim(0)
+	: m_pTexture(nullptr), m_pVtxBuff(nullptr), m_pos(0.0f, 0.0f, 0.0f), m_fRot(0.0f), m_fLength(0.0f), m_fAngle(0.0f), m_col(1.0f, 1.0f, 1.0f, 1.0f), m_nCounterAnim(0), m_nPatternAnim(0)
 {
 }
 
@@ -56,9 +56,6 @@ CObject2D::~CObject2D()
 //-----------------------------------------------------------------------------
 HRESULT CObject2D::Init()
 {
-	//カラーの設定
-	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -70,6 +67,7 @@ HRESULT CObject2D::Init()
 		&m_pVtxBuff,
 		NULL);
 
+	//頂点情報ポインタを宣言
 	VERTEX_2D *pVtx;
 
 	//頂点バッファをロックし、頂点情報へのポインタを取得

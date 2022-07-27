@@ -18,7 +18,7 @@
 // 幅
 const float CSpray::SIZE_WIDTH = 100.0f;
 // 高さ
-const float CSpray::SIZE_HEIGHT = 100.0f;
+const float CSpray::SIZE_HEIGHT = 70.0f;
 // アニメーション間隔
 const int CSpray::ANIM_INTERVAL = 5;
 // アニメーション最大数
@@ -86,7 +86,7 @@ HRESULT CSpray::Load()
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/explosion000.png",
+		"data/TEXTURE/effect001.png",
 		&m_pTexture);
 
 	return S_OK;

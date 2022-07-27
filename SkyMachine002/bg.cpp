@@ -62,6 +62,8 @@ HRESULT CBg::Load()
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_05.png", &m_apTexture[BG_A_WAVE3]);		// 波3
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_06.png", &m_apTexture[BG_A_FLOOR]);		// 海中の床
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_07.png", &m_apTexture[BG_A_ROCK]);		// 岩
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_09.png", &m_apTexture[BG_A_SETWEED]);		// 岩
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_010.png", &m_apTexture[BG_A_SETWEED2]);		// 岩
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_08.png", &m_apTexture[BG_A_SEA_OTHER]);	// 海の裏側
 
 	return S_OK;
@@ -141,6 +143,9 @@ HRESULT CBg::Init()
 		//海中の床
 		m_apObject2D[BG_A_FLOOR]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, (ScreenSize.y - 50.0f) * 2.5f, 0.0f));
 		m_apObject2D[BG_A_FLOOR]->SetSize(D3DXVECTOR2(ScreenSize.x, 100.0f));
+		//背景フェード用
+		m_apObject2D[BG_A_FADEBLACK]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, ScreenSize.y / 2, 0.0f));
+		m_apObject2D[BG_A_FADEBLACK]->SetSize(D3DXVECTOR2(ScreenSize.x, ScreenSize.y));
 
 		for (int nCnt = 0; nCnt < BG_A_MAX - 1; nCnt++)
 		{// 初期化とテクスチャの設定
@@ -148,6 +153,7 @@ HRESULT CBg::Init()
 			m_apObject2D[nCnt]->BindTexture(m_apTexture[nCnt]);
 		}
 		m_apObject2D[BG_A_FLOOR]->SetColor(D3DXCOLOR(0.7f, 0.7f, 1.0f, 1.0f));
+		m_apObject2D[BG_A_FADEBLACK]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
 		break;
 
@@ -190,6 +196,13 @@ void CBg::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CBg::Update()
 {
+	D3DXCOLOR col = m_apObject2D[BG_A_FADEBLACK]->GetColor();
+	col.a -= 0.01f;
+	if (col.a > 0.0f)
+	{
+		m_apObject2D[BG_A_FADEBLACK]->SetColor(col);
+	}
+
 	//海を常に横アニメーションする
 	m_apObject2D[BG_A_SEA]->SetAnimBg(1, 1000, true);
 
@@ -241,29 +254,9 @@ void CBg::Update()
 
 		//雲を背景に合わせて動かす
 		CCloud::AddPos(fMul);
-
+		
 		//雲の移動処理
-		D3DXVECTOR3 posCloud;	//位置格納用
-		for (int nCntObject = 0; nCntObject < CObject::MAX_OBJECT; nCntObject++)
-		{
-			//オブジェクト情報の取得
-			CObject *pObject = CObject::GetObject(nCntObject);
-			if (pObject != nullptr)
-			{
-				//オブジェクトタイプの取得
-				CObject::EObject objType = pObject->GetObjType();
-				//オブジェクトタイプが雲だったら
-				if (objType == OBJ_CLOUD)
-				{
-					//雲を上に移動する
-					CObject2D *pCloud = (CObject2D*)pObject;
-					posCloud = pCloud->GetPosition();
-					posCloud.y -= 0.5f * fMul;
-					pCloud->SetPosition(posCloud);
-					pCloud->SetVertex();
-				}
-			}
-		}
+		CCloud::MoveCloud(-0.5f * fMul);
 
 		aPosBg[BG_A_SKY].y -= 0.5f * fMul;
 		aPosBg[BG_A_UNDERWATER].y -= 0.5f * fMul;

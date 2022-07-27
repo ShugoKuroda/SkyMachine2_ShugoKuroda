@@ -1,7 +1,7 @@
 //=============================================================================
 //
 // サウンド処理 [sound.h]
-// Author : AKIRA TANAKA
+// Author : AKIRA TANAKA, SHUGO KURODA
 //
 //=============================================================================
 #ifndef _SOUND_H_
@@ -36,10 +36,10 @@ public:
 	} SOUND_LABEL;
 
 	HRESULT Init(HWND hWnd);
-	void Uninit(void);
+	void Uninit();
 	static HRESULT Play(SOUND_LABEL label);
 	static void Stop(SOUND_LABEL label);
-	static void Stop(void);
+	static void Stop();
 
 private:
 	// パラメータ構造体定義

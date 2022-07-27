@@ -91,6 +91,10 @@ private:	//メンバ変数
 	ANIMTYPE m_nTexRotType;
 	//プレイヤーの番号
 	int m_nPlayerNum;
+	//弾の発射位置
+	D3DXVECTOR2 posBullet;
+	//プレイヤーが操作できるかどうか
+	bool m_bControl;
 };
 
 #endif //_PLAYER_H_

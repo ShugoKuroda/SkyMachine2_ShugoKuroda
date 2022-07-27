@@ -62,7 +62,7 @@ CBullet::~CBullet()
 //-----------------------------------------------------------------------------------------------
 // 生成
 //-----------------------------------------------------------------------------------------------
-CBullet* CBullet::Create(const D3DXVECTOR3& pos, const int& nDamage)
+CBullet* CBullet::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, const int& nDamage)
 {
 	// ポインタクラスを宣言
 	CBullet* pBullet = new CBullet;
@@ -71,6 +71,9 @@ CBullet* CBullet::Create(const D3DXVECTOR3& pos, const int& nDamage)
 	{// もしnullptrではなかったら
 		// 位置設定
 		pBullet->SetPosition(pos);
+
+		//移動量の設定
+		pBullet->m_move = move;
 
 		//弾のダメージ量の設定
 		pBullet->m_nDamage = nDamage;
@@ -124,8 +127,6 @@ void CBullet::Unload()
 //-----------------------------------------------------------------------------------------------
 HRESULT CBullet::Init()
 {
-	// 移動量
-	m_move.x = MOVE_DEFAULT;
 	// サイズ
 	CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
 

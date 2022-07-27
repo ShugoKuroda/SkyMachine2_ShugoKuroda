@@ -43,6 +43,7 @@ public:
 		TYPE_ROWLING,		// 回転型の敵
 		TYPE_FREEFALL,		// 自由落下型の敵
 		TYPE_SHOT,			// 射撃型の敵
+		TYPE_SENTRY_GUN,	// 固定砲台の敵
 		TYPE_RING_BOSS,		// リング型の中ボス
 		TYPE_DARK_BOSS,		// 大ボス
 		TYPE_MAX			// 敵の最大数
@@ -61,6 +62,7 @@ public:
 	void Update() override;
 	void Draw() override;
 	void SetMove();
+	void SetAnim();
 	void Damage(int nDamage);
 	void State();
 
@@ -76,6 +78,7 @@ private:
 	int m_nCntState;		//状態カウンター
 	int m_nCntAnim;			//アニメーションカウンター
 	int m_nPatternAnim;		//アニメーションのパターンNo.
+	int m_nCounterAnim;		//アニメーションのカウンター
 	int m_nRestTime;		//敵の移動タイマー
 };
 

@@ -24,10 +24,10 @@ public:
 	enum TITLE_OBJ
 	{//背景の種類
 		BG_SKY = 0,		// 背景の空
-		LOGO_TITLE,		// タイトルロゴ
 		LOGO_PLAYER,	// プレイヤーロゴ
-		LOGO_SHADOW,	// プレイヤーロゴ(黒)
+		LOGO_TITLE,		// タイトルロゴ
 		LOGO_PRESS,		// PRESSロゴ
+		LOGO_SHADOW,	// プレイヤーロゴ(黒)
 		OBJ_MAX			// 背景の最大数
 	};
 
@@ -47,9 +47,11 @@ public:
 private:
 	//メンバ変数
 	static LPDIRECT3DTEXTURE9 m_apTexture[OBJ_MAX];	//テクスチャのポインタ
-	CObject2D *m_apObject2D[OBJ_MAX];
+	CObject2D *m_apObject2D[OBJ_MAX - 1];
 	CloudInfo m_CloudInfo;
 	int m_nCountMoveBg;
+	bool m_bTitleDraw;
+	bool m_bPressFade;
 };
 
 #endif		// _TITLE_H_

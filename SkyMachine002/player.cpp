@@ -40,7 +40,7 @@ LPDIRECT3DTEXTURE9 CPlayer::m_apTexture[2] = { nullptr };
 //-----------------------------------------------------------------------------
 CPlayer::CPlayer() :
 	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_nCntState(0), m_nCntAttack(0),
-	m_nCntAnim(0), m_nPatternAnim(0), m_nCntAnimMove(0), m_nTexRotType(TYPE_NEUTRAL), m_nPlayerNum(0)
+	m_nCntAnim(0), m_nPatternAnim(0), m_nCntAnimMove(0), m_nTexRotType(TYPE_NEUTRAL), m_nPlayerNum(0), posBullet(0.0f, 0.0f), m_bControl(false)
 {
 	//オブジェクトの種類設定
 	SetObjectType(EObject::OBJ_PLAYER);
@@ -116,8 +116,13 @@ void CPlayer::Unload()
 //-----------------------------------------------------------------------------
 HRESULT CPlayer::Init()
 {
+	//弾の発射位置を設定
+	posBullet = D3DXVECTOR2(20.0f, 10.0f);
+
+	//サイズの設定
 	CObject2D::SetSize(D3DXVECTOR2(SIZE_X, SIZE_Y));
 
+	//初期化
 	CObject2D::Init();
 
 	//テクスチャアニメーション
@@ -155,7 +160,7 @@ void CPlayer::Update()
 		if (m_nCntAttack > 5)
 		{
 			//弾の設定
-			CBullet::Create(D3DXVECTOR3(pos.x, pos.y, pos.z), 5)->SetType(CBullet::EType::TYPE_PLAYER);
+			CBullet::Create(D3DXVECTOR3(pos.x + posBullet.x, pos.y + posBullet.y, pos.z), D3DXVECTOR3(15.0f, 0.0f, 0.0f), 5)->SetType(CBullet::EType::TYPE_PLAYER);
 			m_nCntAttack = 0;
 
 			//サウンド再生
@@ -224,8 +229,10 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 		{
 			pos.x += sinf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
 			pos.y += cosf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
-			SetAnimNum(TYPE_DOWN,TYPE_UP);
+			SetAnimNum(TYPE_DOWN, TYPE_UP);
 			m_nCntAnimMove++;
+			//弾の発射位置を設定
+			posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		}
 		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
 		{
@@ -233,6 +240,8 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 			pos.y += cosf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
 			SetAnimNum(TYPE_UP, TYPE_DOWN);
 			m_nCntAnimMove++;
+			//弾の発射位置を設定
+			posBullet = D3DXVECTOR2(20.0f, -5.0f);
 		}
 		else
 		{
@@ -240,16 +249,20 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 			pos.y += cosf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
 			m_nTexRotType = TYPE_NEUTRAL;
 			m_nCntAnimMove = 0;
+			//弾の発射位置を設定
+			posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		}
 	}
 	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_RIGHT) == true)
 	{//Dキーが押された
 		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
 		{
-			pos.x += sinf(D3DX_PI *0.75f) * MOVE_DEFAULT;
-			pos.y += cosf(D3DX_PI *0.75f) * MOVE_DEFAULT;
+			pos.x += sinf(D3DX_PI * 0.75f) * MOVE_DEFAULT;
+			pos.y += cosf(D3DX_PI * 0.75f) * MOVE_DEFAULT;
 			SetAnimNum(TYPE_DOWN, TYPE_UP);
 			m_nCntAnimMove++;
+			//弾の発射位置を設定
+			posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		}
 		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
 		{
@@ -257,6 +270,8 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 			pos.y += cosf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
 			SetAnimNum(TYPE_UP, TYPE_DOWN);
 			m_nCntAnimMove++;
+			//弾の発射位置を設定
+			posBullet = D3DXVECTOR2(20.0f, -5.0f);
 		}
 		else
 		{
@@ -264,6 +279,8 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 			pos.y += cosf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
 			m_nTexRotType = TYPE_NEUTRAL;
 			m_nCntAnimMove = 0;
+			//弾の発射位置を設定
+			posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		}
 	}
 	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
@@ -272,6 +289,8 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 		pos.y += cosf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
 		SetAnimNum(TYPE_DOWN, TYPE_UP);
 		m_nCntAnimMove++;
+		//弾の発射位置を設定
+		posBullet = D3DXVECTOR2(20.0f, 10.0f);
 	}
 	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
 	{//Sキーが押された
@@ -279,9 +298,13 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 		pos.y += cosf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
 		SetAnimNum(TYPE_UP, TYPE_DOWN);
 		m_nCntAnimMove++;
+		//弾の発射位置を設定
+		posBullet = D3DXVECTOR2(20.0f, -5.0f);
 	}
 	else
 	{
+		//弾の発射位置を設定
+		posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		m_nCntAnimMove = 0;
 		m_nTexRotType = TYPE_NEUTRAL;
 	}

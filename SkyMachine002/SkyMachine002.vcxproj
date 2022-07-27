@@ -26,6 +26,7 @@
     <ClCompile Include="cloud.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="explosion.cpp" />
+    <ClCompile Include="fade_white.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="input_joypad.cpp" />
@@ -57,6 +58,7 @@
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemy_data.h" />
     <ClInclude Include="explosion.h" />
+    <ClInclude Include="fade_white.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="input_joypad.h" />

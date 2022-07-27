@@ -11,6 +11,11 @@
 #include "enemy_data.h"
 #include "cloud_data.h"
 
+//*****************************************************************************
+// 前方宣言
+//*****************************************************************************
+class CPlayer;
+
 //-----------------------------------------------------------------------------
 // ベースクラス(派生クラス)
 //-----------------------------------------------------------------------------
@@ -33,6 +38,7 @@ public:		//メンバ関数
 	void CreateEnemy();
 	static void SetCreateCloud(bool bCreate) { m_bCreateCloud = bCreate; }
 	static void SetCreateBubble(bool bCreate) { m_bCreateBubble = bCreate; }
+	static CPlayer *GetPlayer() { return m_pPlayer; }
 
 private:
 	// テクスチャ読み込み
@@ -41,6 +47,8 @@ private:
 	static void UnloadAll();
 
 private:	//メンバ変数
+	static CPlayer *m_pPlayer;
+
 	CloudInfo m_CloudInfo;
 	// 雲を生成するかどうか
 	static bool m_bCreateCloud;

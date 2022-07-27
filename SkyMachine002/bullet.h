@@ -42,7 +42,7 @@ public:
 	~CBullet() override;
 
 	//メンバ関数
-	static CBullet *Create(const D3DXVECTOR3& pos, const int& nDamage);	//インスタンス生成処理
+	static CBullet *Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, const int& nDamage);	//インスタンス生成処理
 	static HRESULT Load();		//テクスチャの読み込み
 	static void Unload();		//テクスチャの削除
 
