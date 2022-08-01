@@ -18,6 +18,7 @@ class CBubble : public CObject2D
 public:	//定数
 	// 泡サイズの最小値
 	static const int MIN_SIZE = 10;
+
 public:
 	CBubble();
 	~CBubble() override;

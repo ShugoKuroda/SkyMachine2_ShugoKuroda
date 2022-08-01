@@ -109,17 +109,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 //-----------------------------------------------------------------------------
 void CManager::Uninit()
 {
-	// オブジェクトの終了処理
-	CObject::ReleaseAll();
-
-	// ベースの破棄
-	if (m_pBase != nullptr)
-	{
-		m_pBase->Uninit();
-		delete m_pBase;
-		m_pBase = nullptr;
-	}
-
 	// サウンドの終了処理
 	if (m_pSound != nullptr)
 	{
@@ -134,6 +123,17 @@ void CManager::Uninit()
 		m_pRenderer->Uninit();
 		delete m_pRenderer;
 		m_pRenderer = nullptr;
+	}
+
+	// オブジェクトの終了処理
+	CObject::ReleaseAll();
+
+	// ベースの破棄
+	if (m_pBase != nullptr)
+	{
+		m_pBase->Uninit();
+		delete m_pBase;
+		m_pBase = nullptr;
 	}
 
 	// キーボードの終了処理

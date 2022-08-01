@@ -83,13 +83,13 @@ bool LibrarySpace::SteyInScreen2D(D3DXVECTOR3 *pPos, D3DXVECTOR2 size)
 //-----------------------------------------------------------------------------------------------
 bool LibrarySpace::BoxCollision2D(const D3DXVECTOR3 *pPos1, const D3DXVECTOR3*pPos2, const D3DXVECTOR3*pSize1, const D3DXVECTOR3*pSize2)
 {
-	// 二つのものの当たり判定を計算
+	// 四面の当たり判定
 	if (pPos1->x - pSize1->x / 2 <= pPos2->x + pSize2->x / 2 &&
 		pPos1->x + pSize1->x / 2 >= pPos2->x - pSize2->x / 2 &&
 		pPos1->y - pSize1->y / 2 <= pPos2->y + pSize2->y / 2 &&
 		pPos1->y + pSize1->y / 2 >= pPos2->y - pSize2->y / 2)
 	{
-		// 当たったフラグをtrueに
+		// 当たった
 		return true;
 	}
 
@@ -120,6 +120,7 @@ bool LibrarySpace::SphereCollision2D(const D3DXVECTOR3& posIn, const D3DXVECTOR3
 //-----------------------------------------------------------------------------------------------
 int LibrarySpace::GetRandNum(int nMax, int nMin)
 {
+	//最大値～最小値から乱数を取得
 	int nRandNum = rand() % (nMax - nMin + 1) + nMin;
 
 	return nRandNum;

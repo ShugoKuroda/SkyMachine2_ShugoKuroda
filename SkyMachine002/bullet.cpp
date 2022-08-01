@@ -40,7 +40,7 @@ const int CBullet::DIVISION_V = 1;
 // 静的メンバ変数
 //-----------------------------------------------------------------------------------------------
 // テクスチャのポインタ
-LPDIRECT3DTEXTURE9 CBullet::m_apTexture = nullptr;
+LPDIRECT3DTEXTURE9 CBullet::m_apTexture[TYPE_MAX] = { nullptr };
 
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
@@ -62,7 +62,7 @@ CBullet::~CBullet()
 //-----------------------------------------------------------------------------------------------
 // 生成
 //-----------------------------------------------------------------------------------------------
-CBullet* CBullet::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, const int& nDamage)
+CBullet* CBullet::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, const int& nDamage, const EType type)
 {
 	// ポインタクラスを宣言
 	CBullet* pBullet = new CBullet;
@@ -78,11 +78,14 @@ CBullet* CBullet::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, const 
 		//弾のダメージ量の設定
 		pBullet->m_nDamage = nDamage;
 
+		//テクスチャ種類の設定
+		pBullet->m_type = type;
+
 		// 初期化
 		pBullet->Init();
 
 		// テクスチャの設定
-		pBullet->BindTexture(m_apTexture);
+		pBullet->BindTexture(m_apTexture[pBullet->m_type]);
 	}
 
 	return pBullet;
@@ -99,14 +102,18 @@ HRESULT CBullet::Load()
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/bullet000.png",
-		&m_apTexture);
+		&m_apTexture[TYPE_PLAYER_BLUE]);
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/bullet001.png",
+		&m_apTexture[TYPE_ENEMY_ORANGE]);
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/bullet003.png",
+		&m_apTexture[TYPE_ENEMY_LASER]);
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/bullet002.png",
+		&m_apTexture[TYPE_ENEMY_RED]);
 
-	if (m_apTexture != nullptr)
-	{
-		return S_OK;
-	}
-
-	return S_FALSE;
+	return S_OK;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -114,11 +121,14 @@ HRESULT CBullet::Load()
 //-----------------------------------------------------------------------------------------------
 void CBullet::Unload()
 {
-	// テクスチャの破棄
-	if (m_apTexture != nullptr)
+	for (int nCnt = 0; nCnt < TYPE_MAX; nCnt++)
 	{
-		m_apTexture->Release();
-		m_apTexture = nullptr;
+		// テクスチャの破棄
+		if (m_apTexture[nCnt] != nullptr)
+		{
+			m_apTexture[nCnt]->Release();
+			m_apTexture[nCnt] = nullptr; 
+		}
 	}
 }
 
@@ -127,8 +137,16 @@ void CBullet::Unload()
 //-----------------------------------------------------------------------------------------------
 HRESULT CBullet::Init()
 {
-	// サイズ
-	CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
+	if (m_type == TYPE_ENEMY_LASER)
+	{
+		// サイズ
+		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH / 2, SIZE_HEIGHT * 3));
+	}
+	else
+	{
+		// サイズ
+		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
+	}
 
 	CObject2D::Init();
 
@@ -213,18 +231,40 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 		if (pObject != nullptr)
 		{
 			CObject::EObject objType = pObject->GetObjType();
-			if (objType == OBJ_ENEMY && m_nType == TYPE_PLAYER)
+			if (objType == OBJ_ENEMY && m_parent == PARENT_PLAYER)
 			{
+				//オブジェクトポインタを敵にキャスト
 				CEnemy *pEnemy = (CEnemy*)pObject;
 
 				if (LibrarySpace::SphereCollision2D(posStart, pEnemy->GetPosition(), fStartLength, pEnemy->GetLength()))
 				{//弾と当たったら(球体の当たり判定)
-
 					//ダメージ処理
 					pEnemy->Damage(m_nDamage);
 					// 弾の破棄
 					Uninit();
 					return true;	//当たった
+				}
+			}
+			if (objType == OBJ_PLAYER && m_parent == PARENT_ENEMY)
+			{
+				//オブジェクトポインタをプレイヤーにキャスト
+				CPlayer *pPlayer = (CPlayer*)pObject;
+
+				//プレイヤーの状態が通常なら
+				if (pPlayer->GetState() == CPlayer::STATE_NORMAL)
+				{
+					if (m_type == TYPE_ENEMY_LASER)
+					{
+						fStartLength -= 20.0f;
+					}
+					if (LibrarySpace::SphereCollision2D(posStart, pPlayer->GetPosition(), fStartLength - 10.0f, pPlayer->GetLength() - 30.0f))
+					{//弾と当たったら(球体の当たり判定)
+					 //ダメージ処理
+						pPlayer->Damage(m_nDamage);
+						// 弾の破棄
+						Uninit();
+						return true;	//当たった
+					}
 				}
 			}
 		}

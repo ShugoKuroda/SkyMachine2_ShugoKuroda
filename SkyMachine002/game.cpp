@@ -16,6 +16,7 @@
 #include "enemy.h"
 #include "bullet.h"
 #include "explosion.h"
+#include "spray.h"
 #include "bubble.h"
 
 //-----------------------------------------------------------------------------------------------
@@ -120,7 +121,7 @@ void CGame::CreateBubble()
 
 	if (m_nCntBubble >= m_nRandBubble)
 	{
-		D3DXVECTOR3 posBubble = D3DXVECTOR3((float)LibrarySpace::GetRandNum(CRenderer::SCREEN_WIDTH, 0), (float)LibrarySpace::GetRandNum(CRenderer::SCREEN_HEIGHT, CRenderer::SCREEN_HEIGHT / 2), 0.0f);
+		D3DXVECTOR3 posBubble = D3DXVECTOR3((float)LibrarySpace::GetRandNum(CRenderer::SCREEN_WIDTH, 0), (float)LibrarySpace::GetRandNum(CRenderer::SCREEN_HEIGHT, CRenderer::SCREEN_HEIGHT - 250), 0.0f);
 
 		for (int nCntBubble = 0; nCntBubble < 3; nCntBubble++)
 		{
@@ -155,7 +156,7 @@ void CGame::CreateEnemy()
 			if (m_EnemySetInfo.CountInfo[nCntEnemy].nCreateTime >= m_EnemySetInfo.pCreateInfo[nCntEnemy].nInterval)
 			{
 				//敵の生成(位置、種類、移動情報を引数に設定)
-				CEnemy::Create(m_EnemySetInfo.pCreateInfo[nCntEnemy].pos, (CEnemy::TYPE)m_EnemySetInfo.pCreateInfo[nCntEnemy].nType, &m_EnemySetInfo.pCreateInfo[nCntEnemy].MoveInfo[0]);
+				CEnemy::Create(m_EnemySetInfo.pCreateInfo[nCntEnemy].pos, (CEnemy::TYPE)m_EnemySetInfo.pCreateInfo[nCntEnemy].nType, m_EnemySetInfo.pCreateInfo[nCntEnemy].nLife, &m_EnemySetInfo.pCreateInfo[nCntEnemy].MoveInfo[0]);
 
 				//敵の生成数カウンターを加算
 				m_EnemySetInfo.CountInfo[nCntEnemy].nCreateNum++;
@@ -189,6 +190,8 @@ void CGame::LoadAll()
 	CBullet::Load();
 	// 爆発
 	CExplosion::Load();
+	//水しぶき
+	CSpray::Load();
 	// 泡エフェクト
 	CBubble::Load();
 }
@@ -198,8 +201,6 @@ void CGame::LoadAll()
 //-----------------------------------------------------------------------------------------------
 void CGame::UnloadAll()
 {
-	//背景
-	CBg::Unload();
 	//雲
 	CCloud::Unload();
 	// プレイヤー
@@ -210,6 +211,10 @@ void CGame::UnloadAll()
 	CBullet::Unload();
 	// 爆発
 	CExplosion::Unload();
+	//水しぶき
+	CSpray::Unload();
 	// 泡エフェクト
 	CBubble::Unload();
+	//背景
+	CBg::Unload();
 }

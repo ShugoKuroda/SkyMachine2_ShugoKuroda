@@ -147,7 +147,7 @@ void CObject::Release()
 	if (m_apObject[m_nID] != nullptr)
 	{
 		// èIóπèàóù
-		int nID = m_nID;
+ 		int nID = m_nID;
 		delete m_apObject[nID];
 		m_apObject[nID] = nullptr;
 		m_nNumAll--;

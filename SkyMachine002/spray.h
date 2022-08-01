@@ -43,6 +43,8 @@ public:
 	static HRESULT Load();
 	// テクスチャの削除
 	static void Unload();
+	//移動処理
+	static void Move(float fMove);
 
 	// 初期化
 	HRESULT Init() override;

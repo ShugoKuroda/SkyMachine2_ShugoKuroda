@@ -51,7 +51,6 @@ public:
 	static CRenderer *GetRenderer() { return m_pRenderer; }
 	static CBase *GetBase(void) { return m_pBase; }
 	//static CFade *GetFade(void) { return m_pFade; }
-	//static MODE GetMode(void) { return m_mode; }
 	static CSound *GetSound(void) { return m_pSound; }
 	static CInputKeyboard *GetInputKeyboard() { return m_pInputKeyboard; }
 	static CInputJoypad *GetInputJoypad() { return m_pInputJoypad; }

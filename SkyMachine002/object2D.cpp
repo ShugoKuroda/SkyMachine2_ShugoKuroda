@@ -31,7 +31,8 @@ template<class T> T Divide(const T data0, const T data1)
 // デフォルトコンストラクタ
 //-----------------------------------------------------------------------------
 CObject2D::CObject2D()
-	: m_pTexture(nullptr), m_pVtxBuff(nullptr), m_pos(0.0f, 0.0f, 0.0f), m_fRot(0.0f), m_fLength(0.0f), m_fAngle(0.0f), m_col(1.0f, 1.0f, 1.0f, 1.0f), m_nCounterAnim(0), m_nPatternAnim(0)
+	: m_pTexture(nullptr), m_pVtxBuff(nullptr), m_pos(0.0f, 0.0f, 0.0f), m_size(0.0f, 0.0f), m_fRot(0.0f), m_fLength(0.0f), m_fAngle(0.0f),
+	m_col(1.0f, 1.0f, 1.0f, 1.0f), m_nCounterAnim(0), m_nPatternAnim(0)
 {
 }
 

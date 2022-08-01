@@ -156,12 +156,13 @@ void CCloud::Unload()
 }
 
 //-----------------------------------------------------------------------------------------------
-// 雲の移動処理
+// 移動処理
 //-----------------------------------------------------------------------------------------------
-void CCloud::MoveCloud(float fMove)
+void CCloud::Move(float fMove)
 {
-	//雲の移動処理
-	D3DXVECTOR3 posCloud;	//位置格納用
+	D3DXVECTOR3 pos;	//位置情報格納用
+
+	// 雲オブジェクトの取得
 	for (int nCntObject = 0; nCntObject < CObject::MAX_OBJECT; nCntObject++)
 	{
 		//オブジェクト情報の取得
@@ -175,9 +176,9 @@ void CCloud::MoveCloud(float fMove)
 			{
 				//雲を上に移動する
 				CObject2D *pCloud = (CObject2D*)pObject;
-				posCloud = pCloud->GetPosition();
-				posCloud.y += fMove;
-				pCloud->SetPosition(posCloud);
+				pos = pCloud->GetPosition();
+				pos.y += fMove;
+				pCloud->SetPosition(pos);
 				pCloud->SetVertex();
 			}
 		}

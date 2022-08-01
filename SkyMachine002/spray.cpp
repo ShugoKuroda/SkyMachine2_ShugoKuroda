@@ -18,11 +18,11 @@
 // 幅
 const float CSpray::SIZE_WIDTH = 100.0f;
 // 高さ
-const float CSpray::SIZE_HEIGHT = 70.0f;
+const float CSpray::SIZE_HEIGHT = 50.0f;
 // アニメーション間隔
 const int CSpray::ANIM_INTERVAL = 5;
 // アニメーション最大数
-const int CSpray::MAX_ANIM = 8;
+const int CSpray::MAX_ANIM = 6;
 // U座標(X方向)の最大分割数
 const int CSpray::DIVISION_U = 4;
 // V座標(Y方向)の最大分割数
@@ -40,7 +40,7 @@ LPDIRECT3DTEXTURE9 CSpray::m_pTexture = nullptr;
 CSpray::CSpray()
 	:m_nCntAnim(0), m_nPatternAnim(0), m_nPatterAnimV(0)
 {
-	SetObjectType(CSpray::OBJ_EXPLOSION);
+	SetObjectType(CSpray::OBJ_SPRAY);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -53,7 +53,6 @@ CSpray::~CSpray()
 
 //-----------------------------------------------------------------------------------------------
 // 生成
-//
 // const D3DXVECTOR3& pos → 生成する位置
 //-----------------------------------------------------------------------------------------------
 CSpray* CSpray::Create(const D3DXVECTOR3& pos)
@@ -107,8 +106,6 @@ void CSpray::Unload()
 
 //-----------------------------------------------------------------------------------------------
 // 初期化
-//
-//const D3DXVECTOR3& pos → 最初に表示する位置
 //-----------------------------------------------------------------------------------------------
 HRESULT CSpray::Init()
 {
@@ -137,6 +134,11 @@ void CSpray::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CSpray::Update()
 {
+	//常に右に流す
+	D3DXVECTOR3 pos = CObject2D::GetPosition();
+	pos.x -= 1.0f;
+	CObject2D::SetPosition(pos);
+
 	// カウントを増やす
 	m_nCntAnim++;
 
@@ -171,4 +173,34 @@ void CSpray::Update()
 void CSpray::Draw()
 {
 	CObject2D::Draw();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 移動処理
+//-----------------------------------------------------------------------------------------------
+void CSpray::Move(float fMove)
+{
+	D3DXVECTOR3 pos;	//位置情報格納用
+
+	// 水しぶきオブジェクトの取得
+	for (int nCntObject = 0; nCntObject < CObject::MAX_OBJECT; nCntObject++)
+	{
+		//オブジェクト情報の取得
+		CObject *pObject = CObject::GetObject(nCntObject);
+		if (pObject != nullptr)
+		{
+			//オブジェクトタイプの取得
+			CObject::EObject objType = pObject->GetObjType();
+			//オブジェクトタイプが水しぶきだったら
+			if (objType == CObject::OBJ_SPRAY)
+			{
+				//上に移動する
+				CObject2D *pSpray = (CObject2D*)pObject;
+				pos = pSpray->GetPosition();
+				pos.y += fMove;
+				pSpray->SetPosition(pos);
+				pSpray->SetVertex();
+			}
+		}
+	}
 }

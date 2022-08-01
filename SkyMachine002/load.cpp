@@ -84,6 +84,10 @@ HRESULT LoadSpace::LoadEnemy(HWND hWnd)
 					{//“G‚Ìí—Ş
 						sscanf(cScanf, "%s = %d", &cScanfHead, &g_aEnemyInfo[nIdxEnemy].nType);
 					}
+					else if (strcmp(&cScanfHead[0], "LIFE") == 0)
+					{//“G‚Ìƒ‰ƒCƒt
+						sscanf(cScanf, "%s = %d", &cScanfHead, &g_aEnemyInfo[nIdxEnemy].nLife);
+					}
 					else if (strcmp(&cScanfHead[0], "NUM") == 0)
 					{//“G‚Ì”
 						sscanf(cScanf, "%s = %d", &cScanfHead, &g_aEnemyInfo[nIdxEnemy].nNum);

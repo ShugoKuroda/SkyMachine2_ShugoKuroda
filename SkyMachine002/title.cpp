@@ -92,19 +92,6 @@ HRESULT CTitle::Init()
 	// 雲
 	CCloud::Load();
 
-	// 雲を複数、初期配置する
-	for (int nCntCloud = 0; nCntCloud < 25; nCntCloud++)
-	{
-		// 位置を設定
-		D3DXVECTOR3 pos;
-		pos.x = (float)GetRandNum(CRenderer::SCREEN_WIDTH, 0);
-		pos.y = (float)GetRandNum(CRenderer::SCREEN_HEIGHT - 300, CRenderer::SCREEN_HEIGHT * -4);
-		pos.z = 0.0f;
-
-		// 雲の生成
-		CCloud::Create(pos);
-	}
-
 	// スクリーンサイズの保存
 	D3DXVECTOR2 ScreenSize = D3DXVECTOR2((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT);
 
@@ -132,15 +119,30 @@ HRESULT CTitle::Init()
 		m_apObject2D[nCnt]->BindTexture(m_apTexture[nCnt]);
 	}
 
-	//背景以外を前に描画する(タイプを設定する)
-	for (int nCnt = LOGO_PLAYER; nCnt < OBJ_MAX - 1; nCnt++)
+	//背景とプレイヤーロゴ以外を前に描画する(タイプを設定する)
+	for (int nCnt = LOGO_TITLE; nCnt < OBJ_MAX - 1; nCnt++)
 	{
 		m_apObject2D[nCnt]->SetObjectType(CObject::OBJ_TITLE);
 	}
+	//プレイヤーロゴを背景の次に描画する
+	m_apObject2D[LOGO_PLAYER]->SetObjectType(CObject::OBJ_TITLE_LOGO);
 
 	//タイトルとPressロゴを透明にする
 	m_apObject2D[LOGO_TITLE]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 	m_apObject2D[LOGO_PRESS]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+
+	// 雲を複数、初期配置する
+	for (int nCntCloud = 0; nCntCloud < 25; nCntCloud++)
+	{
+		// 位置を設定
+		D3DXVECTOR3 pos;
+		pos.x = (float)GetRandNum(CRenderer::SCREEN_WIDTH, 0);
+		pos.y = (float)GetRandNum(CRenderer::SCREEN_HEIGHT - 300, CRenderer::SCREEN_HEIGHT * -4);
+		pos.z = 0.0f;
+
+		// 雲の生成
+		CCloud::Create(pos);
+	}
 
 	return S_OK;
 }
@@ -150,6 +152,15 @@ HRESULT CTitle::Init()
 //-----------------------------------------------------------------------------------------------
 void CTitle::Uninit()
 {
+	for (int nCnt = 0; nCnt < OBJ_MAX; nCnt++)
+	{
+		// テクスチャの破棄
+		if (m_apObject2D[nCnt] != nullptr)
+		{
+			m_apObject2D[nCnt] = nullptr;
+		}
+	}
+
 	//テクスチャの破棄
 	CTitle::Unload();
 	//雲
@@ -161,7 +172,7 @@ void CTitle::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CTitle::Update()
 {
-	m_nCountMoveBg++;
+	m_nCountMoveBg += 2;
 
 	//背景位置の取得
 	D3DXVECTOR3 aPosBg[OBJ_MAX - 1];
@@ -216,7 +227,7 @@ void CTitle::Update()
 	else if (m_nCountMoveBg >= 120)
 	{
 		//雲の移動処理
-		CCloud::MoveCloud(3.0f);
+		CCloud::Move(3.0f);
 
 		aPosBg[BG_SKY].y += 3.0f;
 	}
@@ -235,6 +246,7 @@ void CTitle::Update()
 	{//SPACEキーを押された
 		// モードの設定
 		CManager::SetMode(CManager::MODE_GAME);
+		return;
 	}
 
 	//雲の生成

@@ -16,8 +16,6 @@
 class CEnemy : public CObject2D
 {
 private:
-	// 寿命
-	static const int LIFE;
 	// 幅
 	static const float SIZE_WIDTH;
 	// 高さ
@@ -29,6 +27,7 @@ public:
 	{
 		STATE_NORMAL = 0,		//通常
 		STATE_DAMAGE,			//ダメージ状態
+		STATE_DIE,				//死亡状態
 		STATE_MAX
 	};
 
@@ -53,18 +52,28 @@ public:
 	~CEnemy() override;
 
 	//メンバ関数
-	static CEnemy *Create(const D3DXVECTOR3& pos, TYPE type, EnemyMove *pEnemyMove);	//インスタンス生成処理
+	static CEnemy *Create(const D3DXVECTOR3& pos, TYPE type, int nLife, EnemyMove *pEnemyMove);	//インスタンス生成処理
 	static HRESULT Load();		//テクスチャの読み込み
 	static void Unload();		//テクスチャの削除
+	static LPDIRECT3DTEXTURE9 GetTexture(TYPE type) { return m_apTexture[type]; }
 
-	HRESULT Init() override;
-	void Uninit() override;
-	void Update() override;
-	void Draw() override;
+	virtual HRESULT Init() override;
+	virtual void Uninit() override;
+	virtual void Update() override;
+	virtual void Draw() override;
+
+	virtual void State();
+	bool Collision(D3DXVECTOR3 posStart);
+	void Damage(int nDamage);
 	void SetMove();
 	void SetAnim();
-	void Damage(int nDamage);
-	void State();
+	D3DXVECTOR3 SetVector();
+
+
+	void SetType(TYPE type) { m_type = type; }
+	void SetLife(int nLife) { m_nLife = nLife; }
+	int GetLife() { return m_nLife; }
+	
 
 private:
 	//メンバ変数
@@ -76,9 +85,9 @@ private:
 	TYPE m_type;			//種類
 	int m_nLife;			//寿命
 	int m_nCntState;		//状態カウンター
-	int m_nCntAnim;			//アニメーションカウンター
-	int m_nPatternAnim;		//アニメーションのパターンNo.
-	int m_nCounterAnim;		//アニメーションのカウンター
+	int m_nPattern;			//パターン番号
+	int m_nCounter;			//様々な処理を行うためのカウンター
+	int m_nCountAttack;		//攻撃を行うまでのカウンター
 	int m_nRestTime;		//敵の移動タイマー
 };
 

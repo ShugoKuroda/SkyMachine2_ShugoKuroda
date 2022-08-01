@@ -25,6 +25,7 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="cloud.cpp" />
     <ClCompile Include="enemy.cpp" />
+    <ClCompile Include="enemy_boss.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade_white.cpp" />
     <ClCompile Include="game.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="cloud.h" />
     <ClInclude Include="cloud_data.h" />
     <ClInclude Include="enemy.h" />
+    <ClInclude Include="enemy_boss.h" />
     <ClInclude Include="enemy_data.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade_white.h" />

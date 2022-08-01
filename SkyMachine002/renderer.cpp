@@ -194,7 +194,7 @@ void CRenderer::DrawFPS()
 	for (int nCntObj = 0; nCntObj < CObject::MAX_OBJECT; nCntObj++)
 	{
 		CObject *pObject = CObject::GetObject(nCntObj);
-		if (pObject != nullptr)
+		if (pObject != nullptr && nCntObj != 1)
 		{
 			if (nCntObj > 35)
 			{
@@ -213,7 +213,6 @@ void CRenderer::DrawFPS()
 			m_pFont->DrawTextA(NULL, strObj[nCntObj], -1, &rectObj[nCntObj], DT_LEFT, D3DCOLOR_ARGB(0xff, 0xff, 0xff, 0xff));
 		}
 	}
-
-	
 }
+
 #endif // _DEBUG

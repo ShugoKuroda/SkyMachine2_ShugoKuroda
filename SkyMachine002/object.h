@@ -16,7 +16,7 @@ class CObject
 {
 public:		// 定数
 	// オブジェクトの最大数
-	static const int MAX_OBJECT = 100;
+	static const int MAX_OBJECT = 300;
 
 public:
 	enum EObject
@@ -27,7 +27,12 @@ public:
 		OBJ_ENEMY,
 		OBJ_BULLET,
 		OBJ_EXPLOSION,
+		OBJ_SPRAY,
 		OBJ_BUBBLE,
+		OBJ_WAVE1,
+		OBJ_WAVE2,
+		OBJ_WAVE3,
+		OBJ_TITLE_LOGO,
 		OBJ_TITLE,
 		OBJ_FADE_WHITE,
 		OBJ_MAX

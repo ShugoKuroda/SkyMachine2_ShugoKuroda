@@ -17,12 +17,14 @@
 
 #include "game.h"
 #include "cloud.h"
+#include "spray.h"
 
 //-----------------------------------------------------------------------------------------------
 // 静的メンバ変数
 //-----------------------------------------------------------------------------------------------
 // テクスチャのポインタ
-LPDIRECT3DTEXTURE9 CBg::m_apTexture[BG_A_MAX] = { nullptr };
+LPDIRECT3DTEXTURE9 CBg::m_apTexture[BG_A_MAX] = {};
+CObject2D *CBg::m_apObject2D[BG_A_MAX] = {};
 
 //-----------------------------------------------------------------------------------------------
 //	コンストラクタ
@@ -54,16 +56,16 @@ HRESULT CBg::Load()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_00.png", &m_apTexture[BG_A_SKY]);		// 空
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_02.png", &m_apTexture[BG_A_UNDERWATER]);	// 海中
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_01.png", &m_apTexture[BG_A_SEA]);		// 海面
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_00.jpg", &m_apTexture[BG_A_SKY]);		// 空
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_02.jpg", &m_apTexture[BG_A_UNDERWATER]);	// 海中
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_01.jpg", &m_apTexture[BG_A_SEA]);		// 海面
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_03.png", &m_apTexture[BG_A_WAVE1]);		// 波1
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_04.png", &m_apTexture[BG_A_WAVE2]);		// 波2
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_05.png", &m_apTexture[BG_A_WAVE3]);		// 波3
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_06.png", &m_apTexture[BG_A_FLOOR]);		// 海中の床
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_07.png", &m_apTexture[BG_A_ROCK]);		// 岩
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_09.png", &m_apTexture[BG_A_SETWEED]);		// 岩
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_010.png", &m_apTexture[BG_A_SETWEED2]);		// 岩
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_09.png", &m_apTexture[BG_A_SETWEED]);	// 海藻
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_10.png", &m_apTexture[BG_A_SETWEED2]);	// 海藻2
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_08.png", &m_apTexture[BG_A_SEA_OTHER]);	// 海の裏側
 
 	return S_OK;
@@ -79,7 +81,7 @@ void CBg::Unload()
 		// テクスチャの破棄
 		if (m_apTexture[nCnt] != nullptr)
 		{
-			m_apTexture[nCnt]->Release();
+ 			m_apTexture[nCnt]->Release();
 			m_apTexture[nCnt] = nullptr;
 		}
 	}
@@ -118,10 +120,16 @@ HRESULT CBg::Init()
 	{
 	case SET_A:		// ZONE_A
 
-		for (int nCnt = 0; nCnt < BG_A_MAX - 1; nCnt++)
+		for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
 		{// 生成
 			m_apObject2D[nCnt] = new CObject2D;
 		}
+		
+		//波の背景のみ前で描画する
+		m_apObject2D[BG_A_WAVE1]->SetObjectType(CObject::OBJ_WAVE1);
+		m_apObject2D[BG_A_WAVE2]->SetObjectType(CObject::OBJ_WAVE2);
+		m_apObject2D[BG_A_WAVE3]->SetObjectType(CObject::OBJ_WAVE3);
+
 		//空
 		m_apObject2D[BG_A_SKY]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, (ScreenSize.y / 2) - 100.0f, 0.0f));
 		m_apObject2D[BG_A_SKY]->SetSize(D3DXVECTOR2(ScreenSize.x, ScreenSize.y - 200.0f));
@@ -143,15 +151,26 @@ HRESULT CBg::Init()
 		//海中の床
 		m_apObject2D[BG_A_FLOOR]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, (ScreenSize.y - 50.0f) * 2.5f, 0.0f));
 		m_apObject2D[BG_A_FLOOR]->SetSize(D3DXVECTOR2(ScreenSize.x, 100.0f));
+		//岩
+		m_apObject2D[BG_A_ROCK]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, (ScreenSize.y - 110.0f) * 2.5f, 0.0f));
+		m_apObject2D[BG_A_ROCK]->SetSize(D3DXVECTOR2(ScreenSize.x, 300.0f));
+		//海藻
+		m_apObject2D[BG_A_SETWEED]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, (ScreenSize.y - 110.0f) * 2.5f, 0.0f));
+		m_apObject2D[BG_A_SETWEED]->SetSize(D3DXVECTOR2(ScreenSize.x, 250.0f));
+		//海藻2
+		m_apObject2D[BG_A_SETWEED2]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, (ScreenSize.y - 100.0f) * 2.5f, 0.0f));
+		m_apObject2D[BG_A_SETWEED2]->SetSize(D3DXVECTOR2(ScreenSize.x, 200.0f));
 		//背景フェード用
 		m_apObject2D[BG_A_FADEBLACK]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, ScreenSize.y / 2, 0.0f));
 		m_apObject2D[BG_A_FADEBLACK]->SetSize(D3DXVECTOR2(ScreenSize.x, ScreenSize.y));
 
-		for (int nCnt = 0; nCnt < BG_A_MAX - 1; nCnt++)
+		for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
 		{// 初期化とテクスチャの設定
 			m_apObject2D[nCnt]->Init();
 			m_apObject2D[nCnt]->BindTexture(m_apTexture[nCnt]);
 		}
+
+		//色の設定
 		m_apObject2D[BG_A_FLOOR]->SetColor(D3DXCOLOR(0.7f, 0.7f, 1.0f, 1.0f));
 		m_apObject2D[BG_A_FADEBLACK]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
@@ -178,13 +197,12 @@ HRESULT CBg::Init()
 //-----------------------------------------------------------------------------------------------
 void CBg::Uninit()
 {
-	// 終了処理
-	for (int nCntBg = 0; nCntBg < BG_A_MAX - 1; nCntBg++)
+	for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
 	{
-		if (m_apObject2D[nCntBg] != nullptr)
+		if (m_apObject2D[nCnt] != nullptr)
 		{
-			m_apObject2D[nCntBg]->Uninit();
-			m_apObject2D[nCntBg] = nullptr;
+			m_apObject2D[nCnt]->Uninit();
+			m_apObject2D[nCnt] = nullptr;
 		}
 	}
 
@@ -209,19 +227,25 @@ void CBg::Update()
 	//背景移動までのカウンターを加算
 	m_nCntBgChange++;
 
-	if (m_nCntBgChange >= 1140)
+	if (m_nCntBgChange >= 2660)
 	{
 		//カウンターを止める
 		m_nCntBgChange = m_nCntBgChange;
 		//床のアニメーション
 		m_apObject2D[BG_A_FLOOR]->SetAnimBg(1, 1000, true);
+		//岩のアニメーション
+		m_apObject2D[BG_A_ROCK]->SetAnimBg(1, 2000, true);
+		//海藻のアニメーション
+		m_apObject2D[BG_A_SETWEED]->SetAnimBg(1, 1500, true);
+		//海藻2のアニメーション
+		m_apObject2D[BG_A_SETWEED2]->SetAnimBg(1, 1000, true);
 	}
 	//一定時間経過で海に入る演出を開始する
-	else if (m_nCntBgChange >= 600)
+	else if (m_nCntBgChange >= 2120)
 	{
 		//背景位置の取得
-		D3DXVECTOR3 aPosBg[BG_A_MAX - 1];
-		for (int nCnt = 0; nCnt < BG_A_MAX - 1; nCnt++)
+		D3DXVECTOR3 aPosBg[BG_A_MAX];
+		for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
 		{
 			aPosBg[nCnt] = m_apObject2D[nCnt]->GetPosition();
 		}
@@ -230,8 +254,11 @@ void CBg::Update()
 
 		float fMul = 1.5f;
 
-		if (m_nCntBgChange >= 960)
+		if (m_nCntBgChange >= 2480)
 		{
+			//泡エフェクトの生成を開始する
+			CGame::SetCreateBubble(true);
+
 			fMul = 0.75f;
 			sizeSea.y += 0.5f;
 			aPosBg[BG_A_SEA].y += 0.5f;
@@ -240,30 +267,44 @@ void CBg::Update()
 
 			//床のアニメーション
 			m_apObject2D[BG_A_FLOOR]->SetAnimBg(1, 1000, true);
+			//岩のアニメーション
+			m_apObject2D[BG_A_ROCK]->SetAnimBg(1, 2000, true);
+			//海藻のアニメーション
+			m_apObject2D[BG_A_SETWEED]->SetAnimBg(1, 1500, true);
+			//海藻2のアニメーション
+			m_apObject2D[BG_A_SETWEED2]->SetAnimBg(1, 1000, true);
 
 			//雲の生成を止める
 			CGame::SetCreateCloud(false);
 		}
-		else if (m_nCntBgChange >= 780)
+		else if (m_nCntBgChange >= 2300)
 		{
 			fMul = 3.0f;
 
-			//泡エフェクトの生成を開始する
-			CGame::SetCreateBubble(true);
+			//岩のアニメーション
+			m_apObject2D[BG_A_ROCK]->SetAnimBg(1, 2000, true);
+			//海藻のアニメーション
+			m_apObject2D[BG_A_SETWEED]->SetAnimBg(1, 1500, true);
+			//海藻2のアニメーション
+			m_apObject2D[BG_A_SETWEED2]->SetAnimBg(1, 1000, true);
 		}
 
 		//雲を背景に合わせて動かす
 		CCloud::AddPos(fMul);
 		
-		//雲の移動処理
-		CCloud::MoveCloud(-0.5f * fMul);
+		//背景に合わせて他オブジェクトを移動
+		CCloud::Move(-0.5f * fMul);		//雲
+		CSpray::Move(-1.0f * fMul);		//水しぶき
 
 		aPosBg[BG_A_SKY].y -= 0.5f * fMul;
 		aPosBg[BG_A_UNDERWATER].y -= 0.5f * fMul;
 		//海のみサイズも変える
 		aPosBg[BG_A_SEA].y -= 0.75f * fMul;
 		sizeSea.y -= 0.5f * fMul;
-		aPosBg[BG_A_FLOOR].y -= 1 * fMul;
+		aPosBg[BG_A_FLOOR].y -= 1.0f * fMul;
+		aPosBg[BG_A_ROCK].y -= 1.0f * fMul;
+		aPosBg[BG_A_SETWEED].y -= 1.0f * fMul;
+		aPosBg[BG_A_SETWEED2].y -= 1.0f * fMul;
 
 		aPosBg[BG_A_WAVE1].y -= 1.0f * fMul;
 		aPosBg[BG_A_WAVE2].y -= 1.0f * fMul;
@@ -277,7 +318,7 @@ void CBg::Update()
 		m_apObject2D[BG_A_SEA]->SetSize(sizeSea);
 
 		//背景位置の設定
-		for (int nCnt = 0; nCnt < BG_A_MAX - 1; nCnt++)
+		for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
 		{
 			m_apObject2D[nCnt]->SetPosition(aPosBg[nCnt]);
 			m_apObject2D[nCnt]->SetVertex();

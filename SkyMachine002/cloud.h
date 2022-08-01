@@ -42,7 +42,7 @@ public:
 	static HRESULT Load();		//テクスチャの読み込み
 	static void Unload();		//テクスチャの削除
 	static void AddPos(float fMul) { m_fCreatePos += 0.5f * fMul; }		//位置の加算
-	static void MoveCloud(float fMove);		//雲の移動処理
+	static void Move(float fMove);		//雲の移動処理
 
 	HRESULT Init() override;
 	void Uninit() override;

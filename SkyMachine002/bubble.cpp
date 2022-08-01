@@ -131,6 +131,8 @@ void CBubble::Update()
 
 	//ˆÚ“®—Ê‚ğ‰ÁZ
 	pos.x += sinf(m_move.x / 300.0f) * m_nReverse;
+	//í‚É¶ã‚É—¬‚·
+	pos.x -= 1.0f;
 	pos.y += m_move.y;
 
 	// ƒ¿’l‚ª0ˆÈ‰º‚Ü‚½‚Í‰æ–ÊŠO‚Å”jŠü

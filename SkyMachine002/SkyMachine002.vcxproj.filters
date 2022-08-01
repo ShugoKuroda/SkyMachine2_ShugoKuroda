@@ -29,6 +29,7 @@
     <ClCompile Include="bubble.cpp" />
     <ClCompile Include="spray.cpp" />
     <ClCompile Include="fade_white.cpp" />
+    <ClCompile Include="enemy_boss.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -61,5 +62,6 @@
     <ClInclude Include="cloud_data.h" />
     <ClInclude Include="spray.h" />
     <ClInclude Include="fade_white.h" />
+    <ClInclude Include="enemy_boss.h" />
   </ItemGroup>
 </Project>

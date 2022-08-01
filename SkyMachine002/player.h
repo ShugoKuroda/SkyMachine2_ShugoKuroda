@@ -31,17 +31,20 @@ private:
 	static const int DIVISION_U;
 	// V座標の最大分割数
 	static const int DIVISION_V;
-
+	//プレイヤーのデフォルトカラー
+	static const D3DXCOLOR DEFAULT_COL;
 
 public:
-	//プレイヤーの状態
+	//状態
 	enum STATE
 	{
 		STATE_NORMAL = 0,	//通常
 		STATE_RESPAWN,		//無敵(リスポーン)状態
+		STATE_DIE,			//死亡状態
 		STATE_MAX
 	};
 
+	//アニメーション番号
 	enum ANIMTYPE
 	{
 		TYPE_NEUTRAL = 0,
@@ -63,8 +66,13 @@ public:
 	void Update() override;
 	void Draw() override;
 	D3DXVECTOR3 Move(D3DXVECTOR3 pos);
+	void SetSpray();
 	void SetAnimNum(ANIMTYPE AnimIn, ANIMTYPE AnimOut);
-	void Damage();
+
+	STATE GetState() { return m_state; }
+
+	void State();
+	void Damage(int nDamage);
 	void Die();
 
 private:	//メンバ変数
@@ -95,6 +103,8 @@ private:	//メンバ変数
 	D3DXVECTOR2 posBullet;
 	//プレイヤーが操作できるかどうか
 	bool m_bControl;
+	//海に入ったかどうか
+	bool m_bInSea;
 };
 
 #endif //_PLAYER_H_

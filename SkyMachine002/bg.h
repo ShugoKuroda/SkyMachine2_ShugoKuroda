@@ -9,9 +9,9 @@
 
 #include "object.h"
 
-//*****************************************************************************
+//*******************************************************************
 // 前方宣言
-//*****************************************************************************
+//*******************************************************************
 class CObject2D;
 
 //*******************************************************************
@@ -42,7 +42,6 @@ public:
 	enum ESet
 	{
 		SET_NONE = 0,
-		SET_TITLE,		// タイトル
 		SET_A,			// ZONE_A
 		SET_B,			// ZONE_B
 		SET_C,			// ZONE_C
@@ -57,9 +56,9 @@ public:
 		BG_A_WAVE1,			// 波1
 		BG_A_WAVE2,			// 波2
 		BG_A_WAVE3,			// 波3
-		BG_A_FLOOR,			// 海中の床
 		BG_A_ROCK,			// 岩
 		BG_A_SETWEED,		// 海藻
+		BG_A_FLOOR,			// 海中の床
 		BG_A_SETWEED2,		// 海藻2
 		BG_A_FADEBLACK,		// 背景フェード用
 		BG_A_SEA_OTHER,		// 海の裏側(海中からみた海面)
@@ -73,6 +72,7 @@ public:
 	static HRESULT Load(void);		//テクスチャの読み込み
 	static void Unload(void);		//テクスチャの削除
 	static CBg *Create(ESet set);	//インスタンス生成処理
+	static CObject2D *GetObjectBg(EZone_A index) { return m_apObject2D[index]; }
 
 	HRESULT Init() override;
 	void Uninit() override;
@@ -82,7 +82,7 @@ public:
 private:
 	//メンバ変数
 	static LPDIRECT3DTEXTURE9 m_apTexture[BG_A_MAX];	//テクスチャのポインタ
-	CObject2D *m_apObject2D[BG_A_MAX - 1];				//2Dポリゴンへのポインタ
+	static CObject2D *m_apObject2D[BG_A_MAX];				//2Dポリゴンへのポインタ
 	ESet m_set;					//描画する背景(ZONE)
 	int m_nCntBgChange;			//次の背景が描画されるまでのカウンター
 };

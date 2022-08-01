@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------------------------
 //
-// 弾の処理[bullet.cpp]
+// 敵の処理[enemy.cpp]
 // Author : SHUGO kURODA
 //
 //-----------------------------------------------------------------------------------------------
@@ -16,13 +16,12 @@
 #include "library.h"
 
 #include "player.h"
+#include "bullet.h"
 #include "explosion.h"
 
 //-----------------------------------------------------------------------------------------------
 // 定数変数
 //-----------------------------------------------------------------------------------------------
-// 体力
-const int CEnemy::LIFE = 50;
 // 幅
 const float CEnemy::SIZE_WIDTH = 50.0f;
 // 高さ
@@ -38,7 +37,7 @@ LPDIRECT3DTEXTURE9 CEnemy::m_apTexture[TYPE_MAX] = { nullptr };
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CEnemy::CEnemy() :
-	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_nLife(0), m_nCntState(0), m_nCntAnim(0), m_nPatternAnim(0), m_nCounterAnim(0)
+	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_nLife(0), m_nCntState(0), m_nPattern(0), m_nCounter(0), m_nCountAttack(0)
 {
 	SetObjectType(EObject::OBJ_ENEMY);
 }
@@ -53,7 +52,7 @@ CEnemy::~CEnemy()
 //-----------------------------------------------------------------------------------------------
 // 生成
 //-----------------------------------------------------------------------------------------------
-CEnemy *CEnemy::Create(const D3DXVECTOR3& pos, TYPE type, EnemyMove *pEnemyMove)
+CEnemy *CEnemy::Create(const D3DXVECTOR3& pos, TYPE type, int nLife, EnemyMove *pEnemyMove)
 {
 	// ポインタクラスを宣言
 	CEnemy* pEnemy = new CEnemy;
@@ -67,13 +66,16 @@ CEnemy *CEnemy::Create(const D3DXVECTOR3& pos, TYPE type, EnemyMove *pEnemyMove)
 		pEnemy->m_pMoveInfo = pEnemyMove;
 
 		//種類の設定
-		pEnemy->m_type = type;
+		pEnemy->SetType(type);
+
+		//ライフの設定
+		pEnemy->SetLife(nLife);
 
 		// 初期化
 		pEnemy->Init();
 
 		// テクスチャの設定
-		pEnemy->BindTexture(m_apTexture[type]);
+		pEnemy->BindTexture(m_apTexture[pEnemy->m_type]);
 	}
 
 	return pEnemy;
@@ -124,12 +126,21 @@ void CEnemy::Unload()
 //-----------------------------------------------------------------------------------------------
 HRESULT CEnemy::Init()
 {
-	//移動量の計算
+	// 移動量の計算
 	m_nRestTime = m_pMoveInfo->nFrameMove;
-	// 寿命の設定
-	m_nLife = LIFE;
-	// サイズ設定
-	CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
+
+	// ウニ型の敵だけサイズを2倍にする
+	if (m_type == CEnemy::TYPE_SEAURCHIN)
+	{
+		// サイズ設定
+		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH * 2, SIZE_HEIGHT * 2));
+	}
+	else
+	{
+		// サイズ設定
+		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
+	}
+	
 	// オブジェクト情報の初期化
 	CObject2D::Init();
 	// 頂点カラーの設定
@@ -179,12 +190,13 @@ void CEnemy::Update()
 	//移動量の再設定
 	if (m_nRestTime <= 0)
 	{//目的の位置に到達したら
-		SetMove();
+		SetMove(); 
 	}
 
+	Collision(pos);
 	//アニメーション処理
 	SetAnim();
-	//状態処理
+	//状態管理
 	State();
 	// 位置の更新
 	CObject2D::SetPosition(pos);
@@ -212,86 +224,6 @@ void CEnemy::Draw()
 	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 	pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_CURRENT);
-}
-
-//-----------------------------------------------------------------------------------------------
-// 移動量の設定(計算)
-//-----------------------------------------------------------------------------------------------
-void CEnemy::SetMove()
-{
-	m_pMoveInfo++;
-	m_nRestTime = m_pMoveInfo->nFrameMove;
-}
-
-//-----------------------------------------------------------------------------------------------
-// 敵ごとにアニメーション(動き方)を設定
-//-----------------------------------------------------------------------------------------------
-void CEnemy::SetAnim()
-{
-	//向きの取得
-	float fRot = CObject2D::GetRot();
-	// 位置の取得
-	D3DXVECTOR3 pos = CObject2D::GetPosition();
-
-	switch (m_type)
-	{
-	case CEnemy::TYPE_STARFISH:
-	case CEnemy::TYPE_ROWLING:
-
-		fRot += 0.1f;
-		//向きの更新
-		CObject2D::SetRot(fRot);
-		break;
-
-	case CEnemy::TYPE_MOSQUITO:
-		m_nCounterAnim++;
-		if (m_nCounterAnim >= 2)
-		{
-			m_nPatternAnim++;
-			m_nCounterAnim = 0;
-
-			if (m_nPatternAnim >= 2)
-			{
-				m_nPatternAnim = 0;
-			}
-			CObject2D::SetAnimation(m_nPatternAnim, 0, 2, 1);
-		}
-		break;
-
-	case CEnemy::TYPE_ASSAULT:
-	{
-		// プレイヤー情報の取得
-		CPlayer *pPlayer = CGame::GetPlayer();
-		//常にプレイヤーの方向を向く
-		D3DXVECTOR3 posPlayer = pPlayer->GetPosition();
-		D3DXVECTOR3 vec = posPlayer - pos;
-		float fAngle = atan2f(vec.x, vec.y);
-		CObject2D::SetRot(fAngle);
-		CObject2D::SetVertex();
-	}
-	break;
-
-	case CEnemy::TYPE_SPHERE:
-		break;
-
-	case CEnemy::TYPE_SEAURCHIN:
-		break;
-
-	case CEnemy::TYPE_FREEFALL:
-		break;
-
-	case CEnemy::TYPE_SHOT:
-		break;
-
-	case CEnemy::TYPE_RING_BOSS:
-		break;
-
-	case CEnemy::TYPE_DARK_BOSS:
-		break;
-
-	default:
-		break;
-	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -335,4 +267,224 @@ void CEnemy::State()
 		}
 		break;
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+// 生成
+//-----------------------------------------------------------------------------------------------
+bool CEnemy::Collision(D3DXVECTOR3 posStart)
+{
+	//敵のサイズ取得
+	float fStartLength = GetLength();
+	//プレイヤー情報の取得
+	CPlayer *pPlayer = CGame::GetPlayer();
+
+	if (pPlayer->GetState() == CPlayer::STATE_NORMAL)
+	{
+		if (LibrarySpace::SphereCollision2D(posStart, pPlayer->GetPosition(), fStartLength, pPlayer->GetLength() - 30.0f))
+		{//敵と当たったら(球体の当たり判定)
+			//ダメージ処理
+			pPlayer->Damage(1);
+			return true;	//当たった
+		}
+	}
+
+	return false;		//当たってない
+}
+
+//-----------------------------------------------------------------------------------------------
+// 移動量の設定(計算)
+//-----------------------------------------------------------------------------------------------
+void CEnemy::SetMove()
+{
+	m_pMoveInfo++;
+	m_nRestTime = m_pMoveInfo->nFrameMove;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 敵ごとにアニメーション(動き方)を設定
+//-----------------------------------------------------------------------------------------------
+void CEnemy::SetAnim()
+{
+	// 位置の取得
+	D3DXVECTOR3 pos = CObject2D::GetPosition();
+	//向きの取得
+	float fRot = CObject2D::GetRot();
+
+	switch (m_type)
+	{
+	case CEnemy::TYPE_STARFISH:
+	case CEnemy::TYPE_ROWLING:
+
+		fRot += 0.1f;
+		//向きの更新
+		CObject2D::SetRot(fRot);
+
+		// 弾の配置
+		SetVector();
+
+		break;
+
+	case CEnemy::TYPE_MOSQUITO:
+
+		// 弾の配置
+		SetVector();
+
+		// 常にアニメーションする
+		m_nCounter++;
+		if (m_nCounter >= 2)
+		{
+			m_nPattern++;
+			m_nCounter = 0;
+
+			if (m_nPattern >= 2)
+			{
+				m_nPattern = 0;
+			}
+			CObject2D::SetAnimation(m_nPattern, 0, 2, 1);
+		}
+		break;
+
+	case CEnemy::TYPE_ASSAULT:
+	{
+		// 弾の配置
+		D3DXVECTOR3 vec = SetVector();
+
+		float fAngle = atan2f(vec.x, vec.y);
+		CObject2D::SetRot(fAngle);
+	}
+	break;
+
+	case CEnemy::TYPE_SPHERE:
+		// 弾の配置
+		SetVector();
+		break;
+
+	case CEnemy::TYPE_SEAURCHIN:
+	{
+		// サイズの取得
+		D3DXVECTOR2 size = CObject2D::GetSize();
+
+		m_nCounter++;
+
+		if (m_nCounter >= 30)
+		{
+			//カウンターのリセット
+			m_nCounter = 0;
+			//パターン番号を切り替える
+			m_nPattern = ~m_nPattern;
+
+			if (m_nPattern)
+			{
+				CObject2D::SetSize(D3DXVECTOR2(size.x + 20.0f, size.y + 20.0f));
+			}
+			else
+			{
+				CObject2D::SetSize(D3DXVECTOR2(size.x - 20.0f, size.y - 20.0f));
+			}
+
+			//攻撃カウンターを加算
+			m_nCountAttack++;
+
+			if (m_nCountAttack >= 3)
+			{
+				//カウンターリセット
+				m_nCountAttack = 0;
+
+				float fDeg = 0.0f;
+
+				while (fDeg <= 340.0f)
+				{
+					// 弾を円状に配置
+					float fRad = fDeg * (D3DX_PI / 180);
+					D3DXVECTOR3 vec = D3DXVECTOR3(sinf(fRad) * 4.0f, cosf(fRad) * 4.0f, 0);
+					CBullet* pBullet = CBullet::Create(pos, vec, 1, CBullet::TYPE_ENEMY_LASER);
+					pBullet->SetParent(CBullet::PARENT_ENEMY);
+					pBullet->SetRot(fRad);
+					fDeg += 20.0f;
+				}
+			}
+		}
+	}
+	break;
+
+	case CEnemy::TYPE_FREEFALL:
+		break;
+
+	case CEnemy::TYPE_SHOT:
+		break;
+
+	case CEnemy::TYPE_SENTRY_GUN:
+		//攻撃カウンターを加算
+		m_nCounter++;
+		//常に回転させる
+		fRot += 0.01f;
+
+		if (m_nCounter >= 120)
+		{
+			//カウンターリセット
+			m_nCountAttack++;
+
+			if (m_nCountAttack >= 5)
+			{
+				m_nCountAttack = 0;
+				m_nPattern++;
+				float fDeg = 0.0f;
+
+				while (fDeg <= 340.0f)
+				{
+					// 弾を円状に配置
+					float fRad = (fDeg * (D3DX_PI / 180)) + fRot;
+					D3DXVECTOR3 vec = D3DXVECTOR3(sinf(fRad) * 4.0f, cosf(fRad) * 4.0f, 0);
+					CBullet* pBullet = CBullet::Create(pos, vec, 1, CBullet::TYPE_ENEMY_LASER);
+					pBullet->SetParent(CBullet::PARENT_ENEMY);
+					pBullet->SetRot(fRad);
+					fDeg += 20.0f;
+				}
+
+				if (m_nPattern >= 5)
+				{
+					m_nCounter = 0;
+					m_nPattern = 0;
+				}
+			}
+		}
+		CObject2D::SetRot(fRot);
+
+		break;
+
+	default:
+		break;
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+// 弾ベクトル設定処理
+//-----------------------------------------------------------------------------------------------
+D3DXVECTOR3 CEnemy::SetVector()
+{
+	// プレイヤー情報の取得
+	D3DXVECTOR3 posPlayer = CGame::GetPlayer()->GetPosition();
+	// 位置の取得
+	D3DXVECTOR3 pos = CObject2D::GetPosition();
+
+	//常にプレイヤーの方向を向く
+	D3DXVECTOR3 vec = posPlayer - pos;
+
+	m_nCounter++;
+
+	if (m_nCounter >= 120)
+	{
+		//敵からプレイヤーへのベクトル(移動量)に変換する
+		D3DXVec3Normalize(&vec, &vec);
+		//ベクトル量の調整
+		vec.x *= 5.0f;
+		vec.y *= 5.0f;
+		//弾の生成
+		CBullet::Create(pos, vec, 1, CBullet::TYPE_ENEMY_ORANGE)->SetParent(CBullet::PARENT_ENEMY);
+		//攻撃カウンターのリセット
+		m_nCounter = 0;
+	}
+
+	return vec;
 }
