@@ -170,8 +170,11 @@ HRESULT CBg::Init()
 			m_apObject2D[nCnt]->BindTexture(m_apTexture[nCnt]);
 		}
 
-		//色の設定
-		m_apObject2D[BG_A_FLOOR]->SetColor(D3DXCOLOR(0.7f, 0.7f, 1.0f, 1.0f));
+		for (int nCnt = BG_A_ROCK; nCnt < BG_A_FADEBLACK; nCnt++)
+		{// 初期化とテクスチャの設定
+			//色の設定
+			m_apObject2D[nCnt]->SetColor(D3DXCOLOR(0.7f, 0.7f, 1.0f, 1.0f));
+		}
 		m_apObject2D[BG_A_FADEBLACK]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
 		break;
@@ -227,7 +230,7 @@ void CBg::Update()
 	//背景移動までのカウンターを加算
 	m_nCntBgChange++;
 
-	if (m_nCntBgChange >= 2660)
+	if (m_nCntBgChange >= 2720)
 	{
 		//カウンターを止める
 		m_nCntBgChange = m_nCntBgChange;
@@ -241,7 +244,7 @@ void CBg::Update()
 		m_apObject2D[BG_A_SETWEED2]->SetAnimBg(1, 1000, true);
 	}
 	//一定時間経過で海に入る演出を開始する
-	else if (m_nCntBgChange >= 2120)
+	else if (m_nCntBgChange >= 2180)
 	{
 		//背景位置の取得
 		D3DXVECTOR3 aPosBg[BG_A_MAX];
@@ -254,7 +257,7 @@ void CBg::Update()
 
 		float fMul = 1.5f;
 
-		if (m_nCntBgChange >= 2480)
+		if (m_nCntBgChange >= 2540)
 		{
 			//泡エフェクトの生成を開始する
 			CGame::SetCreateBubble(true);
@@ -277,7 +280,7 @@ void CBg::Update()
 			//雲の生成を止める
 			CGame::SetCreateCloud(false);
 		}
-		else if (m_nCntBgChange >= 2300)
+		else if (m_nCntBgChange >= 2360)
 		{
 			fMul = 3.0f;
 

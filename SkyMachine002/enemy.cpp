@@ -37,7 +37,7 @@ LPDIRECT3DTEXTURE9 CEnemy::m_apTexture[TYPE_MAX] = { nullptr };
 // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 //-----------------------------------------------------------------------------------------------
 CEnemy::CEnemy() :
-	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_nLife(0), m_nCntState(0), m_nPattern(0), m_nCounter(0), m_nCountAttack(0)
+	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_nLife(0), m_nCntState(0), m_nPattern(0), m_nCounter(0), m_nCountAttack(0), m_nNumPatten(0)
 {
 	SetObjectType(EObject::OBJ_ENEMY);
 }
@@ -135,6 +135,12 @@ HRESULT CEnemy::Init()
 		// ƒTƒCƒYÝ’è
 		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH * 2, SIZE_HEIGHT * 2));
 	}
+	// ƒEƒjŒ^‚Ì“G‚¾‚¯ƒTƒCƒY‚ð2”{‚É‚·‚é
+	else if (m_type == CEnemy::TYPE_SENTRY_GUN)
+	{
+		// ƒTƒCƒYÝ’è
+		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH * 1.5f, SIZE_HEIGHT * 1.5f));
+	}
 	else
 	{
 		// ƒTƒCƒYÝ’è
@@ -143,8 +149,23 @@ HRESULT CEnemy::Init()
 	
 	// ƒIƒuƒWƒFƒNƒgî•ñ‚Ì‰Šú‰»
 	CObject2D::Init();
-	// ’¸“_ƒJƒ‰[‚ÌÝ’è
-	CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+
+	//‰H’ŽŒ^‚ÆŽËŒ‚Œ^‚Ì“G‚¾‚¯ƒeƒNƒXƒ`ƒƒÀ•W‚ðÝ’è‚·‚é
+	if (m_type == CEnemy::TYPE_MOSQUITO || m_type == CEnemy::TYPE_SHOT)
+	{
+		CObject2D::SetAnimation(m_nPattern, 0, 2, 1);
+	}
+	
+	if (CGame::GetBubble() == false)
+	{
+		// ’¸“_ƒJƒ‰[‚ÌÝ’è
+		CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.3f, 1.0f));
+	}
+	else
+	{
+		// ’¸“_ƒJƒ‰[‚ÌÝ’è
+		CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+	}
 
 	return S_OK;
 }
@@ -263,7 +284,14 @@ void CEnemy::State()
 		{
 			m_state = STATE_NORMAL;
 
-			CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+			if (CGame::GetBubble() == false)
+			{
+				CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.3f, 1.0f));
+			}
+			else
+			{
+				CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+			}
 		}
 		break;
 	}
@@ -302,7 +330,7 @@ void CEnemy::SetMove()
 }
 
 //-----------------------------------------------------------------------------------------------
-// “G‚²‚Æ‚ÉƒAƒjƒ[ƒVƒ‡ƒ“(“®‚«•û)‚ðÝ’è
+// “G‚²‚Æ‚ÉƒAƒjƒ[ƒVƒ‡ƒ“,‹““®‚ðÝ’è
 //-----------------------------------------------------------------------------------------------
 void CEnemy::SetAnim()
 {
@@ -313,18 +341,21 @@ void CEnemy::SetAnim()
 
 	switch (m_type)
 	{
+	//--------------------------------------
+	// ¯Œ^A‰ñ“]Œ^‚Ì“G
+	//--------------------------------------
 	case CEnemy::TYPE_STARFISH:
 	case CEnemy::TYPE_ROWLING:
 
-		fRot += 0.1f;
+		fRot -= 0.1f;
 		//Œü‚«‚ÌXV
 		CObject2D::SetRot(fRot);
 
-		// ’e‚Ì”z’u
-		SetVector();
-
 		break;
 
+	//--------------------------------------
+	// ‰H’ŽŒ^‚Ì“G
+	//--------------------------------------
 	case CEnemy::TYPE_MOSQUITO:
 
 		// ’e‚Ì”z’u
@@ -345,6 +376,9 @@ void CEnemy::SetAnim()
 		}
 		break;
 
+	//--------------------------------------
+	// “ËŒ‚Œ^‚Ì“G
+	//--------------------------------------
 	case CEnemy::TYPE_ASSAULT:
 	{
 		// ’e‚Ì”z’u
@@ -355,16 +389,21 @@ void CEnemy::SetAnim()
 	}
 	break;
 
+	//--------------------------------------
+	// ŠÛŒ^‚Ì“G
+	//--------------------------------------
 	case CEnemy::TYPE_SPHERE:
 		// ’e‚Ì”z’u
 		SetVector();
 		break;
 
+	//--------------------------------------
+	// ƒEƒjŒ^‚Ì“G
+	//--------------------------------------
 	case CEnemy::TYPE_SEAURCHIN:
 	{
 		// ƒTƒCƒY‚ÌŽæ“¾
 		D3DXVECTOR2 size = CObject2D::GetSize();
-
 		m_nCounter++;
 
 		if (m_nCounter >= 30)
@@ -385,7 +424,6 @@ void CEnemy::SetAnim()
 
 			//UŒ‚ƒJƒEƒ“ƒ^[‚ð‰ÁŽZ
 			m_nCountAttack++;
-
 			if (m_nCountAttack >= 3)
 			{
 				//ƒJƒEƒ“ƒ^[ƒŠƒZƒbƒg
@@ -397,7 +435,7 @@ void CEnemy::SetAnim()
 				{
 					// ’e‚ð‰~ó‚É”z’u
 					float fRad = fDeg * (D3DX_PI / 180);
-					D3DXVECTOR3 vec = D3DXVECTOR3(sinf(fRad) * 4.0f, cosf(fRad) * 4.0f, 0);
+					D3DXVECTOR3 vec = D3DXVECTOR3(sinf(fRad) * 7.0f, cosf(fRad) * 7.0f, 0);
 					CBullet* pBullet = CBullet::Create(pos, vec, 1, CBullet::TYPE_ENEMY_LASER);
 					pBullet->SetParent(CBullet::PARENT_ENEMY);
 					pBullet->SetRot(fRad);
@@ -408,21 +446,56 @@ void CEnemy::SetAnim()
 	}
 	break;
 
+	//--------------------------------------
+	// Ž©—R—Ž‰ºŒ^‚Ì“G
+	//--------------------------------------
 	case CEnemy::TYPE_FREEFALL:
 		break;
 
+	//--------------------------------------
+	// ŽËŒ‚Œ^‚Ì“G
+	//--------------------------------------
 	case CEnemy::TYPE_SHOT:
+		//UŒ‚ƒJƒEƒ“ƒ^[‚ð‰ÁŽZ
+		m_nCounter++;
+
+		if (m_nCounter >= 60)
+		{
+			//˜A‘±UŒ‚ƒJƒEƒ“ƒ^[‚ð‰ÁŽZ
+			m_nCountAttack++;
+
+			if (m_nCountAttack >= 5)
+			{
+				CBullet::Create(pos, D3DXVECTOR3(-7.0f, 0.0f, 0.0f), 1, CBullet::TYPE_ENEMY_RED)->SetParent(CBullet::PARENT_ENEMY);
+
+				m_nCountAttack = 0;
+				m_nPattern = ~m_nPattern;
+
+				m_nNumPatten++;
+				if (m_nNumPatten >= 3)
+				{
+					m_nNumPatten = 0;
+					m_nCounter = 0;
+					m_nPattern = 0;
+				}
+
+				CObject2D::SetAnimation(m_nPattern, 0, 2, 1);
+			}
+		}
 		break;
 
+	//--------------------------------------
+	// ŒÅ’è–C‘äŒ^‚Ì“G
+	//--------------------------------------
 	case CEnemy::TYPE_SENTRY_GUN:
 		//UŒ‚ƒJƒEƒ“ƒ^[‚ð‰ÁŽZ
 		m_nCounter++;
 		//í‚É‰ñ“]‚³‚¹‚é
 		fRot += 0.01f;
 
-		if (m_nCounter >= 120)
+		if (m_nCounter >= 240)
 		{
-			//ƒJƒEƒ“ƒ^[ƒŠƒZƒbƒg
+			//˜A‘±UŒ‚ƒJƒEƒ“ƒ^[‚ð‰ÁŽZ
 			m_nCountAttack++;
 
 			if (m_nCountAttack >= 5)
@@ -431,18 +504,18 @@ void CEnemy::SetAnim()
 				m_nPattern++;
 				float fDeg = 0.0f;
 
-				while (fDeg <= 340.0f)
+				while (fDeg <= 330.0f)
 				{
 					// ’e‚ð‰~ó‚É”z’u
 					float fRad = (fDeg * (D3DX_PI / 180)) + fRot;
 					D3DXVECTOR3 vec = D3DXVECTOR3(sinf(fRad) * 4.0f, cosf(fRad) * 4.0f, 0);
-					CBullet* pBullet = CBullet::Create(pos, vec, 1, CBullet::TYPE_ENEMY_LASER);
+					CBullet* pBullet = CBullet::Create(pos, vec, 1, CBullet::TYPE_ENEMY_RED);
 					pBullet->SetParent(CBullet::PARENT_ENEMY);
 					pBullet->SetRot(fRad);
-					fDeg += 20.0f;
+					fDeg += 30.0f;
 				}
 
-				if (m_nPattern >= 5)
+				if (m_nPattern >= 3)
 				{
 					m_nCounter = 0;
 					m_nPattern = 0;

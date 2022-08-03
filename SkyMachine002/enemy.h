@@ -86,6 +86,7 @@ private:
 	int m_nLife;			//寿命
 	int m_nCntState;		//状態カウンター
 	int m_nPattern;			//パターン番号
+	int m_nNumPatten;		//パターン番号の加算数
 	int m_nCounter;			//様々な処理を行うためのカウンター
 	int m_nCountAttack;		//攻撃を行うまでのカウンター
 	int m_nRestTime;		//敵の移動タイマー

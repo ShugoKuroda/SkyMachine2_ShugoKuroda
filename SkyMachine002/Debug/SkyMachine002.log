@@ -1,3 +1,4 @@
 ﻿  enemy.cpp
+cl : コマンド ライン warning D9028: 簡易リビルド時のエラーです、通常のビルドに戻します
   SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\SkyMachine2_ShugoKuroda\SkyMachine002\SkyMachine002.exe
   SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\SkyMachine2_ShugoKuroda\SkyMachine002\SkyMachine002.pdb (Full PDB)

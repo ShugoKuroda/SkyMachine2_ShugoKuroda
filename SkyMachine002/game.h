@@ -39,6 +39,7 @@ public:		//メンバ関数
 	static void SetCreateCloud(bool bCreate) { m_bCreateCloud = bCreate; }
 	static void SetCreateBubble(bool bCreate) { m_bCreateBubble = bCreate; }
 	static CPlayer *GetPlayer() { return m_pPlayer; }
+	static bool GetBubble() { return m_bCreateCloud; }
 
 private:
 	// テクスチャ読み込み
@@ -49,16 +50,17 @@ private:
 private:	//メンバ変数
 	static CPlayer *m_pPlayer;
 
-	CloudInfo m_CloudInfo;
 	// 雲を生成するかどうか
 	static bool m_bCreateCloud;
+	// 泡を生成するかどうか
+	static bool m_bCreateBubble;
 
+	// 雲の生成情報
+	CloudInfo m_CloudInfo;
 	// 雲が生成されるまでの時間(乱数)
 	int m_nRandBubble;
 	// 雲が生成されるまでの時間カウンター
 	int m_nCntBubble;
-	// 泡を生成するかどうか
-	static bool m_bCreateBubble;
 
 	// 敵のセット情報
 	EnemySetInfo m_EnemySetInfo;

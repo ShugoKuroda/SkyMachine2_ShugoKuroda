@@ -22,7 +22,7 @@
 //-----------------------------------------------------------------------------------------------
 // Ã“Iƒƒ“ƒo•Ï”
 //-----------------------------------------------------------------------------------------------
-bool CGame::m_bCreateCloud = true;
+bool CGame::m_bCreateCloud = true; 
 bool CGame::m_bCreateBubble = false;
 CPlayer *CGame::m_pPlayer = nullptr;
 
