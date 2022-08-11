@@ -42,11 +42,12 @@ public:
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
-	void Damage(int nDamage);
+	bool Collision(D3DXVECTOR3 posStart) override;
+	void Damage(int nDamage) override;
 	void State() override;
+	void SetAnim() override;
 
 private:
-	D3DXVECTOR3 m_move;		//ˆÚ“®—Ê
 };
 
 #endif	// _ENEMY_BOSS_H_

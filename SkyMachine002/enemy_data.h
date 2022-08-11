@@ -13,7 +13,7 @@
 // マクロ定義
 //===================================================================
 #define MAX_MOVE		(30)		//最大移動回数
-#define MAX_WAVE		(30)		//最大ウェーブ数(初期値)
+#define MAX_WAVE		(50)		//最大ウェーブ数(初期値)
 
 //*******************************************************************
 //	敵のロード情報の定義
@@ -26,7 +26,7 @@ typedef struct
 
 typedef struct
 {
-	EnemyMove MoveInfo[MAX_MOVE];	//移動情報
+	EnemyMove move[MAX_MOVE];	//移動情報
 	D3DXVECTOR3 pos;	//出現する位置
 	int nMaxMove;		//最大移動回数
 	int nFrame;			//出現するフレーム(時間)
@@ -40,9 +40,9 @@ typedef struct
 typedef struct
 {
 	// 敵が連続で生成されるまでの時間
-	int nCreateTime;
+	int nCreate;
 	// 敵が生成された数
-	int nCreateNum;
+	int nNum;
 	//敵を生成しないかどうか
 	bool bCreate;
 }EnemyCount;
@@ -52,9 +52,9 @@ typedef struct
 	// 敵が生成されるまでの時間
 	int nCreatenCount;
 	//敵の生成カウンター情報
-	EnemyCount CountInfo[MAX_WAVE];
+	EnemyCount count[MAX_WAVE];
 	// 敵の生成情報
-	EnemyInfo *pCreateInfo;
+	EnemyInfo *pCreate;
 	// 最大ウェーブ数
 	int nWave;
 }EnemySetInfo;

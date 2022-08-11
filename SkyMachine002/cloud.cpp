@@ -33,7 +33,7 @@ CCloud::CCloud() :
 	m_move(0.0f, 0.0f, 0.0f)
 {
 	//オブジェクトタイプの設定
-	SetObjectType(EObject::OBJ_CLOUD);
+	SetObjType(EObject::OBJ_CLOUD);
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -15,6 +15,7 @@
 // 前方宣言
 //*****************************************************************************
 class CPlayer;
+class CScore;
 
 //-----------------------------------------------------------------------------
 // ベースクラス(派生クラス)
@@ -39,6 +40,7 @@ public:		//メンバ関数
 	static void SetCreateCloud(bool bCreate) { m_bCreateCloud = bCreate; }
 	static void SetCreateBubble(bool bCreate) { m_bCreateBubble = bCreate; }
 	static CPlayer *GetPlayer() { return m_pPlayer; }
+	static CScore *GetScore() { return m_pScore; }
 	static bool GetBubble() { return m_bCreateCloud; }
 
 private:
@@ -48,7 +50,9 @@ private:
 	static void UnloadAll();
 
 private:	//メンバ変数
+	// プレイヤー情報
 	static CPlayer *m_pPlayer;
+	static CScore *m_pScore;
 
 	// 雲を生成するかどうか
 	static bool m_bCreateCloud;
@@ -63,7 +67,7 @@ private:	//メンバ変数
 	int m_nCntBubble;
 
 	// 敵のセット情報
-	EnemySetInfo m_EnemySetInfo;
+	EnemySetInfo m_EnemyInfo;
 };
 
 #endif	//_GAME_H_

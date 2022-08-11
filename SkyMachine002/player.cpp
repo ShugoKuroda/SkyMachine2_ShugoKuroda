@@ -49,7 +49,7 @@ CPlayer::CPlayer() :
 	m_nTexRotType(TYPE_NEUTRAL), m_nPlayerNum(0), posBullet(0.0f, 0.0f), m_bControl(false), m_bInSea(false)
 {
 	//オブジェクトの種類設定
-	SetObjectType(EObject::OBJ_PLAYER);
+	SetObjType(EObject::OBJ_PLAYER);
 }
 
 //-----------------------------------------------------------------------------

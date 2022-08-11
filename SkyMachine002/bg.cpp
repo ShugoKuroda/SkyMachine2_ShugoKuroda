@@ -14,6 +14,7 @@
 #include "renderer.h"
 #include "object.h"
 #include "object2D.h"
+#include "input_keyboard.h"
 
 #include "game.h"
 #include "cloud.h"
@@ -37,7 +38,7 @@ CBg::CBg() :m_set(SET_NONE), m_nCntBgChange(0)
 	}
 
 	//オブジェクトの種類設定
-	SetObjectType(EObject::OBJ_BG);
+	SetObjType(EObject::OBJ_BG);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -126,9 +127,9 @@ HRESULT CBg::Init()
 		}
 		
 		//波の背景のみ前で描画する
-		m_apObject2D[BG_A_WAVE1]->SetObjectType(CObject::OBJ_WAVE1);
-		m_apObject2D[BG_A_WAVE2]->SetObjectType(CObject::OBJ_WAVE2);
-		m_apObject2D[BG_A_WAVE3]->SetObjectType(CObject::OBJ_WAVE3);
+		m_apObject2D[BG_A_WAVE1]->SetObjType(CObject::OBJ_WAVE1);
+		m_apObject2D[BG_A_WAVE2]->SetObjType(CObject::OBJ_WAVE2);
+		m_apObject2D[BG_A_WAVE3]->SetObjType(CObject::OBJ_WAVE3);
 
 		//空
 		m_apObject2D[BG_A_SKY]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, (ScreenSize.y / 2) - 100.0f, 0.0f));
@@ -229,6 +230,16 @@ void CBg::Update()
 
 	//背景移動までのカウンターを加算
 	m_nCntBgChange++;
+
+#ifdef _DEBUG
+	// キーボード情報の取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+
+	if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_1) == true)
+	{//1キーを押された
+		m_nCntBgChange = 2180;
+	}
+#endif // _DEBUG
 
 	if (m_nCntBgChange >= 2720)
 	{

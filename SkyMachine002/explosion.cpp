@@ -40,7 +40,7 @@ LPDIRECT3DTEXTURE9 CExplosion::m_pTexture = nullptr;
 CExplosion::CExplosion()
 	:m_nCntAnim(0), m_nPatternAnim(0), m_nPatterAnimV(0)
 {
-	SetObjectType(EObject::OBJ_EXPLOSION);
+	SetObjType(EObject::OBJ_EXPLOSION);
 }
 
 //-----------------------------------------------------------------------------------------------

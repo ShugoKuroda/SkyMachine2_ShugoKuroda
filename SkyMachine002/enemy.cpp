@@ -15,9 +15,12 @@
 #include "game.h"
 #include "library.h"
 
+#include "score.h"
+
 #include "player.h"
 #include "bullet.h"
 #include "explosion.h"
+#include "spray.h"
 
 //-----------------------------------------------------------------------------------------------
 // 定数変数
@@ -39,7 +42,7 @@ LPDIRECT3DTEXTURE9 CEnemy::m_apTexture[TYPE_MAX] = { nullptr };
 CEnemy::CEnemy() :
 	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_nLife(0), m_nCntState(0), m_nPattern(0), m_nCounter(0), m_nCountAttack(0), m_nNumPatten(0)
 {
-	SetObjectType(EObject::OBJ_ENEMY);
+	SetObjType(EObject::OBJ_ENEMY);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -98,7 +101,8 @@ HRESULT CEnemy::Load()
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy005.png", &m_apTexture[TYPE_ROWLING]);			// 回転型の敵
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy006.png", &m_apTexture[TYPE_FREEFALL]);			// 自由落下型の敵
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy007.png", &m_apTexture[TYPE_SHOT]);				// 射撃型の敵
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy008.png", &m_apTexture[TYPE_SENTRY_GUN]);			// 固定砲台の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy008.png", &m_apTexture[TYPE_SENTRYGUN]);			// 固定砲台の敵
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/Enemy009.png", &m_apTexture[TYPE_FLYINGFISH]);			// 水面を飛ぶ敵
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/EnemyBoss000.png", &m_apTexture[TYPE_RING_BOSS]);		// リング型の中ボス
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/EnemyBoss001.png", &m_apTexture[TYPE_DARK_BOSS]);		// 大ボス
 
@@ -135,8 +139,8 @@ HRESULT CEnemy::Init()
 		// サイズ設定
 		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH * 2, SIZE_HEIGHT * 2));
 	}
-	// ウニ型の敵だけサイズを2倍にする
-	else if (m_type == CEnemy::TYPE_SENTRY_GUN)
+	// 固定砲台、敵生み出し型の敵だけサイズを1.5倍にする
+	else if (m_type == CEnemy::TYPE_SENTRYGUN || m_type == CEnemy::TYPE_FREEFALL)
 	{
 		// サイズ設定
 		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH * 1.5f, SIZE_HEIGHT * 1.5f));
@@ -154,6 +158,12 @@ HRESULT CEnemy::Init()
 	if (m_type == CEnemy::TYPE_MOSQUITO || m_type == CEnemy::TYPE_SHOT)
 	{
 		CObject2D::SetAnimation(m_nPattern, 0, 2, 1);
+	}
+	// 水面を飛ぶ敵のみ、水しぶきを生成
+	else if (m_type == CEnemy::TYPE_FLYINGFISH)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+		CSpray::Create(D3DXVECTOR3(pos.x, pos.y + 20.0f, pos.z));
 	}
 	
 	if (CGame::GetBubble() == false)
@@ -195,6 +205,10 @@ void CEnemy::Update()
 
 	if (m_nLife <= 0)
 	{// ライフが0
+
+		// スコア加算
+		CScore *pScore = CGame::GetScore();
+		pScore->Add(400);
 		// 爆発の生成
 		CExplosion::Create(pos);
 		// 破棄
@@ -203,6 +217,12 @@ void CEnemy::Update()
 	}
 	else if (LibrarySpace::OutScreen2D(&pos, CObject2D::GetSize()))
 	{//画面外に出たら
+		// 水面を飛ぶ敵のみ、水しぶきを生成
+		if (m_type == CEnemy::TYPE_FLYINGFISH)
+		{
+			pos = GetPosition();
+			CSpray::Create(D3DXVECTOR3(pos.x, pos.y + 20.0f, pos.z));
+		}
 		// 破棄
 		Uninit();
 		return;
@@ -214,6 +234,7 @@ void CEnemy::Update()
 		SetMove(); 
 	}
 
+	//当たり判定
 	Collision(pos);
 	//アニメーション処理
 	SetAnim();
@@ -298,7 +319,7 @@ void CEnemy::State()
 }
 
 //-----------------------------------------------------------------------------------------------
-// 生成
+// プレイヤーとの当たり判定
 //-----------------------------------------------------------------------------------------------
 bool CEnemy::Collision(D3DXVECTOR3 posStart)
 {
@@ -487,13 +508,13 @@ void CEnemy::SetAnim()
 	//--------------------------------------
 	// 固定砲台型の敵
 	//--------------------------------------
-	case CEnemy::TYPE_SENTRY_GUN:
+	case CEnemy::TYPE_SENTRYGUN:
 		//攻撃カウンターを加算
 		m_nCounter++;
 		//常に回転させる
 		fRot += 0.01f;
 
-		if (m_nCounter >= 240)
+		if (m_nCounter >= 180)
 		{
 			//連続攻撃カウンターを加算
 			m_nCountAttack++;
@@ -524,6 +545,16 @@ void CEnemy::SetAnim()
 		}
 		CObject2D::SetRot(fRot);
 
+		break;
+
+	//--------------------------------------
+	// 水面を飛ぶ敵
+	//--------------------------------------
+	case CEnemy::TYPE_FLYINGFISH:
+		//常に回転させる
+		fRot += 0.025f;
+
+		CObject2D::SetRot(fRot);
 		break;
 
 	default:

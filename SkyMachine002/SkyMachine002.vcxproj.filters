@@ -30,6 +30,8 @@
     <ClCompile Include="spray.cpp" />
     <ClCompile Include="fade_white.cpp" />
     <ClCompile Include="enemy_boss.cpp" />
+    <ClCompile Include="score.cpp" />
+    <ClCompile Include="number.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -63,5 +65,7 @@
     <ClInclude Include="spray.h" />
     <ClInclude Include="fade_white.h" />
     <ClInclude Include="enemy_boss.h" />
+    <ClInclude Include="score.h" />
+    <ClInclude Include="number.h" />
   </ItemGroup>
 </Project>

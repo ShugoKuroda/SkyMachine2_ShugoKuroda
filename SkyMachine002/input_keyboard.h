@@ -28,6 +28,7 @@ public:
 		KEYINFO_LEFT,				// 左移動
 		KEYINFO_PAUSE,				// ポーズ
 		KEYINFO_ATTACK,				// 攻撃
+		KEYINFO_1,					// 1
 		KEYINFO_MAX,
 	};
 
@@ -55,6 +56,7 @@ private:
 		DIK_A,			// 左移動
 		DIK_P,			// ポーズ
 		DIK_SPACE,		// 攻撃
+		DIK_1			// 1
 	};
 };
 #endif

@@ -87,13 +87,13 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		m_pInputMouse->Init(hInstance, hWnd);
 	}
 
-	// サウンドの初期化処理
-	m_pSound = new CSound;
+	//// サウンドの初期化処理
+	//m_pSound = new CSound;
 
-	if (m_pSound != nullptr)
-	{
-		m_pSound->Init(hWnd);
-	}
+	//if (m_pSound != nullptr)
+	//{
+	//	m_pSound->Init(hWnd);
+	//}
 
 	//敵配置情報のロード
 	LoadSpace::LoadEnemy(hWnd);
@@ -109,13 +109,13 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 //-----------------------------------------------------------------------------
 void CManager::Uninit()
 {
-	// サウンドの終了処理
-	if (m_pSound != nullptr)
-	{
-		m_pSound->Uninit();
-		delete m_pSound;
-		m_pSound = nullptr;
-	}
+	//// サウンドの終了処理
+	//if (m_pSound != nullptr)
+	//{
+	//	m_pSound->Uninit();
+	//	delete m_pSound;
+	//	m_pSound = nullptr;
+	//}
 
 	// レンダラの終了処理
 	if (m_pRenderer != nullptr)

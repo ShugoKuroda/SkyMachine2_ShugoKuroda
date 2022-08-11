@@ -21,7 +21,7 @@ int CBubble::m_nReverseCount = 0;
 CBubble::CBubble() :m_move(0.0f, 0.0f, 0.0f),m_nReverse(0)
 {
 	//ƒ^ƒCƒv‚Ìİ’è
-	SetObjectType(EObject::OBJ_BUBBLE);
+	SetObjType(EObject::OBJ_BUBBLE);
 	m_nReverseCount++;
 }
 
@@ -130,7 +130,7 @@ void CBubble::Update()
 	m_move.x += 100.0f;
 
 	//ˆÚ“®—Ê‚ğ‰ÁZ
-	pos.x += sinf(m_move.x / 300.0f) * m_nReverse;
+	pos.x += sinf(m_move.x / 500.0f) * m_nReverse;
 	//í‚É¶ã‚É—¬‚·
 	pos.x -= 1.0f;
 	pos.y += m_move.y;

@@ -40,7 +40,7 @@ LPDIRECT3DTEXTURE9 CSpray::m_pTexture = nullptr;
 CSpray::CSpray()
 	:m_nCntAnim(0), m_nPatternAnim(0), m_nPatterAnimV(0)
 {
-	SetObjectType(CSpray::OBJ_SPRAY);
+	SetObjType(CSpray::OBJ_SPRAY);
 }
 
 //-----------------------------------------------------------------------------------------------

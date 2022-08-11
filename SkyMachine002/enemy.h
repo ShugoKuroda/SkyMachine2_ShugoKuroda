@@ -42,7 +42,8 @@ public:
 		TYPE_ROWLING,		// ‰ñ“]Œ^‚Ì“G
 		TYPE_FREEFALL,		// ©—R—‰ºŒ^‚Ì“G
 		TYPE_SHOT,			// ËŒ‚Œ^‚Ì“G
-		TYPE_SENTRY_GUN,	// ŒÅ’è–C‘ä‚Ì“G
+		TYPE_SENTRYGUN,		// ŒÅ’è–C‘ä‚Ì“G
+		TYPE_FLYINGFISH,	// …–Ê‚ğ”ò‚Ô“G
 		TYPE_RING_BOSS,		// ƒŠƒ“ƒOŒ^‚Ì’†ƒ{ƒX
 		TYPE_DARK_BOSS,		// ‘åƒ{ƒX
 		TYPE_MAX			// “G‚ÌÅ‘å”
@@ -63,17 +64,16 @@ public:
 	virtual void Draw() override;
 
 	virtual void State();
-	bool Collision(D3DXVECTOR3 posStart);
-	void Damage(int nDamage);
+	virtual void SetAnim();
+	virtual bool Collision(D3DXVECTOR3 posStart);
+	virtual void Damage(int nDamage);
 	void SetMove();
-	void SetAnim();
 	D3DXVECTOR3 SetVector();
-
 
 	void SetType(TYPE type) { m_type = type; }
 	void SetLife(int nLife) { m_nLife = nLife; }
+	TYPE GetType() { return m_type; }
 	int GetLife() { return m_nLife; }
-	
 
 private:
 	//ƒƒ“ƒo•Ï”

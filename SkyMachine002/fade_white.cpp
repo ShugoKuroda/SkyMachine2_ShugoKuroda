@@ -17,7 +17,7 @@
 CFadeWhite::CFadeWhite()
 {
 	//É^ÉCÉvÇÃê›íË
-	CObject::SetObjectType(CObject::OBJ_FADE_WHITE);
+	CObject::SetObjType(CObject::OBJ_FADE_WHITE);
 }
 
 //-----------------------------------------------------------------------------------------------

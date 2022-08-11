@@ -23,7 +23,7 @@
 // 定数変数
 //-----------------------------------------------------------------------------------------------
 // 体力
-const int CEnemyBoss::LIFE = 500;
+const int CEnemyBoss::LIFE = 1000;
 // 幅
 const float CEnemyBoss::SIZE_WIDTH = 100.0f;
 // 高さ
@@ -32,7 +32,7 @@ const float CEnemyBoss::SIZE_HEIGHT = 90.0f;
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
-CEnemyBoss::CEnemyBoss() :m_move(0.0f, 0.0f, 0.0f)
+CEnemyBoss::CEnemyBoss()
 {
 }
 
@@ -101,9 +101,22 @@ void CEnemyBoss::Update()
 {
 	// 位置の取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
+	//向きの取得
+	float rot = CObject2D::GetRot();
+
+	rot += 0.01f;
 
 	// 移動量の更新
-	pos += m_move;
+	pos += D3DXVECTOR3(
+		// X軸
+		sinf(rot) * 12,
+
+		// Y軸
+		0.0f,
+
+		// Z軸
+		sinf(rot * 2) * 2
+	);
 
 	if (GetLife() <= 0)
 	{// ライフが0
@@ -134,6 +147,14 @@ void CEnemyBoss::Draw()
 }
 
 //-----------------------------------------------------------------------------------------------
+// プレイヤーとの当たり判定
+//-----------------------------------------------------------------------------------------------
+bool CEnemyBoss::Collision(D3DXVECTOR3 posStart)
+{
+	return CEnemy::Collision(posStart);
+}
+
+//-----------------------------------------------------------------------------------------------
 // ダメージ処理
 //-----------------------------------------------------------------------------------------------
 void CEnemyBoss::Damage(int nDamage)
@@ -147,4 +168,24 @@ void CEnemyBoss::Damage(int nDamage)
 void CEnemyBoss::State()
 {
 	CEnemy::State();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 敵ごとにアニメーション,挙動を設定
+//-----------------------------------------------------------------------------------------------
+void CEnemyBoss::SetAnim()
+{
+	switch (GetType())
+	{
+	case CEnemy::TYPE_RING_BOSS:
+
+		break;
+
+	case CEnemy::TYPE_DARK_BOSS:
+
+		break;
+
+	default:
+		break;
+	}
 }

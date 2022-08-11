@@ -34,6 +34,7 @@ public:
 		OBJ_WAVE3,
 		OBJ_TITLE_LOGO,
 		OBJ_TITLE,
+		OBJ_SCORE,
 		OBJ_FADE_WHITE,
 		OBJ_MAX
 	};
@@ -51,7 +52,7 @@ public:
 	static void DrawAll();
 
 	static CObject* GetObject(int nCnt) { return m_apObject[nCnt]; }
-	void SetObjectType(EObject type) { m_nType = type; }
+	void SetObjType(EObject type) { m_nType = type; }
 	EObject GetObjType() { return m_nType; }
 
 protected:

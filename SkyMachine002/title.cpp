@@ -122,10 +122,10 @@ HRESULT CTitle::Init()
 	//背景とプレイヤーロゴ以外を前に描画する(タイプを設定する)
 	for (int nCnt = LOGO_TITLE; nCnt < OBJ_MAX - 1; nCnt++)
 	{
-		m_apObject2D[nCnt]->SetObjectType(CObject::OBJ_TITLE);
+		m_apObject2D[nCnt]->SetObjType(CObject::OBJ_TITLE);
 	}
 	//プレイヤーロゴを背景の次に描画する
-	m_apObject2D[LOGO_PLAYER]->SetObjectType(CObject::OBJ_TITLE_LOGO);
+	m_apObject2D[LOGO_PLAYER]->SetObjType(CObject::OBJ_TITLE_LOGO);
 
 	//タイトルとPressロゴを透明にする
 	m_apObject2D[LOGO_TITLE]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));

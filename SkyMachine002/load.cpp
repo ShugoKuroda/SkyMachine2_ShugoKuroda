@@ -17,7 +17,7 @@
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-EnemyInfo g_aEnemyInfo[MAX_MOVE];	//敵情報の取得
+EnemyInfo g_aEnemyInfo[MAX_WAVE];	//敵情報の取得
 int g_nMaxWave;
 
 //-----------------------------------------------------------------------------
@@ -108,9 +108,9 @@ HRESULT LoadSpace::LoadEnemy(HWND hWnd)
 							if (strcmp(&cScanfHead[0], "MOVE") == 0)
 							{//移動位置の設定
 								sscanf(cScanf, "%s = %f%f%d", &cScanfHead,
-									&g_aEnemyInfo[nIdxEnemy].MoveInfo[nIdxMove].posEnd.x,
-									&g_aEnemyInfo[nIdxEnemy].MoveInfo[nIdxMove].posEnd.y,
-									&g_aEnemyInfo[nIdxEnemy].MoveInfo[nIdxMove].nFrameMove);
+									&g_aEnemyInfo[nIdxEnemy].move[nIdxMove].posEnd.x,
+									&g_aEnemyInfo[nIdxEnemy].move[nIdxMove].posEnd.y,
+									&g_aEnemyInfo[nIdxEnemy].move[nIdxMove].nFrameMove);
 								//配列番号の加算
 								nIdxMove++;
 							}

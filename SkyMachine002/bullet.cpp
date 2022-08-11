@@ -48,7 +48,7 @@ LPDIRECT3DTEXTURE9 CBullet::m_apTexture[TYPE_MAX] = { nullptr };
 CBullet::CBullet() :
 	m_move(0.0f, 0.0f, 0.0f), m_nDamage(0), m_nCntAnim(0), m_nPatternAnim(0)
 {
-	SetObjectType(EObject::OBJ_BULLET);
+	SetObjType(EObject::OBJ_BULLET);
 }
 
 //-----------------------------------------------------------------------------------------------
