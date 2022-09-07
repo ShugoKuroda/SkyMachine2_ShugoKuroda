@@ -1,50 +1,44 @@
-//=============================================================================
+//====================================================================
 //
-// フェードヘッダー (fade.h)
-// Author:Itsuki Takaiwa
+// フェードの処理 (fade.h)
+// Author : SHUGO KURODA
 //
-//=============================================================================
+//====================================================================
 #ifndef _FADE_H_
 #define _FADE_H_
 
-#include "manager.h"
+//================================================
+// インクルードファイル
+//================================================
+#include "renderer.h"
+#include "object2D.h"
 
-//*****************************************************************************
-// 前方宣言
-//*****************************************************************************
-class CBase;			// ベースシーンクラス
-
-//*****************************************************************************
-// フェードクラス(基本クラス)
-//*****************************************************************************
-class CFade
+//================================================
+// クラス宣言
+//================================================
+// フェードクラス
+class CFade : public CObject2D
 {
 public:
-	// フェードコマンド
-	typedef enum
-	{
-		FADE_NONE = 0,	// 何もしていない
-		FADE_IN,		// フェードイン
-		FADE_OUT,		// フェードアウト
-		FADE_MAX,
-	}FADE;
+	enum FADETYPE
+	{//フェードの種類
+		TYPE_NONE = 0,
+		TYPE_BLACK,		// 薄い黒(ボス前演出)
+		TYPE_WHITE,		// 白
+	};
 
+public:
 	CFade();
 	~CFade();
-
-	HRESULT Init(CBase *pBase);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
-
-	static void SetFade(FADE fade, CBase *pBase);
-	static FADE GetFade(void);
+	static CFade *Create(FADETYPE type);
+	HRESULT Init() override;
+	void Uninit() override;
+	void Update() override;
+	void Draw() override;
 
 private:
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuffFade;	// 頂点バッファのポインタ
-	static FADE m_fade;						// フェードの状態
-	static CBase *m_pBaseNext;				// 次のモード
-	D3DXCOLOR m_colorFade;					// フェード色
+	FADETYPE m_type;	//フェードの種類
+	int m_nCounter;		//フェード解除までのカウンター
 };
 
-#endif
+#endif	//_FADE_H_

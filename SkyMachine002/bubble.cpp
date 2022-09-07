@@ -127,10 +127,10 @@ void CBubble::Update()
 
 	col.a -= 0.01f;
 
-	m_move.x += 100.0f;
+	m_move.x += 1.0f;
 
 	//ˆÚ“®—Ê‚ğ‰ÁZ
-	pos.x += sinf(m_move.x / 500.0f) * m_nReverse;
+	pos.x += sinf(m_move.x / 5.0f) * m_nReverse;
 	//í‚É¶ã‚É—¬‚·
 	pos.x -= 1.0f;
 	pos.y += m_move.y;

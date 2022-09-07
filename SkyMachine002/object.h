@@ -16,26 +16,29 @@ class CObject
 {
 public:		// 定数
 	// オブジェクトの最大数
-	static const int MAX_OBJECT = 300;
+	static const int MAX_OBJECT = 500;
 
 public:
 	enum EObject
 	{//オブジェクトの種類(下から描画を優先)
 		OBJ_BG = 0,
 		OBJ_CLOUD,
+		OBJ_TITLE_LOGO,
+		OBJ_TITLE,
+		OBJ_FADE,
+		OBJ_BUBBLE,
 		OBJ_PLAYER,
+		OBJ_EFFECT,
+		OBJ_ENEMYBOSS,
 		OBJ_ENEMY,
 		OBJ_BULLET,
 		OBJ_EXPLOSION,
 		OBJ_SPRAY,
-		OBJ_BUBBLE,
 		OBJ_WAVE1,
 		OBJ_WAVE2,
 		OBJ_WAVE3,
-		OBJ_TITLE_LOGO,
-		OBJ_TITLE,
 		OBJ_SCORE,
-		OBJ_FADE_WHITE,
+		OBJ_LOGO,
 		OBJ_MAX
 	};
 

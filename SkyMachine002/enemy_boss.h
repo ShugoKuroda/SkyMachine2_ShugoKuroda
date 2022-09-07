@@ -1,6 +1,6 @@
 //===================================================================
 //
-//	敵の処理[enemy.h]
+//	敵ボスの処理[enemy_boss.h]
 //	Author:SHUGO KURODA
 //
 //===================================================================
@@ -14,22 +14,40 @@
 //*******************************************************************
 class CEnemyBoss : public CEnemy
 {
-private:
-	// 寿命
-	static const int LIFE;
+public:		//定数
 	// 幅
 	static const float SIZE_WIDTH;
 	// 高さ
 	static const float SIZE_HEIGHT;
+	// U座標の最大分割数
+	static const int DIVISION_U;
+	// V座標の最大分割数
+	static const int DIVISION_V;
+private:
+	// 寿命
+	static const int LIFE;
+	// 攻撃前の予備動作間隔
+	static const int RUSH_OPERATION;
 
 public:
-	//敵の状態
+	//状態
 	enum STATE
 	{
 		STATE_NORMAL = 0,	//通常
 		STATE_DAMAGE,		//ダメージ状態
-		STATE_DIE,
 		STATE_MAX
+	};
+
+	//行動パターン
+	enum PATTERN
+	{
+		PATTERN_ENTRY = 0,	//登場
+		PATTERN_NORMAL,		//通常
+		PATTERN_RUSH,		//連続突進攻撃
+		PATTERN_CREATE,		//雑魚敵の生成攻撃
+		PATTERN_BARRAGE,	//弾幕攻撃
+		PATTERN_DIE,		//死亡
+		PATTERN_MAX
 	};
 
 	CEnemyBoss();
@@ -46,8 +64,16 @@ public:
 	void Damage(int nDamage) override;
 	void State() override;
 	void SetAnim() override;
+	void ChangeSize(D3DXVECTOR2 *pSize, const float& fSize);
+	void StateReset(D3DXVECTOR3 *pMove);
 
 private:
+	PATTERN m_pattern;		//行動パターン
+	int m_nCounter;			//行動変化までのカウンター
+	int m_nCountOperation;	//突進前の予備動作の間隔
+	float m_fAttackRot;		//突進攻撃、弾発射の角度
+	bool m_bSizeChange;		//大きさの変更
+	int m_nCountObject;		//オブジェクトを生成した数
 };
 
 #endif	// _ENEMY_BOSS_H_

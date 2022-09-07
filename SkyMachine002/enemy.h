@@ -72,15 +72,18 @@ public:
 
 	void SetType(TYPE type) { m_type = type; }
 	void SetLife(int nLife) { m_nLife = nLife; }
+	void SetMove(D3DXVECTOR3 move) { m_move = move; }
 	TYPE GetType() { return m_type; }
 	int GetLife() { return m_nLife; }
+	D3DXVECTOR3 GetMove() { return m_move; }
+	LPDIRECT3DTEXTURE9 GetTexture(int nNum) { return m_apTexture[nNum]; }
 
 private:
 	//メンバ変数
 	static LPDIRECT3DTEXTURE9 m_apTexture[TYPE_MAX];	//テクスチャのポインタ
+
 	D3DXVECTOR3 m_move;		//移動量
 	EnemyMove *m_pMoveInfo;	//移動情報のポインタ
-
 	STATE m_state;			//状態
 	TYPE m_type;			//種類
 	int m_nLife;			//寿命

@@ -79,7 +79,7 @@ private:	//メンバ変数
 	//アニメーションカウンター
 	int m_nCounterAnim;
 	//アニメーションパターン
-	int m_nPatternAnim;
+	int m_nPatternAnim; 
 };
 
 #endif // _OBJECT_2D_

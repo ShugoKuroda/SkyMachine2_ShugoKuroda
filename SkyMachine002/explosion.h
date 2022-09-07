@@ -18,10 +18,6 @@
 class CExplosion : public CObject2D
 {
 private:		// 定数
-	// 幅
-	static const float SIZE_WIDTH;
-	// 高さ
-	static const float SIZE_HEIGHT;
 	// アニメーション間隔
 	static const int ANIM_INTERVAL;
 	// アニメーション最大数
@@ -38,7 +34,7 @@ public:
 	~CExplosion() override;
 
 	// 生成
-	static CExplosion* Create(const D3DXVECTOR3& pos);
+	static CExplosion* Create(const D3DXVECTOR3& pos, const D3DXVECTOR2& size);
 	// テクスチャの読み込み
 	static HRESULT Load();
 	// テクスチャの削除

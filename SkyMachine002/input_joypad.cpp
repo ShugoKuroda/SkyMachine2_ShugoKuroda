@@ -36,14 +36,14 @@ HRESULT CInputJoypad::Init()
 	{
 		//メモリーのクリア
 		memset(&m_JoyKeyState[nCnt], 0, sizeof(XINPUT_STATE));
-		memset(&g_JoyKeyStateTrigger[nCnt], 0, sizeof(XINPUT_STATE));
+		memset(&m_JoyKeyStateTrigger[nCnt], 0, sizeof(XINPUT_STATE));
 
 		//ジョイパッドの振動制御の０クリア
-		ZeroMemory(&g_JoyMoter[nCnt], sizeof(XINPUT_VIBRATION));
+		ZeroMemory(&m_JoyMoter[nCnt], sizeof(XINPUT_VIBRATION));
 
 		//振動制御用の初期化
-		g_nStrength[nCnt] = 0;
-		g_nTime[nCnt] = 0;
+		m_nStrength[nCnt] = 0;
+		m_nTime[nCnt] = 0;
 	}
 
 	return S_OK;
@@ -70,25 +70,25 @@ void CInputJoypad::Update()
 		//ジョイパッドの状態を取得
 		if (XInputGetState(nCnt, &JoyKeyState[nCnt]) == ERROR_SUCCESS)
 		{
-			g_JoyKeyStateTrigger[nCnt].Gamepad.wButtons
+			m_JoyKeyStateTrigger[nCnt].Gamepad.wButtons
 				= ~m_JoyKeyState[nCnt].Gamepad.wButtons
 				& JoyKeyState[nCnt].Gamepad.wButtons;		//トリガー情報を保存
 			m_JoyKeyState[nCnt] = JoyKeyState[nCnt];		//プレス処理
 		}
 
 		//ジョイパッドの振動
-		g_JoyMoter[nCnt].wLeftMotorSpeed = (WORD)g_nStrength[nCnt];
-		g_JoyMoter[nCnt].wRightMotorSpeed = (WORD)g_nStrength[nCnt];
-		XInputSetState(nCnt, &g_JoyMoter[nCnt]);
+		m_JoyMoter[nCnt].wLeftMotorSpeed = (WORD)m_nStrength[nCnt];
+		m_JoyMoter[nCnt].wRightMotorSpeed = (WORD)m_nStrength[nCnt];
+		XInputSetState(nCnt, &m_JoyMoter[nCnt]);
 
-		if (g_nTime[nCnt] > 0)
+		if (m_nTime[nCnt] > 0)
 		{
-			g_nTime[nCnt]--;
+			m_nTime[nCnt]--;
 		}
 		else
 		{
-			g_nStrength[nCnt] = 0;
-			g_nTime[nCnt] = 0;
+			m_nStrength[nCnt] = 0;
+			m_nTime[nCnt] = 0;
 		}
 	}
 }
@@ -106,7 +106,7 @@ bool CInputJoypad::GetPress(JOYKEY Key, int nPlayer)
 //======================================================
 bool CInputJoypad::GetTrigger(JOYKEY Key, int nPlayer)
 {
-	return (g_JoyKeyStateTrigger[nPlayer].Gamepad.wButtons & (0x01 << Key)) ? true : false;
+	return (m_JoyKeyStateTrigger[nPlayer].Gamepad.wButtons & (0x01 << Key)) ? true : false;
 }
 
 //======================================================
@@ -117,14 +117,14 @@ D3DXVECTOR3 CInputJoypad::GetStick(JOYKEY Key, int nPlayer)
 	switch (Key)
 	{
 	case JOYKEY_LEFT_STICK:
-		g_JoyStickPos[nPlayer] = D3DXVECTOR3(m_JoyKeyState[nPlayer].Gamepad.sThumbLX / 32767.0f, -m_JoyKeyState[nPlayer].Gamepad.sThumbLY / 32767.0f, 0.0f);
+		m_JoyStickPos[nPlayer] = D3DXVECTOR3(m_JoyKeyState[nPlayer].Gamepad.sThumbLX / 32767.0f, -m_JoyKeyState[nPlayer].Gamepad.sThumbLY / 32767.0f, 0.0f);
 		break;
 	case JOYKEY_RIGHT_STICK:
-		g_JoyStickPos[nPlayer] = D3DXVECTOR3(m_JoyKeyState[nPlayer].Gamepad.sThumbRX / 32767.0f, -m_JoyKeyState[nPlayer].Gamepad.sThumbRY / 32767.0f, 0.0f);
+		m_JoyStickPos[nPlayer] = D3DXVECTOR3(m_JoyKeyState[nPlayer].Gamepad.sThumbRX / 32767.0f, -m_JoyKeyState[nPlayer].Gamepad.sThumbRY / 32767.0f, 0.0f);
 		break;
 	}
 
-	return g_JoyStickPos[nPlayer];
+	return m_JoyStickPos[nPlayer];
 }
 
 //======================================================
@@ -152,6 +152,6 @@ int CInputJoypad::GetTriggerPedal(JOYKEY Key, int nPlayer)
 //======================================================
 void CInputJoypad::Vibration(int nTime, WORD nStrength, int nPlayer)
 {
-	g_nTime[nPlayer] = nTime;			//振動持続時間
-	g_nStrength[nPlayer] = nStrength;	//振動の強さ
+	m_nTime[nPlayer] = nTime;			//振動持続時間
+	m_nStrength[nPlayer] = nStrength;	//振動の強さ
 }

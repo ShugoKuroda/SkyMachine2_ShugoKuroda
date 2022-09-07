@@ -1,93 +1,71 @@
-//===================================================================
+//-------------------------------------------
 //
-//	敵の処理[enemy.h]
-//	Author:SHUGO KURODA
+// ロゴの情報[logo.h]
+// Author : SHUGO KURODA
 //
-//===================================================================
-#ifndef _ENEMY_H_
-#define _ENEMY_H_
+//-------------------------------------------
+#ifndef _LOGO_H_
+#define _LOGO_H_
 
+//-------------------------------------------
+// インクルード
+//-------------------------------------------
 #include "object2D.h"
-#include "enemy_data.h"
 
-//*******************************************************************
-//	敵クラスの定義
-//*******************************************************************
-class CEnemy : public CObject2D
+//-------------------------------------------
+// ロゴクラス
+//-------------------------------------------
+class CLogo : public CObject2D
 {
-private:
-	// 幅
-	static const float SIZE_WIDTH;
-	// 高さ
-	static const float SIZE_HEIGHT;
-
 public:
-	//敵の状態
-	enum STATE
-	{
-		STATE_NORMAL = 0,		//通常
-		STATE_DAMAGE,			//ダメージ状態
-		STATE_DIE,				//死亡状態
-		STATE_MAX
+	enum LOGOTYPE
+	{//ロゴの種類
+		TYPE_NONE = 0,		// 何もなし
+		TYPE_WARNING,		// ボス接近ロゴ
+		TYPE_WARNING_SUB,	// ボス接近の説明ロゴ
+		TYPE_REMINDER,		// 注意喚起標識のロゴ
+		TYPE_MAX
 	};
 
-	enum TYPE
-	{//敵の種類
-		TYPE_NONE = 0,		// 何もない
-		TYPE_STARFISH,		// ヒトデ型の敵
-		TYPE_MOSQUITO,		// 羽虫型の敵
-		TYPE_SPHERE,		// 球体型の敵
-		TYPE_ASSAULT,		// 突撃型の敵(バトミントンの玉みたいな敵)
-		TYPE_SEAURCHIN,		// ウニ型の敵
-		TYPE_ROWLING,		// 回転型の敵
-		TYPE_FREEFALL,		// 自由落下型の敵
-		TYPE_SHOT,			// 射撃型の敵
-		TYPE_SENTRYGUN,	// 固定砲台の敵
-		TYPE_RING_BOSS,		// リング型の中ボス
-		TYPE_DARK_BOSS,		// 大ボス
-		TYPE_MAX			// 敵の最大数
+	enum ANIMTYPE
+	{//アニメーションの種類
+		ANIM_NONE = 0,		// 何もしない
+		ANIM_LENGTHWISE,	// 縦に広がる
+		ANIM_HORIZONTALLY,	// 横に広がる
+		ANIM_FLASHING,		// 点滅
+		ANIM_MAX
 	};
 
-	CEnemy();
-	~CEnemy() override;
+	// コンストラクタ
+	CLogo();
+	// デストラクタ
+	~CLogo() override;
 
-	//メンバ関数
-	static CEnemy *Create(const D3DXVECTOR3& pos, TYPE type, int nLife, EnemyMove *pEnemyMove);	//インスタンス生成処理
-	static HRESULT Load();		//テクスチャの読み込み
-	static void Unload();		//テクスチャの削除
-	static LPDIRECT3DTEXTURE9 GetTexture(TYPE type) { return m_apTexture[type]; }
+	// 生成
+	static CLogo* Create(const D3DXVECTOR3& pos, const D3DXVECTOR2& size, const D3DXCOLOR& col, const float& fRot, const LOGOTYPE& type, const ANIMTYPE& AnimType, const int& nCount);
+	// テクスチャの読み込み
+	static HRESULT Load();
+	// テクスチャの削除
+	static void Unload();
 
-	virtual HRESULT Init() override;
-	virtual void Uninit() override;
-	virtual void Update() override;
-	virtual void Draw() override;
-
-	virtual void State();
-	bool Collision(D3DXVECTOR3 posStart);
-	void Damage(int nDamage);
-	void SetMove();
-	void SetAnim();
-	D3DXVECTOR3 SetVector();
-
-	void SetType(TYPE type) { m_type = type; }
-	void SetLife(int nLife) { m_nLife = nLife; }
-	int GetLife() { return m_nLife; }
+	// 初期化
+	HRESULT Init() override;
+	// 終了
+	void Uninit() override;
+	// 更新
+	void Update() override;
+	// 描画
+	void Draw() override;
 
 private:
-	//メンバ変数
-	static LPDIRECT3DTEXTURE9 m_apTexture[TYPE_MAX];	//テクスチャのポインタ
-	D3DXVECTOR3 m_move;		//移動量
-	EnemyMove *m_pMoveInfo;	//移動情報のポインタ
-
-	STATE m_state;			//状態
-	TYPE m_type;			//種類
-	int m_nLife;			//寿命
-	int m_nCntState;		//状態カウンター
-	int m_nPattern;			//パターン番号
-	int m_nNumPatten;		//パターン番号の加算数
-	int m_nCounter;			//様々な処理を行うためのカウンター
-	int m_nCountAttack;		//攻撃を行うまでのカウンター
-	int m_nRestTime;		//敵の移動タイマー
+	// テクスチャのポインタ
+	static LPDIRECT3DTEXTURE9 m_pTexture[ANIM_MAX];
+	// アニメーションの種類
+	ANIMTYPE m_AnimType;
+	// 破棄するまでのカウンター
+	int m_nCountUninit;
+	// 元のサイズ記憶用
+	D3DXVECTOR2 m_DefaultSize;
 };
 
-#endif	// _ENEMY_H_
+#endif		// _LOGO_H_

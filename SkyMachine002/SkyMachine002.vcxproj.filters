@@ -28,10 +28,12 @@
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="bubble.cpp" />
     <ClCompile Include="spray.cpp" />
-    <ClCompile Include="fade_white.cpp" />
     <ClCompile Include="enemy_boss.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="number.cpp" />
+    <ClCompile Include="fade_mode.cpp" />
+    <ClCompile Include="fade.cpp" />
+    <ClCompile Include="effect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -63,9 +65,11 @@
     <ClInclude Include="bubble.h" />
     <ClInclude Include="cloud_data.h" />
     <ClInclude Include="spray.h" />
-    <ClInclude Include="fade_white.h" />
     <ClInclude Include="enemy_boss.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="number.h" />
+    <ClInclude Include="fade_mode.h" />
+    <ClInclude Include="fade.h" />
+    <ClInclude Include="effect.h" />
   </ItemGroup>
 </Project>

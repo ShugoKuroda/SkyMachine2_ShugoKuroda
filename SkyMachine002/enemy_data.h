@@ -24,6 +24,7 @@ typedef struct
 	int nFrameMove;			//移動時間(フレーム)
 }EnemyMove;
 
+//敵の生成情報
 typedef struct
 {
 	EnemyMove move[MAX_MOVE];	//移動情報
@@ -31,10 +32,20 @@ typedef struct
 	int nMaxMove;		//最大移動回数
 	int nFrame;			//出現するフレーム(時間)
 	int nType;			//敵の種類
-	int nLife;
+	int nLife;			//敵のライフ
 	int nNum;			//出現する敵の数
 	int nInterval;		//連続で敵を出す間隔
 }EnemyInfo;
+
+//ボスが生み出す敵の生成情報
+typedef struct
+{
+	EnemyMove move[MAX_MOVE];	//移動情報
+	int nType;			//敵の種類
+	int nLife;			//敵のライフ
+	int nNum;			//出現する敵の数
+	int nInterval;		//連続で敵を出す間隔
+}ParentEnemyInfo;
 
 //敵の生成カウンター情報
 typedef struct

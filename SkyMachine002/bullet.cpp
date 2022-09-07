@@ -231,6 +231,8 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 		if (pObject != nullptr)
 		{
 			CObject::EObject objType = pObject->GetObjType();
+
+			//プレイヤーの弾と敵の判定
 			if (objType == OBJ_ENEMY && m_parent == PARENT_PLAYER)
 			{
 				//オブジェクトポインタを敵にキャスト
@@ -245,6 +247,24 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 					return true;	//当たった
 				}
 			}
+
+			//プレイヤーの弾と敵ボスの判定
+			else if (objType == OBJ_ENEMYBOSS && m_parent == PARENT_PLAYER)
+			{
+				//オブジェクトポインタを敵にキャスト
+				CEnemy *pEnemy = (CEnemy*)pObject;
+
+				if (LibrarySpace::SphereCollision2D(posStart, pEnemy->GetPosition(), fStartLength - 60.0f, pEnemy->GetLength()))
+				{//弾と当たったら(球体の当たり判定)
+				 //ダメージ処理
+					pEnemy->Damage(m_nDamage);
+					// 弾の破棄
+					Uninit();
+					return true;	//当たった
+				}
+			}
+
+			//敵の弾とプレイヤーの判定
 			if (objType == OBJ_PLAYER && m_parent == PARENT_ENEMY)
 			{
 				//オブジェクトポインタをプレイヤーにキャスト

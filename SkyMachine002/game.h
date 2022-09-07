@@ -34,13 +34,24 @@ public:		//ƒƒ“ƒoŠÖ”
 	void Uninit() override;
 	void Update() override;
 
+	// ‰_‚ğ¶¬
 	void CreateCloud();
+	// …’†‚Ì–A‚ğ¶¬
 	void CreateBubble();
+	// “G‚ğ¶¬
 	void CreateEnemy();
+	// ƒƒS‚ğ¶¬
+	void CreateLogo(int nCounter);
+
+	// ‰_‚Ì¶¬ó‘Ô‚ğİ’è
 	static void SetCreateCloud(bool bCreate) { m_bCreateCloud = bCreate; }
+	// –A‚Ì¶¬ó‘Ô‚ğİ’è
 	static void SetCreateBubble(bool bCreate) { m_bCreateBubble = bCreate; }
+	// ƒvƒŒƒCƒ„[î•ñ‚Ìæ“¾
 	static CPlayer *GetPlayer() { return m_pPlayer; }
+	// ƒXƒRƒAî•ñ‚Ìæ“¾
 	static CScore *GetScore() { return m_pScore; }
+	// –A‚Ì¶¬ó‘Ô‚ğæ“¾
 	static bool GetBubble() { return m_bCreateCloud; }
 
 private:

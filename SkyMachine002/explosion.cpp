@@ -15,10 +15,6 @@
 //-----------------------------------------------------------------------------------------------
 // 定数宣言
 //-----------------------------------------------------------------------------------------------
-// 幅
-const float CExplosion::SIZE_WIDTH = 100.0f;
-// 高さ
-const float CExplosion::SIZE_HEIGHT = 100.0f;
 // アニメーション間隔
 const int CExplosion::ANIM_INTERVAL = 5;
 // アニメーション最大数
@@ -55,7 +51,7 @@ CExplosion::~CExplosion()
 // 生成
 // const D3DXVECTOR3& pos → 生成する位置
 //-----------------------------------------------------------------------------------------------
-CExplosion* CExplosion::Create(const D3DXVECTOR3& pos)
+CExplosion* CExplosion::Create(const D3DXVECTOR3& pos, const D3DXVECTOR2& size)
 {
 	// ポインタクラスを宣言
 	CExplosion* pExplosion = new CExplosion;
@@ -65,6 +61,9 @@ CExplosion* CExplosion::Create(const D3DXVECTOR3& pos)
 
 		// 位置設定
 		pExplosion->SetPosition(pos);
+
+		// サイズ設定
+		pExplosion->SetSize(size);
 
 		// 初期化
 		pExplosion->Init();
@@ -110,9 +109,6 @@ void CExplosion::Unload()
 //-----------------------------------------------------------------------------------------------
 HRESULT CExplosion::Init()
 {
-	// サイズ
-	CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
-
 	//初期化
 	CObject2D::Init();
 

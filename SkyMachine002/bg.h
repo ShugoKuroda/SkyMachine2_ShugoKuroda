@@ -58,8 +58,9 @@ public:
 		BG_A_WAVE3,			// ”g3
 		BG_A_ROCK,			// Šâ
 		BG_A_SETWEED,		// ŠC‘”
+		BG_A_BOSS,			// ƒ{ƒXí‚Ì”wŒi
 		BG_A_FLOOR,			// ŠC’†‚Ì°
-		BG_A_SETWEED2,		// ŠC‘”2
+		BG_A_SETWEED2,		// ŠC‘”
 		BG_A_FADEBLACK,		// ”wŒiƒtƒF[ƒh—p
 		BG_A_SEA_OTHER,		// ŠC‚Ì— ‘¤(ŠC’†‚©‚ç‚Ý‚½ŠC–Ê)
 		BG_A_MAX			// ”wŒi‚ÌÅ‘å”

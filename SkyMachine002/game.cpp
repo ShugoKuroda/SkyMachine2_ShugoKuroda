@@ -9,9 +9,11 @@
 
 #include "library.h"
 #include "load.h"
+#include "fade.h"
 
 #include "score.h"
 #include "number.h"
+#include "logo.h"
 
 #include "bg.h"
 #include "cloud.h"
@@ -22,6 +24,7 @@
 #include "explosion.h"
 #include "spray.h"
 #include "bubble.h"
+#include "effect.h"
 
 //-----------------------------------------------------------------------------------------------
 // using宣言
@@ -184,11 +187,39 @@ void CGame::CreateEnemy()
 		}
 	}
 
-	//// ボスを出現させる
-	//if (m_EnemyInfo.nCreatenCount == 100)
-	//{
-	//	CEnemyBoss::Create(D3DXVECTOR3(1000.0f, (float)CRenderer::SCREEN_HEIGHT / 2, 0.0f), CEnemy::TYPE_DARK_BOSS);
-	//}
+	// ボスを出現させる
+	if (m_EnemyInfo.nCreatenCount == 60)//420
+	{
+		CEnemyBoss::Create(D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT + CEnemyBoss::SIZE_HEIGHT, 0.0f), CEnemy::TYPE_DARK_BOSS);
+	}
+
+	if (m_EnemyInfo.nCreatenCount == 100)
+	{
+		CFade::Create(CFade::TYPE_BLACK);
+	}
+
+	//ロゴの生成
+	CreateLogo(m_EnemyInfo.nCreatenCount);
+}
+
+//-----------------------------------------------------------------------------------------------
+// ロゴの生成
+//-----------------------------------------------------------------------------------------------
+void CGame::CreateLogo(int nCounter)
+{
+	if (nCounter == 100)
+	{
+		// ボス接近中のロゴ
+		CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 300.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH - 400.0f, 90.0f),
+			D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_WARNING, CLogo::ANIM_LENGTHWISE, 420);
+	}
+
+	if (nCounter == 220)
+	{
+		// ボス接近中の説明ロゴ
+		CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 500.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH - 760.0f, 270.0f),
+			D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_WARNING_SUB, CLogo::ANIM_HORIZONTALLY, 300);
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -196,6 +227,8 @@ void CGame::CreateEnemy()
 //-----------------------------------------------------------------------------------------------
 void CGame::LoadAll()
 {
+	// エフェクト
+	CEffect::Load();
 	// 雲
 	CCloud::Load();
 	// プレイヤー
@@ -214,6 +247,8 @@ void CGame::LoadAll()
 	CBg::Load();
 	// スコア
 	CNumber::Load();
+	// ロゴ
+	CLogo::Load();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -221,6 +256,8 @@ void CGame::LoadAll()
 //-----------------------------------------------------------------------------------------------
 void CGame::UnloadAll()
 {
+	// エフェクト
+	CEffect::Unload();
 	// 雲
 	CCloud::Unload();
 	// プレイヤー
@@ -237,6 +274,8 @@ void CGame::UnloadAll()
 	CBubble::Unload();
 	// 背景
 	CBg::Unload();
-	// スコア(数字)
+	// スコア
 	CNumber::Unload();
+	// ロゴ
+	CLogo::Unload();
 }

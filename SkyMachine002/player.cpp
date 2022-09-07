@@ -487,8 +487,9 @@ void CPlayer::Die()
 	m_nCntState = 60;
 	//アニメーション番号をリセットする
 	m_nTexRotType = TYPE_NEUTRAL;
+	D3DXVECTOR2 size = GetSize();
 	// 爆発の生成
-	CExplosion::Create(CObject2D::GetPosition());
+	CExplosion::Create(CObject2D::GetPosition(), D3DXVECTOR2(size.x, size.y * 2));
 	//プレイヤーの位置を左端に設定する
 	CObject2D::SetPosition(D3DXVECTOR3(-SIZE_X, CRenderer::SCREEN_HEIGHT / 2, 0.0f));
 }

@@ -125,3 +125,18 @@ int LibrarySpace::GetRandNum(int nMax, int nMin)
 
 	return nRandNum;
 }
+
+//-----------------------------------------------------------------------------------------------
+// —”(•‚“®¬”)‚Ìæ“¾
+//-----------------------------------------------------------------------------------------------
+float LibrarySpace::GetRandFloat(int nMax, int nMin, int nNumDiv)
+{
+	int nMaxNum = nMax * nNumDiv;
+	int nMinNum = nMin * nNumDiv;
+	
+	//Å‘å’l`Å¬’l‚©‚ç—”‚ğæ“¾
+	float fRandNum = rand() % (nMaxNum - nMinNum + 1) + nMinNum;
+	fRandNum = fRandNum / nNumDiv;
+
+	return fRandNum;
+}

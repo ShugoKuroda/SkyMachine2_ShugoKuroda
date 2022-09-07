@@ -65,11 +65,11 @@ public:
 
 private:
 	XINPUT_STATE m_JoyKeyState[MAX_CONTROLLER];				//ジョイパットのプレス情報
-	XINPUT_STATE g_JoyKeyStateTrigger[MAX_CONTROLLER];		//ジョイパットのトリガー情報
-	D3DXVECTOR3 g_JoyStickPos[MAX_CONTROLLER];				//ジョイスティックの傾き
-	XINPUT_VIBRATION g_JoyMoter[MAX_CONTROLLER];			//ジョイパッドのモーター
-	int g_nTime[MAX_CONTROLLER];							//振動持続時間
-	int g_nStrength[MAX_CONTROLLER];						//振動の強さ (0 - 65535)
+	XINPUT_STATE m_JoyKeyStateTrigger[MAX_CONTROLLER];		//ジョイパットのトリガー情報
+	D3DXVECTOR3 m_JoyStickPos[MAX_CONTROLLER];				//ジョイスティックの傾き
+	XINPUT_VIBRATION m_JoyMoter[MAX_CONTROLLER];			//ジョイパッドのモーター
+	int m_nTime[MAX_CONTROLLER];							//振動持続時間
+	int m_nStrength[MAX_CONTROLLER];						//振動の強さ (0 - 65535)
 };
 
 #endif

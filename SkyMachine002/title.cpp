@@ -13,7 +13,7 @@
 #include "library.h"
 
 #include "cloud.h"
-#include "fade_white.h"
+#include "fade.h"
 #include "library.h"
 
 //-----------------------------------------------------------------------------------------------
@@ -152,18 +152,18 @@ HRESULT CTitle::Init()
 //-----------------------------------------------------------------------------------------------
 void CTitle::Uninit()
 {
+	// ポインタの破棄
 	for (int nCnt = 0; nCnt < OBJ_MAX; nCnt++)
 	{
-		// テクスチャの破棄
 		if (m_apObject2D[nCnt] != nullptr)
 		{
 			m_apObject2D[nCnt] = nullptr;
 		}
 	}
 
-	//テクスチャの破棄
+	//タイトルテクスチャの破棄
 	CTitle::Unload();
-	//雲
+	//雲テクスチャの破棄
 	CCloud::Unload();
 }
 
@@ -172,6 +172,7 @@ void CTitle::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CTitle::Update()
 {
+	// 背景アニメーション用カウンターの加算
 	m_nCountMoveBg += 2;
 
 	//背景位置の取得
@@ -181,69 +182,89 @@ void CTitle::Update()
 		aPosBg[nCnt] = m_apObject2D[nCnt]->GetPosition();
 	}
 
-	// 背景が移動しきったら
-	if (m_bTitleDraw == true && m_nCountMoveBg >= 40)
+	// ゲームスタートが可能になったら
+	if (m_bTitleDraw == true)
 	{
+		// PRESSロゴの色を取得
 		D3DXCOLOR col = m_apObject2D[LOGO_PRESS]->GetColor();
+
+		// PRESSロゴを点滅させる
 		if (m_bPressFade == false)
 		{
+			// a値を加算
 			col.a += 0.02f;
+			// a値の加算が終わったら
 			if (col.a >= 1.0f)
-			{
+			{// a値の減算を始める
 				m_bPressFade = true;
 			}
 		}
-		if (m_bPressFade == true)
+		else if (m_bPressFade == true)
 		{
+			// a値を減算
 			col.a -= 0.02f;
+			// a値の減算が終わったら
 			if (col.a <= 0.0f)
-			{
+			{// a値の加算を始める
 				m_bPressFade = false;
 			}
 		}
+
+		// PRESSロゴの色を設定
 		m_apObject2D[LOGO_PRESS]->SetColor(col);
 	}
+	// 背景の移動を終えたら
 	else if (m_nCountMoveBg >= 540)
 	{
+		// プレイヤーのロゴを左から登場(移動)させる
 		aPosBg[LOGO_PLAYER].x += 25.0f;
+
+		// プレイヤーロゴの移動が終わったら
 		if (aPosBg[LOGO_PLAYER].x >= 960.0f)
 		{
+			// タイトルロゴを出現させる
 			m_apObject2D[LOGO_TITLE]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
+			//プレイヤーロゴを所定の位置に設定
 			aPosBg[LOGO_PLAYER].x = 960.0f;
+			//プレイヤーロゴのテクスチャを変更
 			m_apObject2D[LOGO_PLAYER]->BindTexture(m_apTexture[LOGO_SHADOW]);
 
-			//タイトルを描画する
-			m_bTitleDraw = true;
-
 			//白フェードの設定
-			CFadeWhite::Create();
+			CFade::Create(CFade::TYPE_WHITE);
+
+			// ゲームスタート可能にする
+			m_bTitleDraw = true;
 
 			//カウンターのリセット
 			m_nCountMoveBg = 0;
 		}
 	}
-	// 背景の移動を開始する
+	// カウンターが一定数以上
 	else if (m_nCountMoveBg >= 120)
-	{
+	{// 背景の移動を開始する
+
 		//雲の移動処理
 		CCloud::Move(3.0f);
 
+		//空を下に移動させる
 		aPosBg[BG_SKY].y += 3.0f;
 	}
 
-	//背景位置の設定
+	//背景情報の設定
 	for (int nCnt = 0; nCnt < OBJ_MAX - 1; nCnt++)
 	{
+		//位置設定
 		m_apObject2D[nCnt]->SetPosition(aPosBg[nCnt]);
+		//頂点座標の設定
 		m_apObject2D[nCnt]->SetVertex();
 	}
 
 	// キーボード情報の取得
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
 
+	//SPACEキーを押されたら
 	if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_ATTACK) == true)
-	{//SPACEキーを押された
+	{
 		// モードの設定
 		CManager::SetMode(CManager::MODE_GAME);
 		return;
