@@ -34,6 +34,7 @@
     <ClCompile Include="fade_mode.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="effect.cpp" />
+    <ClCompile Include="pause.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -71,5 +72,6 @@
     <ClInclude Include="fade_mode.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="effect.h" />
+    <ClInclude Include="pause.h" />
   </ItemGroup>
 </Project>

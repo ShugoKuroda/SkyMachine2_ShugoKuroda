@@ -39,6 +39,7 @@ public:
 		OBJ_WAVE3,
 		OBJ_SCORE,
 		OBJ_LOGO,
+		OBJ_PAUSE,
 		OBJ_MAX
 	};
 

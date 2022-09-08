@@ -56,6 +56,9 @@ public:
 	static CInputJoypad *GetInputJoypad() { return m_pInputJoypad; }
 	static CInputMouse *GetInputMouse() { return m_pInputMouse; }
 
+	static bool GetPause(void) { return m_bPause; }
+	static void SetPause(bool bPause) { m_bPause = bPause; }
+
 private:
 	static CRenderer *m_pRenderer;				// レンダラー情報のポインタ
 	static CInputKeyboard *m_pInputKeyboard;	// キーボード情報のポインタ
@@ -65,6 +68,7 @@ private:
 	static CBase *m_pBase;						// ベースシーン情報のポインタ
 	//static CFade *m_pFade;
 	static MODE m_mode;							// モード情報
+	static bool m_bPause;						// ポーズするかどうか
 };
 
 #endif // _MANAGER_

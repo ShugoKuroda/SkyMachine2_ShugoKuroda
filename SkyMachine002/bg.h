@@ -83,7 +83,7 @@ public:
 private:
 	//メンバ変数
 	static LPDIRECT3DTEXTURE9 m_apTexture[BG_A_MAX];	//テクスチャのポインタ
-	static CObject2D *m_apObject2D[BG_A_MAX];				//2Dポリゴンへのポインタ
+	static CObject2D *m_apObject2D[BG_A_MAX];			//2Dポリゴンへのポインタ
 	ESet m_set;					//描画する背景(ZONE)
 	int m_nCntBgChange;			//次の背景が描画されるまでのカウンター
 };

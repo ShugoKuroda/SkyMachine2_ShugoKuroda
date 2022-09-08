@@ -66,12 +66,34 @@ void CObject::ReleaseAll()
 //=============================================================================
 void CObject::UpdateAll()
 {
-	for (int nCntUpdate = 0; nCntUpdate < MAX_OBJECT; nCntUpdate++)
+	// ポーズ情報の取得
+	bool bPause = CManager::GetPause();
+
+	// ポーズ中でないなら
+	if (bPause == false)
 	{
-		if (m_apObject[nCntUpdate] != nullptr)
+		for (int nCntUpdate = 0; nCntUpdate < MAX_OBJECT; nCntUpdate++)
 		{
-			// ポリゴンの更新処理
-			m_apObject[nCntUpdate]->Update();
+			if (m_apObject[nCntUpdate] != nullptr)
+			{
+				// ポリゴンの更新処理
+				m_apObject[nCntUpdate]->Update();
+			}
+		}
+	}
+	// ポーズ中なら
+	else if (bPause == true)
+	{
+		for (int nCntUpdate = 0; nCntUpdate < MAX_OBJECT; nCntUpdate++)
+		{
+			if (m_apObject[nCntUpdate]->m_nType == OBJ_PAUSE)
+			{
+				if (m_apObject[nCntUpdate] != nullptr)
+				{
+					// ポリゴンの更新処理
+					m_apObject[nCntUpdate]->Update();
+				}
+			}
 		}
 	}
 }

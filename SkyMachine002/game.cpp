@@ -14,6 +14,7 @@
 #include "score.h"
 #include "number.h"
 #include "logo.h"
+#include "pause.h"
 
 #include "bg.h"
 #include "cloud.h"
@@ -249,6 +250,8 @@ void CGame::LoadAll()
 	CNumber::Load();
 	// ロゴ
 	CLogo::Load();
+	// ポーズ画面
+	CPause::Load();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -278,4 +281,6 @@ void CGame::UnloadAll()
 	CNumber::Unload();
 	// ロゴ
 	CLogo::Unload();
+	// ポーズ画面
+	CPause::Unload();
 }

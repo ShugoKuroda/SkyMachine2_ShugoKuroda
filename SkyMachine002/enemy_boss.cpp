@@ -314,9 +314,13 @@ void CEnemyBoss::Update()
 			}
 		}
 		break;
+
+		//=================================
+		// Ž€–S
+		//=================================
 	case CEnemyBoss::PATTERN_DIE:
-		break;
-	case CEnemyBoss::PATTERN_MAX:
+
+
 		break;
 	default:
 		break;
@@ -324,10 +328,14 @@ void CEnemyBoss::Update()
 
 	if (GetLife() <= 0)
 	{// ƒ‰ƒCƒt‚ª0
-		// ”š”­‚Ì¶¬
-		CExplosion::Create(pos, GetSize());
-		// ”jŠü
-		Uninit();
+
+		//Ž€–SƒAƒjƒ[ƒVƒ‡ƒ“‚ðÄ¶‚·‚é
+		m_pattern = PATTERN_DIE;
+
+		//// ”š”­‚Ì¶¬
+		//CExplosion::Create(pos, GetSize());
+		//// ”jŠü
+		//Uninit();
 		return;
 	}
 
