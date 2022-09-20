@@ -18,6 +18,13 @@
 #include "player.h"
 #include "explosion.h"
 
+#include "bullet_option.h"
+
+//-----------------------------------------------------------------------------
+// using宣言
+//-----------------------------------------------------------------------------
+using namespace LibrarySpace;
+
 //*****************************************************************************
 // 定数宣言
 //*****************************************************************************
@@ -46,7 +53,7 @@ LPDIRECT3DTEXTURE9 CPlayer::m_apTexture[2] = { nullptr };
 //-----------------------------------------------------------------------------
 CPlayer::CPlayer() :
 	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_nCntState(0), m_nCntAttack(0), m_nCntAnim(0), m_nPatternAnim(0), m_nCntAnimMove(0),
-	m_nTexRotType(TYPE_NEUTRAL), m_nPlayerNum(0), posBullet(0.0f, 0.0f), m_bControl(false), m_bInSea(false)
+	m_nTexRotType(TYPE_NEUTRAL), m_nPlayerNum(0), posBullet(0.0f, 0.0f), m_bControl(false), m_bInSea(false), m_pOption(nullptr)
 {
 	//オブジェクトの種類設定
 	SetObjType(EObject::OBJ_PLAYER);
@@ -163,11 +170,12 @@ void CPlayer::Update()
 		CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
 		CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_ATTACK) == true)
-		{//SPACEキーを押された
+		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_ATTACK) == true ||
+			pJoypad->GetPress(CInputJoypad::JOYKEY_A, m_nPlayerNum))
+		{//攻撃キー押下
 
 			//攻撃カウンターの加算
-			m_nCntAttack++;		
+			m_nCntAttack++;
 
 			if (m_nCntAttack > 5)
 			{
@@ -187,8 +195,14 @@ void CPlayer::Update()
 			m_nCntAttack = 10;
 		}
 
+		if (pJoypad->GetTrigger(CInputJoypad::JOYKEY_B, m_nPlayerNum))
+		{
+			m_pOption = CBulletOption::Create(D3DXVECTOR3(pos.x - (SIZE_X / 1), pos.y, pos.z),
+				CBulletOption::SIZE_SMALL, CBulletOption::DAMAGE_SMALL, CBulletOption::TYPE_SMALL);
+		}
+
 		//可動範囲を画面内に制限
-		LibrarySpace::SteyInScreen2D(&pos, CObject2D::GetSize());
+		SteyInScreen2D(&pos, CObject2D::GetSize());
 	}
 
 	//水しぶきを設定
@@ -258,22 +272,26 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 	// ジョイパッド情報の取得
 	CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_LEFT) == true /*||
-		pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).x*/)
-	{//Aキーが押された
-		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
-		{
-			pos.x += sinf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
-			pos.y += cosf(-D3DX_PI * 0.75f) * MOVE_DEFAULT;
+	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_LEFT) == true ||
+		pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).x <= -0.2f)
+	{//左キー押下
+		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true ||
+			pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).y <= -0.2f)
+		{//上キー押下
+			//移動量加算
+			pos.x += GetSinVec(-0.75f, MOVE_DEFAULT);
+			pos.y += GetCosVec(-0.75f, MOVE_DEFAULT);
+			//アニメーション変更
 			SetAnimNum(TYPE_DOWN, TYPE_UP);
 			m_nCntAnimMove++;
 			//弾の発射位置を設定
 			posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		}
-		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
-		{
-			pos.x += sinf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
-			pos.y += cosf(-D3DX_PI * 0.25f) * MOVE_DEFAULT;
+		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true ||
+			pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).y >= 0.2f)
+		{//下キー押下
+			pos.x += GetSinVec(-0.25f, MOVE_DEFAULT);
+			pos.y += GetCosVec(-0.25f, MOVE_DEFAULT);
 			SetAnimNum(TYPE_UP, TYPE_DOWN);
 			m_nCntAnimMove++;
 			//弾の発射位置を設定
@@ -281,29 +299,32 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 		}
 		else
 		{
-			pos.x += sinf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
-			pos.y += cosf(-D3DX_PI * 0.5f) * MOVE_DEFAULT;
+			pos.x += GetSinVec(-0.5f, MOVE_DEFAULT);
+			pos.y += GetCosVec(-0.5f, MOVE_DEFAULT);
 			m_nTexRotType = TYPE_NEUTRAL;
 			m_nCntAnimMove = 0;
 			//弾の発射位置を設定
 			posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		}
 	}
-	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_RIGHT) == true)
-	{//Dキーが押された
-		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
-		{
-			pos.x += sinf(D3DX_PI * 0.75f) * MOVE_DEFAULT;
-			pos.y += cosf(D3DX_PI * 0.75f) * MOVE_DEFAULT;
+	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_RIGHT) == true ||
+		pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).x >= 0.2f)
+	{//右キー押下
+		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true ||
+			pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).y <= -0.2f)
+		{//上キー押下
+			pos.x += GetSinVec(0.75f, MOVE_DEFAULT);
+			pos.y += GetCosVec(0.75f, MOVE_DEFAULT);
 			SetAnimNum(TYPE_DOWN, TYPE_UP);
 			m_nCntAnimMove++;
 			//弾の発射位置を設定
 			posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		}
-		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
-		{
-			pos.x += sinf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
-			pos.y += cosf(D3DX_PI * 0.25f) * MOVE_DEFAULT;
+		else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true ||
+			pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).y >= 0.2f)
+		{//下キー押下
+			pos.x += GetSinVec(0.25f, MOVE_DEFAULT);
+			pos.y += GetCosVec(0.25f, MOVE_DEFAULT);
 			SetAnimNum(TYPE_UP, TYPE_DOWN);
 			m_nCntAnimMove++;
 			//弾の発射位置を設定
@@ -311,27 +332,29 @@ D3DXVECTOR3 CPlayer::Move(D3DXVECTOR3 pos)
 		}
 		else
 		{
-			pos.x += sinf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
-			pos.y += cosf(D3DX_PI * 0.5f) * MOVE_DEFAULT;
+			pos.x += GetSinVec(0.5f, MOVE_DEFAULT);
+			pos.y += GetCosVec(0.5f, MOVE_DEFAULT);
 			m_nTexRotType = TYPE_NEUTRAL;
 			m_nCntAnimMove = 0;
 			//弾の発射位置を設定
 			posBullet = D3DXVECTOR2(20.0f, 10.0f);
 		}
 	}
-	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true)
-	{//Wキーが押された
-		pos.x += sinf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
-		pos.y += cosf(D3DX_PI * 1.0f) * MOVE_DEFAULT;
+	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_UP) == true ||
+		pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).y <= -0.2f)
+	{//上キー押下
+		pos.x += GetSinVec(1.0f, MOVE_DEFAULT);
+		pos.y += GetCosVec(1.0f, MOVE_DEFAULT);
 		SetAnimNum(TYPE_DOWN, TYPE_UP);
 		m_nCntAnimMove++;
 		//弾の発射位置を設定
 		posBullet = D3DXVECTOR2(20.0f, 10.0f);
 	}
-	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true)
-	{//Sキーが押された
-		pos.x += sinf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
-		pos.y += cosf(D3DX_PI * 0.0f) * MOVE_DEFAULT;
+	else if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_DOWN) == true ||
+		pJoypad->GetStick(CInputJoypad::JOYKEY_LEFT_STICK, m_nPlayerNum).y >= 0.2f)
+	{//下キー押下
+		pos.x += GetSinVec(0.0f, MOVE_DEFAULT);
+		pos.y += GetCosVec(0.0f, MOVE_DEFAULT);
 		SetAnimNum(TYPE_UP, TYPE_DOWN);
 		m_nCntAnimMove++;
 		//弾の発射位置を設定

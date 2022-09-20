@@ -7,6 +7,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "base.h"
+#include "fade.h"
 #include "sound.h"
 #include "load.h"
 
@@ -29,7 +30,10 @@ CRenderer *CManager::m_pRenderer = nullptr;
 CInputKeyboard *CManager::m_pInputKeyboard = nullptr;
 CInputJoypad *CManager::m_pInputJoypad = nullptr;
 CInputMouse *CManager::m_pInputMouse = nullptr;
-CSound *CManager::m_pSound = nullptr;					// サウンド情報のポインタ
+CSound *CManager::m_pSound = nullptr;	
+// フェードクラス
+CFade* CManager::m_pFade = nullptr;// サウンド情報のポインタ
+bool CManager::m_bPause = false;
 
 CManager::MODE CManager::m_mode = MODE_TITLE;
 
@@ -87,13 +91,19 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		m_pInputMouse->Init(hInstance, hWnd);
 	}
 
-	//// サウンドの初期化処理
-	//m_pSound = new CSound;
+	// サウンドの初期化処理
+	m_pSound = new CSound;
 
-	//if (m_pSound != nullptr)
-	//{
-	//	m_pSound->Init(hWnd);
-	//}
+	if (m_pSound != nullptr)
+	{
+		m_pSound->Init(hWnd);
+	}
+
+	// フェードの生成
+	if (m_pFade == nullptr)
+	{
+		m_pFade = CFade::Create(m_mode);
+	}
 
 	//敵配置情報のロード
 	LoadSpace::LoadEnemy(hWnd);
@@ -109,13 +119,13 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 //-----------------------------------------------------------------------------
 void CManager::Uninit()
 {
-	//// サウンドの終了処理
-	//if (m_pSound != nullptr)
-	//{
-	//	m_pSound->Uninit();
-	//	delete m_pSound;
-	//	m_pSound = nullptr;
-	//}
+	// サウンドの終了処理
+	if (m_pSound != nullptr)
+	{
+		m_pSound->Uninit();
+		delete m_pSound;
+		m_pSound = nullptr;
+	}
 
 	// レンダラの終了処理
 	if (m_pRenderer != nullptr)
@@ -123,6 +133,13 @@ void CManager::Uninit()
 		m_pRenderer->Uninit();
 		delete m_pRenderer;
 		m_pRenderer = nullptr;
+	}
+
+	// フェードの破棄
+	if (m_pFade != nullptr)
+	{
+		m_pFade->Uninit();
+		m_pFade = nullptr;
 	}
 
 	// オブジェクトの終了処理
@@ -184,16 +201,25 @@ void CManager::Update()
 		m_pInputMouse->Update();
 	}
 
-	// ベースの更新処理
-	if (m_pBase != nullptr)
+	if (m_bPause == false)
 	{
-		m_pBase->Update();
-	}
+		// フェードの更新
+		if (m_pFade != nullptr)
+		{
+			m_pFade->Update();
+		}
 
-	// レンダラの更新処理
-	if (m_pRenderer != nullptr)
-	{
-		m_pRenderer->Update();
+		// ベースの更新処理
+		if (m_pBase != nullptr)
+		{
+			m_pBase->Update();
+		}
+
+		// レンダラの更新処理
+		if (m_pRenderer != nullptr)
+		{
+			m_pRenderer->Update();
+		}
 	}
 }
 
@@ -202,6 +228,12 @@ void CManager::Update()
 //-----------------------------------------------------------------------------
 void CManager::Draw()
 {
+	// フェードの更新
+	if (m_pFade != nullptr)
+	{
+		m_pFade->Draw();
+	}
+
 	// レンダラの描画処理
 	if (m_pRenderer != nullptr)
 	{

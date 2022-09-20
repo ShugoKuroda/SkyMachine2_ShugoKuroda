@@ -64,7 +64,7 @@ HRESULT CBg::Load()
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_04.png", &m_apTexture[BG_A_WAVE2]);		// ”g2
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_05.png", &m_apTexture[BG_A_WAVE3]);		// ”g3
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_06.png", &m_apTexture[BG_A_FLOOR]);		// ŠC’†‚Ì°
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_11.png", &m_apTexture[BG_A_BOSS]);		// ƒ{ƒXí‚Ì”wŒi
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_11.jpg", &m_apTexture[BG_A_BOSS]);		// ƒ{ƒXí‚Ì”wŒi
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_07.png", &m_apTexture[BG_A_ROCK]);		// Šâ
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_09.png", &m_apTexture[BG_A_SETWEED]);	// ŠC‘”
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bg000_10.png", &m_apTexture[BG_A_SETWEED2]);	// ŠC‘”2
@@ -231,16 +231,6 @@ void CBg::Update()
 
 	//”wŒiˆÚ“®‚Ü‚Å‚ÌƒJƒEƒ“ƒ^[‚ð‰ÁŽZ
 	m_nCntBgChange++;
-
-#ifdef _DEBUG
-	// ƒL[ƒ{[ƒhî•ñ‚ÌŽæ“¾
-	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
-
-	if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_1) == true)
-	{//1ƒL[‚ð‰Ÿ‚³‚ê‚½
-		m_nCntBgChange = 2180;
-	}
-#endif // _DEBUG
 
 	if (m_nCntBgChange >= 2720)
 	{

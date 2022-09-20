@@ -22,6 +22,7 @@ public:
 	enum EObject
 	{//オブジェクトの種類(下から描画を優先)
 		OBJ_BG = 0,
+		OBJ_BG_MOVE,
 		OBJ_CLOUD,
 		OBJ_TITLE_LOGO,
 		OBJ_TITLE,

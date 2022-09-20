@@ -65,9 +65,10 @@ public:
 	void State() override;
 	void SetAnim() override;
 	void ChangeSize(D3DXVECTOR2 *pSize, const float& fSize);
-	void StateReset(D3DXVECTOR3 *pMove);
+	void StateReset();
 
 private:
+	D3DXVECTOR3 m_PosOld;	//前回の位置
 	PATTERN m_pattern;		//行動パターン
 	int m_nCounter;			//行動変化までのカウンター
 	int m_nCountOperation;	//突進前の予備動作の間隔

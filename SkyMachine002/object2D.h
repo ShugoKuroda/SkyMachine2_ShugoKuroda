@@ -18,6 +18,8 @@ class CObject2D : public CObject
 public:
 	// 頂点フォーマット
 	static const DWORD FVF_VERTEX_2D = (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+	// 頂点の数
+	static const int MAX_VERTEX = 4;
 
 	// 頂点データ
 	struct VERTEX_2D
@@ -44,6 +46,7 @@ public:
 	void SetVertex();
 	void SetColor(D3DXCOLOR col);
 	void SetAnimation(int nAnimU, int nAnimV, int nPartU, int nPartV);
+	void SetAnimation(int nAnimU, int nAnimV, float fPartU, float fPartV);
 	void SetAnimBg(int nSpeed, int nPattern, bool bRightToLeft);
 	// テクスチャの設定
 	void BindTexture(LPDIRECT3DTEXTURE9 Texture) { m_pTexture = Texture; }

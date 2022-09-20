@@ -8,12 +8,14 @@
 
 #include "manager.h"
 #include "input_keyboard.h"
+#include "input_joypad.h"
 #include "object.h"
 #include "object2D.h"
 #include "library.h"
+#include "fade.h"
 
 #include "cloud.h"
-#include "fade.h"
+#include "fade_scene.h"
 #include "library.h"
 
 //-----------------------------------------------------------------------------------------------
@@ -173,13 +175,57 @@ void CTitle::Uninit()
 void CTitle::Update()
 {
 	// 背景アニメーション用カウンターの加算
-	m_nCountMoveBg += 2;
+	m_nCountMoveBg++;
 
 	//背景位置の取得
 	D3DXVECTOR3 aPosBg[OBJ_MAX - 1];
 	for (int nCnt = 0; nCnt < OBJ_MAX - 1; nCnt++)
 	{
 		aPosBg[nCnt] = m_apObject2D[nCnt]->GetPosition();
+	}
+
+	// キーボード情報の取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+
+	for (int nCnt = CInputKeyboard::KEYINFO_OK; nCnt < CInputKeyboard::KEYINFO_MAX; nCnt++)
+	{
+		//SPACEキーを押されたら
+		if (pKeyboard->GetTrigger(nCnt) == true)
+		{
+			if (m_bTitleDraw == false)
+			{
+				aPosBg[BG_SKY].y = CRenderer::SCREEN_HEIGHT;
+				aPosBg[LOGO_PLAYER].x = 960.0f;
+			}
+			else
+			{
+				// モードの設定
+				CManager::GetFade()->SetFade(CFade::FADE_OUT, CManager::MODE::MODE_GAME);
+				return;
+			}
+		}
+	}
+
+	// ジョイパッド情報の取得
+	CInputJoypad *pJoypad = CManager::GetInputJoypad();
+
+	for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_MAX; nCnt++)
+	{
+		//SPACEキーを押されたら
+		if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, 0) == true)
+		{
+			if (m_bTitleDraw == false)
+			{
+				aPosBg[BG_SKY].y = CRenderer::SCREEN_HEIGHT;
+				aPosBg[LOGO_PLAYER].x = 960.0f;
+			}
+			else
+			{
+				// モードの設定
+				CManager::GetFade()->SetFade(CFade::FADE_OUT, CManager::MODE::MODE_GAME);
+				return;
+			}
+		}
 	}
 
 	// ゲームスタートが可能になったら
@@ -214,7 +260,7 @@ void CTitle::Update()
 		m_apObject2D[LOGO_PRESS]->SetColor(col);
 	}
 	// 背景の移動を終えたら
-	else if (m_nCountMoveBg >= 540)
+	else if (aPosBg[BG_SKY].y >= CRenderer::SCREEN_HEIGHT)
 	{
 		// プレイヤーのロゴを左から登場(移動)させる
 		aPosBg[LOGO_PLAYER].x += 25.0f;
@@ -230,7 +276,7 @@ void CTitle::Update()
 			m_apObject2D[LOGO_PLAYER]->BindTexture(m_apTexture[LOGO_SHADOW]);
 
 			//白フェードの設定
-			CFade::Create(CFade::TYPE_WHITE);
+			CFadeScene::Create(CFadeScene::TYPE_WHITE);
 
 			// ゲームスタート可能にする
 			m_bTitleDraw = true;
@@ -240,7 +286,7 @@ void CTitle::Update()
 		}
 	}
 	// カウンターが一定数以上
-	else if (m_nCountMoveBg >= 120)
+	else if (m_nCountMoveBg >= 60)
 	{// 背景の移動を開始する
 
 		//雲の移動処理
@@ -257,17 +303,6 @@ void CTitle::Update()
 		m_apObject2D[nCnt]->SetPosition(aPosBg[nCnt]);
 		//頂点座標の設定
 		m_apObject2D[nCnt]->SetVertex();
-	}
-
-	// キーボード情報の取得
-	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
-
-	//SPACEキーを押されたら
-	if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_ATTACK) == true)
-	{
-		// モードの設定
-		CManager::SetMode(CManager::MODE_GAME);
-		return;
 	}
 
 	//雲の生成

@@ -135,8 +135,24 @@ float LibrarySpace::GetRandFloat(int nMax, int nMin, int nNumDiv)
 	int nMinNum = nMin * nNumDiv;
 	
 	//最大値～最小値から乱数を取得
-	float fRandNum = rand() % (nMaxNum - nMinNum + 1) + nMinNum;
+	float fRandNum = (float)(rand() % (nMaxNum - nMinNum + 1) + nMinNum);
 	fRandNum = fRandNum / nNumDiv;
 
 	return fRandNum;
+}
+
+//-----------------------------------------------------------------------------------------------
+// サインベクトルの取得
+//-----------------------------------------------------------------------------------------------
+float LibrarySpace::GetSinVec(float fRot, float fNumMul)
+{
+	return sinf(D3DX_PI * fRot) * fNumMul;
+}
+
+//-----------------------------------------------------------------------------------------------
+// コサインベクトルの取得
+//-----------------------------------------------------------------------------------------------
+float LibrarySpace::GetCosVec(float fRot, float fNumMul)
+{
+	return cosf(D3DX_PI * fRot) * fNumMul;
 }

@@ -61,7 +61,7 @@ HRESULT CObject2D::Init()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	//頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * MAX_VERTEX,
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
@@ -246,6 +246,31 @@ void CObject2D::SetAnimation(int nAnimU, int nAnimV, int nPartU, int nPartV)
 	pVtx[1].tex = D3DXVECTOR2((1.0f / nPartU) * (nAnimU + 1), 0.0f + (1.0f / nPartV) * nAnimV);
 	pVtx[2].tex = D3DXVECTOR2(0.0f + (1.0f / nPartU) * nAnimU, (1.0f / nPartV) * (nAnimV + 1));
 	pVtx[3].tex = D3DXVECTOR2((1.0f / nPartU) * (nAnimU + 1), (1.0f / nPartV) * (nAnimV + 1));
+
+	//頂点バッファの解放
+	m_pVtxBuff->Unlock();
+}
+
+//-----------------------------------------------------------------------------
+// テクスチャアニメーション処理
+//
+// nAnimU → 現在のアニメーションU座標
+// nAnimV → 現在のアニメーションV座標
+// fPartU → U座標の最大分割数
+// fPartV → V座標の最大分割数
+//-----------------------------------------------------------------------------
+void CObject2D::SetAnimation(int nAnimU, int nAnimV, float fPartU, float fPartV)
+{
+	VERTEX_2D *pVtx;
+
+	//頂点バッファの設定
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点座標の設定
+	pVtx[0].tex = D3DXVECTOR2(0.0f + (1.0f / fPartU) * nAnimU, 0.0f + (1.0f / fPartV) * nAnimV);
+	pVtx[1].tex = D3DXVECTOR2((1.0f / fPartU) * (nAnimU + 1), 0.0f + (1.0f / fPartV) * nAnimV);
+	pVtx[2].tex = D3DXVECTOR2(0.0f + (1.0f / fPartU) * nAnimU, (1.0f / fPartV) * (nAnimV + 1));
+	pVtx[3].tex = D3DXVECTOR2((1.0f / fPartU) * (nAnimU + 1), (1.0f / fPartV) * (nAnimV + 1));
 
 	//頂点バッファの解放
 	m_pVtxBuff->Unlock();

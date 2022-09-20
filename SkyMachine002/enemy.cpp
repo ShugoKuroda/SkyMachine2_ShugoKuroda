@@ -536,6 +536,8 @@ void CEnemy::SetAnim()
 					pBullet->SetParent(CBullet::PARENT_ENEMY);
 					pBullet->SetRot(fRad);
 					fDeg += 30.0f;
+
+					D3DXVECTOR3(sinf(fRad) * 4.0f, cosf(fRad) * 4.0f, 0);
 				}
 
 				if (m_nPattern >= 3)

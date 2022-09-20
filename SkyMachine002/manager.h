@@ -15,7 +15,7 @@
 class CRenderer;
 class CBase;
 class CSound;				// サウンドクラス
-//class CFade;				// フェードクラス
+class CFade;				// フェードクラス
 class CInputKeyboard;		// キーボードクラス
 class CInputJoypad;			// ジョイパッドクラス
 class CInputMouse;			// マウスクラス
@@ -50,7 +50,7 @@ public:
 
 	static CRenderer *GetRenderer() { return m_pRenderer; }
 	static CBase *GetBase(void) { return m_pBase; }
-	//static CFade *GetFade(void) { return m_pFade; }
+	static CFade *GetFade(void) { return m_pFade; }
 	static CSound *GetSound(void) { return m_pSound; }
 	static CInputKeyboard *GetInputKeyboard() { return m_pInputKeyboard; }
 	static CInputJoypad *GetInputJoypad() { return m_pInputJoypad; }
@@ -66,7 +66,7 @@ private:
 	static CInputMouse *m_pInputMouse;			// マウス情報のポインタ
 	static CSound *m_pSound;					// サウンド情報のポインタ
 	static CBase *m_pBase;						// ベースシーン情報のポインタ
-	//static CFade *m_pFade;
+	static CFade *m_pFade;
 	static MODE m_mode;							// モード情報
 	static bool m_bPause;						// ポーズするかどうか
 };

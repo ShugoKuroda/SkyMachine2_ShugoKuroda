@@ -20,6 +20,8 @@ namespace LibrarySpace
 	bool SphereCollision2D(const D3DXVECTOR3& posIn, const D3DXVECTOR3& posOut, const float& fsizeIn, const float& fsizeOut);
 	int GetRandNum(int nMax, int nMin);
 	float GetRandFloat(int nMax, int nMin, int nNumDiv);
+	float GetSinVec(float fRot, float fNumMul);
+	float GetCosVec(float fRot, float fNumMul);
 };
 
 #endif

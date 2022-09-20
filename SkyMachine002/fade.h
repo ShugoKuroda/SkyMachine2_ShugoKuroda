@@ -1,44 +1,53 @@
-//====================================================================
+//=============================================================================
 //
-// フェードの処理 (fade.h)
-// Author : SHUGO KURODA
+// フェード情報 [fade.h]
+// Author:SHUGO KURODA
 //
-//====================================================================
+//=============================================================================
 #ifndef _FADE_H_
 #define _FADE_H_
 
-//================================================
-// インクルードファイル
-//================================================
+#include "manager.h"
 #include "renderer.h"
 #include "object2D.h"
 
-//================================================
-// クラス宣言
-//================================================
-// フェードクラス
-class CFade : public CObject2D
+//*****************************************************************************
+// フェードクラス(基本クラス)
+//*****************************************************************************
+class CFade
 {
 public:
-	enum FADETYPE
-	{//フェードの種類
-		TYPE_NONE = 0,
-		TYPE_BLACK,		// 薄い黒(ボス前演出)
-		TYPE_WHITE,		// 白
-	};
+	// フェードコマンド
+	typedef enum
+	{
+		FADE_NONE = 0,	// 何もしていない
+		FADE_IN,		// フェードイン
+		FADE_OUT,		// フェードアウト
+		FADE_MAX,
+	}FADE;
 
-public:
 	CFade();
 	~CFade();
-	static CFade *Create(FADETYPE type);
-	HRESULT Init() override;
-	void Uninit() override;
-	void Update() override;
-	void Draw() override;
+
+	// フェード生成
+	static CFade* Create(CManager::MODE modeNext);
+	HRESULT Init();
+	void Uninit();
+	void Update();
+	void Draw();
+
+	static void SetFade(FADE fade, CManager::MODE modeNext);
+	static FADE GetFade() { return m_fade; }
 
 private:
-	FADETYPE m_type;	//フェードの種類
-	int m_nCounter;		//フェード解除までのカウンター
+	//頂点バッファへのポインター
+	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;
+	// フェードの状態
+	static FADE m_fade;
+	// 次の画面(モード)
+	static CManager::MODE m_modeNext;
+	// フェード色
+	D3DXCOLOR m_colorFade;
 };
 
-#endif	//_FADE_H_
+#endif

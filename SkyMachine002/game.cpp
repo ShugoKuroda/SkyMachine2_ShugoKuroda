@@ -4,12 +4,14 @@
 // Author : SHUGO KURODA
 //
 //===============================================================================================
+#include "manager.h"
 #include "game.h"
 #include "object.h"
 
 #include "library.h"
 #include "load.h"
-#include "fade.h"
+#include "fade_scene.h"
+#include "input_keyboard.h"
 
 #include "score.h"
 #include "number.h"
@@ -22,10 +24,13 @@
 #include "enemy.h"
 #include "enemy_boss.h"
 #include "bullet.h"
+#include "bullet_option.h"
 #include "explosion.h"
 #include "spray.h"
 #include "bubble.h"
 #include "effect.h"
+#include "bg_move.h"
+#include "meshfield.h"
 
 //-----------------------------------------------------------------------------------------------
 // using宣言
@@ -104,6 +109,14 @@ void CGame::Update()
 	{
 		//泡エフェクトの生成処理
 		CreateBubble();
+	}
+
+	// キーボード情報の取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+
+	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_PAUSE) == true)
+	{
+		CPause::Create();
 	}
 
 	//敵の生成処理	
@@ -196,7 +209,14 @@ void CGame::CreateEnemy()
 
 	if (m_EnemyInfo.nCreatenCount == 100)
 	{
-		CFade::Create(CFade::TYPE_BLACK);
+		CFadeScene::Create(CFadeScene::TYPE_BLACK);
+	}
+
+	// ボスを出現させる
+	if (m_EnemyInfo.nCreatenCount == 1)//420
+	{
+		//CBgMove::Create();
+		CMeshField::Create();
 	}
 
 	//ロゴの生成
@@ -252,6 +272,12 @@ void CGame::LoadAll()
 	CLogo::Load();
 	// ポーズ画面
 	CPause::Load();
+	// 高速移動中の背景
+	CBgMove::Load();
+	// ボス背景
+	CMeshField::Load();
+	// 弾オプション
+	CBulletOption::Load();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -283,4 +309,10 @@ void CGame::UnloadAll()
 	CLogo::Unload();
 	// ポーズ画面
 	CPause::Unload();
+	// 高速移動中の背景
+	CBgMove::Unload();
+	// ボス背景
+	CMeshField::Unload();
+	// 弾オプション
+	CBulletOption::Unload();
 }

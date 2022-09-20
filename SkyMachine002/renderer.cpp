@@ -7,11 +7,12 @@
 #include <tchar.h> // _T
 #include <stdio.h>
 
-#include "main.h"		//スクリーンサイズの取得
+#include "main.h"
 #include "renderer.h"
 #include "manager.h"
 #include "object.h"
 #include "object2D.h"
+#include "fade.h"
 
 #include <assert.h>
 
@@ -89,10 +90,10 @@ HRESULT CRenderer::Init(HWND hWnd, bool bWindow)
 	m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);		// αデスティネーションカラー
 
 	//サンプラーステートの設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);			// テクスチャU値の繰り返し設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);			// テクスチャV値の繰り返し設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);		// テクスチャ拡大時の補間設定
-	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);		// テクスチャ縮小時の補間設定
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);			// テクスチャ拡大時の補間設定
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);			// テクスチャ縮小時の補間設定
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);		// テクスチャU値の繰り返し設定
+	m_pD3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);		// テクスチャV値の繰り返し設定
 
 	//テクスチャステージステートパラメータの設定
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);		//αブレンディング処理設定
@@ -151,6 +152,9 @@ void CRenderer::Update()
 //=============================================================================
 void CRenderer::Draw()
 {
+	// フェード情報の取得
+	CFade *pFade = CManager::GetFade();
+
 	// バックバッファ＆Ｚバッファのクリア
 	m_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
 
@@ -160,6 +164,9 @@ void CRenderer::Draw()
 
 		//オブジェクトの描画処理
 		CObject::DrawAll();
+
+		//フェードの描画
+		pFade->Draw();
 
 #ifdef _DEBUG
 		// FPS表示

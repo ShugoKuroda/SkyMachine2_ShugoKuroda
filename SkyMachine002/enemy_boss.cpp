@@ -42,7 +42,8 @@ const int CEnemyBoss::RUSH_OPERATION = 60;
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
-CEnemyBoss::CEnemyBoss() :m_pattern(PATTERN_ENTRY), m_nCounter(0), m_fAttackRot(0.0f), m_bSizeChange(false), m_nCountObject(0)
+CEnemyBoss::CEnemyBoss() :m_pattern(PATTERN_ENTRY), m_nCounter(0), m_fAttackRot(0.0f), m_bSizeChange(false),
+						m_nCountObject(0), m_PosOld(0.0f, 0.0f, 0.0f)
 {
 }
 
@@ -151,10 +152,12 @@ void CEnemyBoss::Update()
 	case CEnemyBoss::PATTERN_NORMAL:
 
 		//移動量の加算
-		move += D3DXVECTOR3(1.0f, 1.0f, 0.0f);
+		move += D3DXVECTOR3(0.1f, 0.05f, 0.0f);
 
 		// 移動量の更新
-		pos += D3DXVECTOR3(sinf(move.x / 5) * 2, sinf(move.y / 25) * 5, 0.0f);
+		pos = D3DXVECTOR3((CRenderer::SCREEN_WIDTH - 200.0f) - sinf(move.x) * 100,
+			(CRenderer::SCREEN_HEIGHT / 2) - cosf(move.y) * 100,
+			0.0f);
 
 		//次の行動に移すまでのカウンター加算
 		m_nCounter++;
@@ -186,11 +189,21 @@ void CEnemyBoss::Update()
 
 			if (m_nCounter >= 5)
 			{
-				pos.x += -5.0f;
-				if (pos.x <= 1000.0f)
+				//位置の保存
+				D3DXVECTOR3 vec = m_PosOld - pos;
+				//敵からプレイヤーへのベクトル(移動量)に変換する
+				D3DXVec3Normalize(&vec, &vec);
+				//移動量に倍率を掛ける
+				vec.x *= 4.0f;
+				vec.y *= 4.0f;
+				//移動量の加算
+				pos += vec;
+
+				//前回の位置に移動し終えたら
+				if (pos.x <= m_PosOld.x)
 				{
-					// 変数のリセット
-					StateReset(&move);
+					// 通常状態に戻す(変数のリセット)
+					StateReset();
 				}
 			}
 			else if (m_nCountOperation == -120)
@@ -221,6 +234,7 @@ void CEnemyBoss::Update()
 					m_nCountOperation = -90;
 					m_nCounter++;
 
+					// 5回突進したら
 					if (m_nCounter >= 5)
 					{
 						pos = D3DXVECTOR3((ScreenCenter.x * 2) + (SIZE_WIDTH / 2), ScreenCenter.y - 110.0f, 0.0f);
@@ -231,7 +245,7 @@ void CEnemyBoss::Update()
 			{
 				// エフェクト生成
 				CEffect::Create(pos, D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT), CEffect::TYPE_AFTERIMAGE, CEffect::TEX_BOSS);
-				// 左に移動する
+				// 左に突進する
 				pos.x += -30.0f;
 			}
 		}
@@ -239,6 +253,11 @@ void CEnemyBoss::Update()
 		{
 			//拡縮させる
 			ChangeSize(&size, 2.0f);
+
+			if (m_nCountOperation == RUSH_OPERATION)
+			{// 最初のみ位置を保存
+				m_PosOld = pos;
+			}
 
 			m_nCountOperation--;
 			pos.x += m_nCountOperation * 0.1f;
@@ -267,8 +286,8 @@ void CEnemyBoss::Update()
 				m_nCountObject++;
 				if (m_nCountObject >= pBossInfo->nNum)
 				{
-					// 変数のリセット
-					StateReset(&move);
+					// 通常状態に戻す(変数のリセット)
+					StateReset();
 				}
 			}
 		}
@@ -308,8 +327,8 @@ void CEnemyBoss::Update()
 
 				if (m_nCountObject >= 40)
 				{
-					// 変数のリセット
-					StateReset(&move);
+					// 通常状態に戻す(変数のリセット)
+					StateReset();
 				}
 			}
 		}
@@ -434,12 +453,11 @@ void CEnemyBoss::ChangeSize(D3DXVECTOR2 *pSize, const float& fSize)
 //-----------------------------------------------------------------------------------------------
 // メンバ変数リセット
 //-----------------------------------------------------------------------------------------------
-void CEnemyBoss::StateReset(D3DXVECTOR3 *pMove)
+void CEnemyBoss::StateReset()
 {
 	m_nCounter = 0;
 	m_nCountObject = 0;
 	m_fAttackRot = 0.0f;
 	m_pattern = PATTERN_NORMAL;
 	m_nCountOperation = RUSH_OPERATION;
-	*pMove = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
