@@ -8,11 +8,17 @@
 #include "manager.h"
 #include "renderer.h"
 
+#include "object2D.h"
+#include "library.h"
+
 //*****************************************************************************
 //	静的メンバ変数
 //*****************************************************************************
-CObject* CObject::m_apObject[CObject::MAX_OBJECT] = { nullptr };
+CObject* CObject::m_apObject[MAX_OBJECT] = { nullptr };
 int CObject::m_nNumAll = 0;
+int CObject::m_nShakeInterval = 0;
+bool CObject::m_bShake = false;
+D3DXVECTOR3 CObject::m_aShakePos[MAX_OBJECT] = {};
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -80,15 +86,20 @@ void CObject::UpdateAll()
 				m_apObject[nCntUpdate]->Update();
 			}
 		}
+
+		if (m_bShake == true)
+		{
+			ShakeAll();
+		}
 	}
 	// ポーズ中なら
 	else if (bPause == true)
 	{
 		for (int nCntUpdate = 0; nCntUpdate < MAX_OBJECT; nCntUpdate++)
 		{
-			if (m_apObject[nCntUpdate]->m_nType == OBJ_PAUSE)
+			if (m_apObject[nCntUpdate] != nullptr)
 			{
-				if (m_apObject[nCntUpdate] != nullptr)
+				if (m_apObject[nCntUpdate]->m_nType == OBJ_PAUSE || m_apObject[nCntUpdate]->m_nType == OBJ_PAUSE_MENU)
 				{
 					// ポリゴンの更新処理
 					m_apObject[nCntUpdate]->Update();
@@ -161,7 +172,67 @@ void CObject::DrawAll()
 }
 
 //=============================================================================
-// コンストラクタ
+// オブジェクトを揺らす
+//=============================================================================
+void CObject::ShakeAll()
+{
+	if (m_nShakeInterval < 0)
+	{//シェイクを終える
+		m_bShake = false;
+		return;
+	}
+
+	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
+	{
+		if (m_apObject[nCntObject] != nullptr)
+		{
+			if (m_apObject[nCntObject]->m_nType != OBJ_PLAYER)
+			{
+				//オブジェクトポインタを敵にキャスト
+				CObject2D *pObject2D = (CObject2D*)m_apObject[nCntObject];
+
+				if (m_nShakeInterval == 0)
+				{//シェイクを終える
+					pObject2D->AddPos(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+					continue;
+				}
+
+				// 突進する角度を決める
+				float fRot = LibrarySpace::GetRandFloat(3, 0, 100);
+
+				pObject2D->AddPos(D3DXVECTOR3(sinf(fRot) * m_nShakeInterval,
+					cosf(fRot) * m_nShakeInterval, 0));
+			}
+		}
+	}
+
+	// シェイクする秒数(振れ幅)を減らす
+	m_nShakeInterval--;
+}
+
+void CObject::SetShake(int nShakeNum)
+{
+	m_bShake = true;
+	m_nShakeInterval = nShakeNum;
+
+	//for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
+	//{
+	//	if (m_apObject[nCntObject] != nullptr)
+	//	{
+	//		if (m_apObject[nCntObject]->m_nType != OBJ_PLAYER)
+	//		{
+	//			オブジェクトポインタを敵にキャスト
+	//			CObject2D *pObject2D = (CObject2D*)m_apObject[nCntObject];
+
+	//			 シェイク前の位置を保存
+	//			m_aShakePos[nCntObject] = pObject2D->GetPosition();
+	//		}
+	//	}
+	//}
+}
+
+//=============================================================================
+// 特定のオブジェクト破棄
 //=============================================================================
 void CObject::Release()
 {
@@ -173,5 +244,14 @@ void CObject::Release()
 		delete m_apObject[nID];
 		m_apObject[nID] = nullptr;
 		m_nNumAll--;
+	}
+}
+
+void CObject::SetShake(const D3DXVECTOR3& pos)
+{
+	// シェイク前の位置を保存
+	if (m_apObject[m_nID] != nullptr)
+	{
+		m_aShakePos[m_nID] = pos;
 	}
 }

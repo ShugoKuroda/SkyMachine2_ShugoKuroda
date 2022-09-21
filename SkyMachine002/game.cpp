@@ -12,6 +12,7 @@
 #include "load.h"
 #include "fade_scene.h"
 #include "input_keyboard.h"
+#include "input_joypad.h"
 
 #include "score.h"
 #include "number.h"
@@ -113,10 +114,16 @@ void CGame::Update()
 
 	// キーボード情報の取得
 	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+	// ゲームパッド情報の取得
+	CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-	if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_PAUSE) == true)
+	if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_PAUSE) == true|| pJoypad->GetTrigger(CInputJoypad::JOYKEY_START, 0) == true)
 	{
-		CPause::Create();
+		bool bPause = CManager::GetPause();
+		if (bPause == false)
+		{
+			CPause::Create();
+		}
 	}
 
 	//敵の生成処理	

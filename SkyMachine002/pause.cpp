@@ -24,7 +24,7 @@ CObject2D *CPause::m_apObject2D[TYPE_MAX] = {};
 //=============================================================================
 // CBulletのコンストラクタ
 //=============================================================================
-CPause::CPause() :m_bPause(false), m_nPauseSelect(0)
+CPause::CPause() :m_bPause(false), m_nPauseSelect(0), m_bWait(false)
 {
 	for (int nCnt = 0; nCnt < TYPE_MAX; nCnt++)
 	{
@@ -56,7 +56,7 @@ HRESULT CPause::Load()
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/pause001.png", &m_apTexture[TYPE_RESUME]);		// 再開
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/pause002.png", &m_apTexture[TYPE_RESTART]);	// やり直し
 	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/pause003.png", &m_apTexture[TYPE_EXIT]);		// タイトルに戻る
-	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/pause003.png", &m_apTexture[TYPE_SELECTOR]);	// 選択カーソル
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/option000.png", &m_apTexture[TYPE_SELECTOR]);	// 選択カーソル
 
 	return S_OK;
 }
@@ -103,6 +103,36 @@ HRESULT CPause::Init()
 	SetPause();
 
 	for (int nCnt = 0; nCnt < TYPE_MAX; nCnt++)
+	{// 生成
+		m_apObject2D[nCnt] = new CObject2D;
+		// オブジェクトタイプの設定
+		m_apObject2D[nCnt]->SetObjType(OBJ_PAUSE_MENU);
+	}
+	m_apObject2D[TYPE_FRAME]->SetObjType(OBJ_PAUSE);
+
+	// スクリーンサイズの保存
+	D3DXVECTOR2 ScreenSize = D3DXVECTOR2((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT);
+
+	// 
+	m_nPauseSelect = TYPE_RESUME;
+
+	// ポーズ画面枠
+	m_apObject2D[TYPE_FRAME]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, ScreenSize.y / 2, 0.0f));
+	m_apObject2D[TYPE_FRAME]->SetSize(D3DXVECTOR2(ScreenSize.x - 350.0f, ScreenSize.y - 200.0f));
+	// 再開
+	m_apObject2D[TYPE_RESUME]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, 200.0f, 0.0f));
+	m_apObject2D[TYPE_RESUME]->SetSize(D3DXVECTOR2(ScreenSize.x / 2, 80.0f));
+	// やり直し
+	m_apObject2D[TYPE_RESTART]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, 350.0f, 0.0f));
+	m_apObject2D[TYPE_RESTART]->SetSize(D3DXVECTOR2(ScreenSize.x / 2, 80.0f));
+	// タイトルに戻る
+	m_apObject2D[TYPE_EXIT]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, 500.0f, 0.0f));
+	m_apObject2D[TYPE_EXIT]->SetSize(D3DXVECTOR2(ScreenSize.x / 2, 80.0f));
+	// 選択カーソル
+	m_apObject2D[TYPE_SELECTOR]->SetPosition(D3DXVECTOR3((ScreenSize.x / 2)- 380.0f, 200.0f, 0.0f));
+	m_apObject2D[TYPE_SELECTOR]->SetSize(D3DXVECTOR2(80.0f, 80.0f));
+
+	for (int nCnt = 0; nCnt < TYPE_MAX; nCnt++)
 	{// 初期化とテクスチャの設定
 		m_apObject2D[nCnt]->Init();
 		m_apObject2D[nCnt]->BindTexture(m_apTexture[nCnt]);
@@ -137,6 +167,13 @@ void CPause::Uninit()
 //=============================================================================
 void CPause::Update()
 {
+	// 選択カーソルの角度取得
+	float fRot = m_apObject2D[TYPE_SELECTOR]->GetRot();
+	// 角度加算
+	fRot += 0.01f;
+	// 角度の設定
+	m_apObject2D[TYPE_SELECTOR]->SetRot(fRot);
+
 	if (m_bPause == true)
 	{
 		// キーボード情報の取得
@@ -144,7 +181,7 @@ void CPause::Update()
 		// ゲームパッド情報の取得
 		CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_UP) || pJoypad->GetTrigger(CInputJoypad::JOYKEY_UP, 0))
+		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_UP) == true || pJoypad->GetTrigger(CInputJoypad::JOYKEY_UP, 0) == true)
 		{
 			// 現在選択されている項目の色を元に戻す
 			m_apObject2D[m_nPauseSelect]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
@@ -158,11 +195,19 @@ void CPause::Update()
 				m_nPauseSelect = TYPE_EXIT;
 			}
 
+			// 選択されているポーズ項目の位置を取得
+			D3DXVECTOR3 pos = m_apObject2D[m_nPauseSelect]->GetPosition();
+			// 選択カーソルの位置設定
+			m_apObject2D[TYPE_SELECTOR]->SetPosition(D3DXVECTOR3(pos.x - 380.0f, pos.y, pos.z));
+
 			// 効果音
 			CSound::Play(CSound::SOUND_LABEL_SE_MENU_SELECT);
 		}
 		else if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_DOWN) || pJoypad->GetTrigger(CInputJoypad::JOYKEY_DOWN, 0))
 		{
+			// 現在選択されている項目の色を元に戻す
+			m_apObject2D[m_nPauseSelect]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
 			// 下にいくとき番号を増やす
 			m_nPauseSelect++;
 
@@ -171,6 +216,11 @@ void CPause::Update()
 			{
 				m_nPauseSelect = TYPE_RESUME;
 			}
+
+			// 選択されているポーズ項目の位置を取得
+			D3DXVECTOR3 pos = m_apObject2D[m_nPauseSelect]->GetPosition();
+			// 選択カーソルの位置設定
+			m_apObject2D[TYPE_SELECTOR]->SetPosition(D3DXVECTOR3(pos.x - 380.0f, pos.y, pos.z));
 
 			// 効果音
 			CSound::Play(CSound::SOUND_LABEL_SE_MENU_SELECT);
@@ -187,7 +237,7 @@ void CPause::Update()
 				// 再開ボタン
 			case TYPE_RESUME:
 				// ポーズを閉じる
-				CManager::SetPause(false);
+				SetPause();
 				Uninit();
 				return;
 				// リトライボタン
@@ -206,11 +256,21 @@ void CPause::Update()
 		}
 
 		// ポーズ画面を終える
-		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_PAUSE) || pJoypad->GetTrigger(CInputJoypad::JOYKEY_START, 0))
+		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_PAUSE) ||
+			pJoypad->GetTrigger(CInputJoypad::JOYKEY_START, 0))
 		{
-			SetPause();
-			Uninit();
+			if (m_bWait == true)
+			{
+				SetPause();
+				Uninit();
+				return;
+			}
 		}
+
+		// 頂点座標の設定
+		m_apObject2D[TYPE_SELECTOR]->SetVertex();
+
+		m_bWait = true;
 	}
 }
 
@@ -236,9 +296,6 @@ void CPause::SetPause()
 	else if (m_bPause == false)
 	{
 		CSound::Play(CSound::SOUND_LABEL_SE_MENU_OUT);
-
-		// 選択しているロゴを再開にする
-		m_nPauseSelect = 0;
 	}
 
 	CManager::SetPause(m_bPause);

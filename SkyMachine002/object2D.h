@@ -42,6 +42,7 @@ public:
 	void SetPosition(const D3DXVECTOR3& pos) { m_pos = pos; }
 	void SetSize(D3DXVECTOR2 size);
 	void SetRot(float fRot) { m_fRot = fRot; }
+	void AddPos(const D3DXVECTOR3& move);
 
 	void SetVertex();
 	void SetColor(D3DXCOLOR col);
@@ -82,7 +83,9 @@ private:	//メンバ変数
 	//アニメーションカウンター
 	int m_nCounterAnim;
 	//アニメーションパターン
-	int m_nPatternAnim; 
+	int m_nPatternAnim;
+
+	D3DXVECTOR3 m_move;
 };
 
 #endif // _OBJECT_2D_

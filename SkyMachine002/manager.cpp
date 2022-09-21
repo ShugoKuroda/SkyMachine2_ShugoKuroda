@@ -200,26 +200,26 @@ void CManager::Update()
 	{
 		m_pInputMouse->Update();
 	}
+	// フェードの更新
+	if (m_pFade != nullptr)
+	{
+		m_pFade->Update();
+	}
 
+	//ポーズ中でないなら
 	if (m_bPause == false)
 	{
-		// フェードの更新
-		if (m_pFade != nullptr)
-		{
-			m_pFade->Update();
-		}
-
 		// ベースの更新処理
 		if (m_pBase != nullptr)
 		{
 			m_pBase->Update();
 		}
+	}
 
-		// レンダラの更新処理
-		if (m_pRenderer != nullptr)
-		{
-			m_pRenderer->Update();
-		}
+	// レンダラの更新処理
+	if (m_pRenderer != nullptr)
+	{
+		m_pRenderer->Update();
 	}
 }
 

@@ -51,6 +51,7 @@ private:
 
 	static LPDIRECT3DTEXTURE9 m_apTexture[TYPE_MAX];	//テクスチャのポインタ
 	static CObject2D *m_apObject2D[TYPE_MAX];			//2Dポリゴンへのポインタ
+	bool m_bWait;		//連続ボタン押下防止用
 };
 
 #endif

@@ -18,6 +18,7 @@
 #include "library.h"
 #include "effect.h"
 #include "logo.h"
+#include "score.h"
 
 #include "player.h"
 #include "bullet.h"
@@ -27,7 +28,7 @@
 // ’è”éŒ¾
 //-----------------------------------------------------------------------------------------------
 // ‘Ì—Í
-const int CEnemyBoss::LIFE = 1000;
+const int CEnemyBoss::LIFE = 100;
 // •
 const float CEnemyBoss::SIZE_WIDTH = 300.0f;
 // ‚‚³
@@ -339,7 +340,6 @@ void CEnemyBoss::Update()
 		//=================================
 	case CEnemyBoss::PATTERN_DIE:
 
-
 		break;
 	default:
 		break;
@@ -351,10 +351,17 @@ void CEnemyBoss::Update()
 		//€–SƒAƒjƒ[ƒVƒ‡ƒ“‚ğÄ¶‚·‚é
 		m_pattern = PATTERN_DIE;
 
-		//// ”š”­‚Ì¶¬
-		//CExplosion::Create(pos, GetSize());
-		//// ”jŠü
-		//Uninit();
+		CObject::SetShake(30);
+
+		// ”š”­‚Ì¶¬
+		CExplosion::Create(pos, GetSize());
+
+		// ƒXƒRƒA‰ÁZ
+		CScore *pScore = CGame::GetScore();
+		pScore->Add(400);
+		// ”jŠü
+		Uninit();
+
 		return;
 	}
 

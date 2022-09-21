@@ -41,6 +41,7 @@ public:
 		OBJ_SCORE,
 		OBJ_LOGO,
 		OBJ_PAUSE,
+		OBJ_PAUSE_MENU,
 		OBJ_MAX
 	};
 
@@ -55,17 +56,24 @@ public:
 	static void ReleaseAll();
 	static void UpdateAll();
 	static void DrawAll();
+	static void ShakeAll();
 
 	static CObject* GetObject(int nCnt) { return m_apObject[nCnt]; }
 	void SetObjType(EObject type) { m_nType = type; }
+	static void SetShake(int nShakeNum);
+	static bool GetShake() { return m_bShake; }
 	EObject GetObjType() { return m_nType; }
 
 protected:
 	void Release();
+	void SetShake(const D3DXVECTOR3& pos);
 
 private:
 	static CObject *m_apObject[MAX_OBJECT];
 	static int m_nNumAll;
+	static bool m_bShake;
+	static int m_nShakeInterval;
+	static D3DXVECTOR3 m_aShakePos[MAX_OBJECT];
 	int m_nID;
 	EObject m_nType;
 };
