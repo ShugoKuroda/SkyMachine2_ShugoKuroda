@@ -57,11 +57,6 @@ CObject2D::~CObject2D()
 //-----------------------------------------------------------------------------
 HRESULT CObject2D::Init()
 {
-	if (CObject::GetShake() == true)
-	{
-		SetShake(m_pos);
-	}
-
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
@@ -177,11 +172,6 @@ void CObject2D::SetSize(D3DXVECTOR2 size)
 	m_fAngle = atan2f(size.x, size.y);
 }
 
-void CObject2D::AddPos(const D3DXVECTOR3 & move)
-{
-	m_move = move;
-}
-
 //-----------------------------------------------------------------------------
 // 頂点座標の設定
 //-----------------------------------------------------------------------------
@@ -193,16 +183,16 @@ void CObject2D::SetVertex()
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
-	pVtx[0].pos.x = m_pos.x + m_move.x + sinf(m_fRot + (-D3DX_PI + m_fAngle))*m_fLength;
-	pVtx[0].pos.y = m_pos.y + m_move.y + cosf(m_fRot + (-D3DX_PI + m_fAngle))*m_fLength;
+	pVtx[0].pos.x = (m_pos.x + m_move.x) + sinf(m_fRot + (-D3DX_PI + m_fAngle))*m_fLength;
+	pVtx[0].pos.y = (m_pos.y + m_move.y) + cosf(m_fRot + (-D3DX_PI + m_fAngle))*m_fLength;
 	pVtx[0].pos.z = 0.0f;
 
-	pVtx[1].pos.x = m_pos.x + m_move.x + sinf(m_fRot + (D3DX_PI - m_fAngle))*m_fLength;
-	pVtx[1].pos.y = m_pos.y + m_move.y + cosf(m_fRot + (D3DX_PI - m_fAngle))*m_fLength;
+	pVtx[1].pos.x = (m_pos.x + m_move.x) + sinf(m_fRot + (D3DX_PI - m_fAngle))*m_fLength;
+	pVtx[1].pos.y = (m_pos.y + m_move.y) + cosf(m_fRot + (D3DX_PI - m_fAngle))*m_fLength;
 	pVtx[1].pos.z = 0.0f;
 
-	pVtx[2].pos.x = m_pos.x + m_move.x + sinf(m_fRot + (0.0f - m_fAngle))*m_fLength;
-	pVtx[2].pos.y = m_pos.y + m_move.y + cosf(m_fRot + (0.0f - m_fAngle))*m_fLength;
+	pVtx[2].pos.x = (m_pos.x + m_move.x) + sinf(m_fRot + (0.0f - m_fAngle))*m_fLength;
+	pVtx[2].pos.y = (m_pos.y + m_move.y) + cosf(m_fRot + (0.0f - m_fAngle))*m_fLength;
 	pVtx[2].pos.z = 0.0f;
 
 	pVtx[3].pos.x = (m_pos.x + m_move.x) + sinf(m_fRot + (0.0f + m_fAngle))*m_fLength;

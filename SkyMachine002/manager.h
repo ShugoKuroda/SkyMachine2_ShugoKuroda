@@ -8,6 +8,7 @@
 #define _MANAGER_H_
 
 #include <Windows.h>
+#include "player.h"
 
 //*****************************************************************************
 // 前方宣言
@@ -49,15 +50,17 @@ public:
 	static MODE GetMode() { return m_mode; }
 
 	static CRenderer *GetRenderer() { return m_pRenderer; }
-	static CBase *GetBase(void) { return m_pBase; }
-	static CFade *GetFade(void) { return m_pFade; }
-	static CSound *GetSound(void) { return m_pSound; }
+	static CBase *GetBase() { return m_pBase; }
+	static CFade *GetFade() { return m_pFade; }
+	static CSound *GetSound() { return m_pSound; }
 	static CInputKeyboard *GetInputKeyboard() { return m_pInputKeyboard; }
 	static CInputJoypad *GetInputJoypad() { return m_pInputJoypad; }
 	static CInputMouse *GetInputMouse() { return m_pInputMouse; }
 
-	static bool GetPause(void) { return m_bPause; }
+	static bool GetPause() { return m_bPause; }
 	static void SetPause(bool bPause) { m_bPause = bPause; }
+	static bool GetEntry(int nNum) { return m_bEntry[nNum]; }
+	static void SetEntry(int nNum, bool bEntry) { m_bEntry[nNum] = bEntry; }
 
 private:
 	static CRenderer *m_pRenderer;				// レンダラー情報のポインタ
@@ -66,9 +69,10 @@ private:
 	static CInputMouse *m_pInputMouse;			// マウス情報のポインタ
 	static CSound *m_pSound;					// サウンド情報のポインタ
 	static CBase *m_pBase;						// ベースシーン情報のポインタ
-	static CFade *m_pFade;
+	static CFade *m_pFade;						// 画面フェード情報のポインタ
 	static MODE m_mode;							// モード情報
 	static bool m_bPause;						// ポーズするかどうか
+	static bool m_bEntry[CPlayer::PLAYER_MAX];	// 参加しているかどうか
 };
 
 #endif // _MANAGER_

@@ -249,8 +249,8 @@ HRESULT CSound::Play(SOUND_LABEL label)
 	memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
 	buffer.AudioBytes = m_aSizeAudio[label];
 	buffer.pAudioData = m_apDataAudio[label];
-	buffer.Flags      = XAUDIO2_END_OF_STREAM;
-	buffer.LoopCount  = m_aParam[label].nCntLoop;
+	buffer.Flags = XAUDIO2_END_OF_STREAM;
+	buffer.LoopCount = m_aParam[label].nCntLoop;
 
 	// ó‘Ôæ“¾
 	m_apSourceVoice[label]->GetState(&xa2state);

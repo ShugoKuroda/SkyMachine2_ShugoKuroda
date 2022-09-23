@@ -38,6 +38,7 @@
     <ClCompile Include="meshfield.cpp" />
     <ClCompile Include="bg_move.cpp" />
     <ClCompile Include="bullet_option.cpp" />
+    <ClCompile Include="item.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -79,5 +80,6 @@
     <ClInclude Include="meshfield.h" />
     <ClInclude Include="bg_move.h" />
     <ClInclude Include="bullet_option.h" />
+    <ClInclude Include="item.h" />
   </ItemGroup>
 </Project>

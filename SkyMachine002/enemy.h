@@ -25,10 +25,19 @@ public:
 	//敵の状態
 	enum STATE
 	{
-		STATE_NORMAL = 0,		//通常
-		STATE_DAMAGE,			//ダメージ状態
-		STATE_DIE,				//死亡状態
+		STATE_NORMAL = 0,		// 通常
+		STATE_DAMAGE,			// ダメージ状態
+		STATE_DIE,				// 死亡状態
 		STATE_MAX
+	};
+
+	//敵の色(落とすアイテム)
+	enum COLORITEM
+	{
+		COLOR_NONE = 0,		// なにも無し
+		COLOR_RED,			// 赤(メイン弾強化)
+		COLOR_BLUE,			// 青(オプション弾強化)
+		COLOR_GREEN,		// 緑(バリア強化)
 	};
 
 	enum TYPE
@@ -69,6 +78,7 @@ public:
 	virtual void Damage(int nDamage);
 	void SetMove();
 	D3DXVECTOR3 SetVector();
+	void SetItemColor(COLORITEM color);
 
 	void SetType(TYPE type) { m_type = type; }
 	void SetLife(int nLife) { m_nLife = nLife; }
@@ -86,6 +96,7 @@ private:
 	EnemyMove *m_pMoveInfo;	//移動情報のポインタ
 	STATE m_state;			//状態
 	TYPE m_type;			//種類
+	COLORITEM m_col;		//色(落とすアイテムの種類)
 	int m_nLife;			//寿命
 	int m_nCntState;		//状態カウンター
 	int m_nPattern;			//パターン番号

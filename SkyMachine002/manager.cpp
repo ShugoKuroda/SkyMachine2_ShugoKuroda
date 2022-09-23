@@ -34,6 +34,7 @@ CSound *CManager::m_pSound = nullptr;
 // フェードクラス
 CFade* CManager::m_pFade = nullptr;// サウンド情報のポインタ
 bool CManager::m_bPause = false;
+bool CManager::m_bEntry[CPlayer::PLAYER_MAX] = { false };
 
 CManager::MODE CManager::m_mode = MODE_TITLE;
 
@@ -200,6 +201,7 @@ void CManager::Update()
 	{
 		m_pInputMouse->Update();
 	}
+
 	// フェードの更新
 	if (m_pFade != nullptr)
 	{
@@ -220,6 +222,25 @@ void CManager::Update()
 	if (m_pRenderer != nullptr)
 	{
 		m_pRenderer->Update();
+	}
+
+	// ジョイパッド情報の取得
+	CInputJoypad *pJoypad = CManager::GetInputJoypad();
+
+	// プレイヤーのエントリー処理
+	for (int nCntController = 0; nCntController < CPlayer::PLAYER_MAX; nCntController++)
+	{
+		for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_MAX; nCnt++)
+		{
+			if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, nCntController) && m_bEntry[nCntController] == false)
+			{
+				// ボタンを押したコントローラーをENTRY状態にする
+				SetEntry(nCntController, true);
+				// エントリー音
+				CSound::Play(CSound::SOUND_LABEL_SE_MENU_IN);
+				break;
+			}
+		}
 	}
 }
 

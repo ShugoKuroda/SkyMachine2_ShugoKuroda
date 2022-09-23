@@ -30,6 +30,8 @@ using namespace LibrarySpace;
 //*****************************************************************************
 const float CPlayer::SIZE_X = 90.0f;
 const float CPlayer::SIZE_Y = 40.0f;
+const float CPlayer::ENTRY_SIZE_X = 630.0f;
+const float CPlayer::ENTRY_SIZE_Y = 280.0f;
 const float CPlayer::MOVE_DEFAULT = 10.0f;
 // アニメーション間隔
 const int CPlayer::ANIM_INTERVAL = 5;
@@ -69,19 +71,28 @@ CPlayer::~CPlayer()
 //-----------------------------------------------------------------------------
 // インスタンス生成処理
 //-----------------------------------------------------------------------------
-CPlayer *CPlayer::Create(const D3DXVECTOR3& pos)
+CPlayer *CPlayer::Create(const D3DXVECTOR3& pos, const int& nNum)
 {
 	//インスタンス生成
 	CPlayer *pPlayer = new CPlayer;
 
 	if (pPlayer != nullptr)
 	{
-		//位置設定
-		pPlayer->SetPosition(pos);
-		//生成処理
+		float fPos = 0.0f;
+		// 2Pのみ、ずらして配置
+		if (nNum == PLAYER_2)
+		{
+			fPos = -150.0f;
+		}
+
+		// 位置設定
+		pPlayer->SetPosition(D3DXVECTOR3(pos.x + fPos, pos.y, pos.z));
+		// プレイヤー数の設定
+		pPlayer->m_nPlayerNum = nNum;
+		// 生成処理
 		pPlayer->Init();
 		// テクスチャの設定
-		pPlayer->BindTexture(m_apTexture[0]);
+		pPlayer->BindTexture(m_apTexture[nNum]);
 	}
 
 	return pPlayer;
@@ -111,7 +122,7 @@ HRESULT CPlayer::Load()
 //-----------------------------------------------------------------------------
 void CPlayer::Unload()
 {
-	for (int nCnt = 0; nCnt < MAX_TEX; nCnt++)
+	for (int nCnt = 0; nCnt < PLAYER_MAX; nCnt++)
 	{
 		// テクスチャの破棄
 		if (m_apTexture[nCnt] != nullptr)
@@ -127,18 +138,18 @@ void CPlayer::Unload()
 //-----------------------------------------------------------------------------
 HRESULT CPlayer::Init()
 {
-	//弾の発射位置を設定
+	// 弾の発射位置を設定
 	posBullet = D3DXVECTOR2(20.0f, 10.0f);
-	//プレイヤーを操作可能にする
-	m_bControl = true;
+	// 登場状態にする
+	m_state = STATE_ENTRY;
 
-	//サイズの設定
-	CObject2D::SetSize(D3DXVECTOR2(SIZE_X, SIZE_Y));
-	//初期化
+	// サイズの設定
+	CObject2D::SetSize(D3DXVECTOR2(ENTRY_SIZE_X, ENTRY_SIZE_Y));
+	// 初期化
 	CObject2D::Init();
-	//色の設定
+	// 色の設定
 	CObject2D::SetColor(DEFAULT_COL);
-	//テクスチャ座標の設定
+	// テクスチャ座標の設定
 	CObject2D::SetAnimation(m_nPatternAnim, m_nTexRotType, DIVISION_U, DIVISION_V);
 
 	return S_OK;
@@ -187,7 +198,7 @@ void CPlayer::Update()
 				m_nCntAttack = 0;
 
 				//サウンド再生
-				//CSound::Play(CSound::SOUND_LABEL_TITLE);
+				CSound::Play(CSound::SOUND_LABEL_SE_SHOT);
 			}
 		}
 		else
@@ -197,8 +208,7 @@ void CPlayer::Update()
 
 		if (pJoypad->GetTrigger(CInputJoypad::JOYKEY_B, m_nPlayerNum))
 		{
-			m_pOption = CBulletOption::Create(D3DXVECTOR3(pos.x - (SIZE_X / 1), pos.y, pos.z),
-				CBulletOption::SIZE_SMALL, CBulletOption::DAMAGE_SMALL, CBulletOption::TYPE_SMALL);
+			m_pOption = CBulletOption::Create(D3DXVECTOR3(pos.x - (SIZE_X / 1), pos.y, pos.z), PLAYER_1);
 		}
 
 		//可動範囲を画面内に制限
@@ -213,9 +223,6 @@ void CPlayer::Update()
 
 	//状態管理
 	State();
-	
-	//サイズ更新
-	//CObject2D::SetSize(m_Scale.x, m_Scale.y);
 
 	// カウントを増やす
 	m_nCntAnim++;
@@ -438,9 +445,58 @@ void CPlayer::SetAnimNum(ANIMTYPE AnimIn, ANIMTYPE AnimOut)
 //-----------------------------------------------------------------------------
 void CPlayer::State()
 {
+	// 対角線(サイズ)の取得
+	D3DXVECTOR2 size = CObject2D::GetSize();
+	// 位置の取得
+	D3DXVECTOR3 pos = CObject2D::GetPosition();
+
 	switch (m_state)
 	{
 	case STATE_NORMAL:			//プレイヤーの状態が通常の場合
+		break;
+	case STATE_ENTRY:			//登場状態の場合
+
+		m_nCntState++;
+
+		// 対角線(サイズ)の減算
+		size -= D3DXVECTOR2(4.46f, 1.98f);
+		// 対角線の取得
+		CObject2D::SetSize(size);
+
+		if (pos.y <= CRenderer::SCREEN_HEIGHT / 2)
+		{
+			m_bControl = true;
+			m_state = STATE_RESPAWN;
+			m_nCntState = 150;
+		}
+		else if (pos.y <= CRenderer::SCREEN_HEIGHT / 1.5f)
+		{
+			pos += D3DXVECTOR3(-20.0f, -3.0f, 0.0f);
+		}
+		else
+		{
+			pos += D3DXVECTOR3(22.0f, -3.0f, 0.0f);
+		}
+
+		if (m_nCntState >= 96)
+		{
+			m_nTexRotType = TYPE_NEUTRAL;
+		}
+		else if (m_nCntState >= 72)
+		{
+			m_nTexRotType = TYPE_DOWN;
+		}
+		else if (m_nCntState >= 48)
+		{
+			m_nTexRotType = TYPE_NEUTRAL;
+		}
+		else if (m_nCntState >= 24)
+		{
+			m_nTexRotType = TYPE_UP;
+		}
+
+		CObject2D::SetPosition(pos);
+
 		break;
 	case STATE_RESPAWN:			//プレイヤーがダメージ状態の場合
 		//状態カウンターの減算
@@ -448,9 +504,12 @@ void CPlayer::State()
 		//右から出現させる
 		if (m_nCntState >= 150)
 		{
-			D3DXVECTOR3 pos = CObject2D::GetPosition();
+			// 位置の加算
 			pos.x += 10.0f;
+			// 位置の設定
 			CObject2D::SetPosition(pos);
+
+			// カウンターが一定
 			if (m_nCntState == 150)
 			{
 				//操作可能にする

@@ -30,7 +30,7 @@ LPDIRECT3DTEXTURE9 CMeshField::m_pTexture = {};
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CMeshField::CMeshField() :m_pos(0.0f, 0.0f, 0.0f), m_pVtxBuff(nullptr), m_pIdxBuff(nullptr),
-m_nCounterAnim(0), m_nPatternAnim(0), m_col(0.0f, 0.0f, 0.0f, 0.0f), m_bCol(false)
+m_nCounterAnim(0), m_nPatternAnim(0), m_col(0.0f, 0.0f, 0.0f, 0.0f), m_bCol(false), m_move(0.0f, 0.0f, 0.0f), m_bUninit(false)
 {
 	SetObjType(EObject::OBJ_BG_MOVE);
 }
@@ -113,7 +113,7 @@ HRESULT CMeshField::Init()
 	WORD *pIdx;				//インデックス情報へのポインタ
 
 	m_pos = D3DXVECTOR3(-CRenderer::SCREEN_WIDTH / 2, 0.0f, 0.0f);
-	m_col = D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f);
+	m_col = D3DXCOLOR(1.0f, 0.0f, 1.0f, 0.0f);
 
 	//頂点バッファをロックし、頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
@@ -233,6 +233,22 @@ void CMeshField::Update()
 		}
 	}
 
+	if (m_bUninit == true)
+	{
+		m_col.a -= 0.01f;
+
+		if (m_col.a <= 0.0f)
+		{
+			// 終了
+			Uninit();
+			return;
+		}
+	}
+	else if (m_col.a <= 1.0f)
+	{
+		m_col.a += 0.005f;
+	}
+
 	// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
@@ -245,8 +261,8 @@ void CMeshField::Update()
 			float offsetX = sinf(D3DX_PI * 2.0f * (nCntBlockY + m_nPatternAnim) / MESHFIELD_Y_BLOCK * 0.2f) * 20.0f;
 
 			// 頂点座標の設定
-			pVtx[0].pos = D3DXVECTOR3(m_pos.x + ((CRenderer::SCREEN_WIDTH * 1.6f) / MESHFIELD_X_BLOCK) * nCntBlockX + offsetX,
-				m_pos.y + (CRenderer::SCREEN_HEIGHT / MESHFIELD_Y_BLOCK) * nCntBlockY,
+			pVtx[0].pos = D3DXVECTOR3((m_pos.x + m_move.x) + ((CRenderer::SCREEN_WIDTH * 1.6f) / MESHFIELD_X_BLOCK) * nCntBlockX + offsetX,
+				(m_pos.y + m_move.y) + (CRenderer::SCREEN_HEIGHT / MESHFIELD_Y_BLOCK) * nCntBlockY,
 				m_pos.z);
 
 			// 色の設定

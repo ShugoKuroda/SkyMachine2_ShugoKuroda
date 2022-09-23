@@ -22,8 +22,8 @@ public:
 	enum EObject
 	{//オブジェクトの種類(下から描画を優先)
 		OBJ_BG = 0,
-		OBJ_BG_MOVE,
 		OBJ_CLOUD,
+		OBJ_BG_MOVE,
 		OBJ_TITLE_LOGO,
 		OBJ_TITLE,
 		OBJ_FADE,
@@ -33,6 +33,7 @@ public:
 		OBJ_ENEMYBOSS,
 		OBJ_ENEMY,
 		OBJ_BULLET,
+		OBJ_ITEM,
 		OBJ_EXPLOSION,
 		OBJ_SPRAY,
 		OBJ_WAVE1,
@@ -66,14 +67,12 @@ public:
 
 protected:
 	void Release();
-	void SetShake(const D3DXVECTOR3& pos);
 
 private:
 	static CObject *m_apObject[MAX_OBJECT];
 	static int m_nNumAll;
 	static bool m_bShake;
 	static int m_nShakeInterval;
-	static D3DXVECTOR3 m_aShakePos[MAX_OBJECT];
 	int m_nID;
 	EObject m_nType;
 };

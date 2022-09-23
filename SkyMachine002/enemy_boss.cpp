@@ -19,6 +19,7 @@
 #include "effect.h"
 #include "logo.h"
 #include "score.h"
+#include "fade_scene.h"
 
 #include "player.h"
 #include "bullet.h"
@@ -124,12 +125,114 @@ void CEnemyBoss::Update()
 	D3DXVECTOR2 size = CEnemy::GetSize();
 	// 移動量の取得
 	D3DXVECTOR3 move = CEnemy::GetMove();
+
+	// 行動パターン管理
+	if (Pattern(pos, size, move) == true)
+	{// 破棄された場合
+		return;
+	}
+
+	// ボスの死亡フラグ取得
+	bool bDie = CGame::GetDieBoss();
+
+	if (GetLife() <= 0 && bDie == false)
+	{// ライフが0
+
+		// 変数のリセット
+		StateReset();
+
+		//死亡アニメーションを再生する
+		m_pattern = PATTERN_DIE;
+	}
+
+	// 死亡していなければ
+	if (bDie == false)
+	{
+		//当たり判定
+		Collision(pos);
+	}
+
+	//移動量更新
+	CEnemy::SetMove(move);
+	//アニメーション処理
+	SetAnim();
+	//状態管理
+	State();
+	// 位置の更新
+	CObject2D::SetPosition(pos);
+	// サイズの更新
+	CObject2D::SetSize(size);
+	//頂点座標の設定
+	CObject2D::SetVertex();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 描画
+//-----------------------------------------------------------------------------------------------
+void CEnemyBoss::Draw()
+{
+	//描画処理
+	CEnemy::Draw();
+}
+
+//-----------------------------------------------------------------------------------------------
+// プレイヤーとの当たり判定
+//-----------------------------------------------------------------------------------------------
+bool CEnemyBoss::Collision(D3DXVECTOR3 posStart)
+{
+	return CEnemy::Collision(posStart);
+}
+
+//-----------------------------------------------------------------------------------------------
+// ダメージ処理
+//-----------------------------------------------------------------------------------------------
+void CEnemyBoss::Damage(int nDamage)
+{
+	// ボスの死亡フラグ取得
+	bool bDie = CGame::GetDieBoss();
+
+	// ボスが死亡していなければ
+	if (bDie == false)
+	{
+		CEnemy::Damage(nDamage);
+	}
+}
+
+//-----------------------------------------------------------------------------------------------
+// 状態
+//-----------------------------------------------------------------------------------------------
+void CEnemyBoss::State()
+{
+	CEnemy::State();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 敵ごとにアニメーション,挙動を設定
+//-----------------------------------------------------------------------------------------------
+void CEnemyBoss::SetAnim()
+{
+	switch (GetType())
+	{
+	case CEnemy::TYPE_RING_BOSS:
+
+		break;
+
+	case CEnemy::TYPE_DARK_BOSS:
+
+		break;
+
+	default:
+		break;
+	}
+}
+//-----------------------------------------------------------------------------------------------
+// 行動パターン管理
+//-----------------------------------------------------------------------------------------------
+bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
+{
 	//雑魚敵生成情報の取得
 	ParentEnemyInfo *pBossInfo = LoadSpace::GetParentEnemy();
 
-	//==================================================================
-	// 行動パターン
-	//==================================================================
 	switch (m_pattern)
 	{
 		//=================================
@@ -146,7 +249,7 @@ void CEnemyBoss::Update()
 		//拡縮させる
 		ChangeSize(&size, 0.5f);
 		break;
-	
+
 		//=================================
 		// 通常
 		//=================================
@@ -168,7 +271,7 @@ void CEnemyBoss::Update()
 			//カウンターリセット
 			m_nCounter = 0;
 			//次の行動をランダムで決める
-			m_pattern = (PATTERN)LibrarySpace::GetRandNum(PATTERN_BARRAGE, PATTERN_NORMAL);
+			m_pattern = (PATTERN)LibrarySpace::GetRandNum(PATTERN_BARRAGE, PATTERN_RUSH);
 		}
 
 		//拡縮させる
@@ -339,99 +442,55 @@ void CEnemyBoss::Update()
 		// 死亡
 		//=================================
 	case CEnemyBoss::PATTERN_DIE:
+		// 死亡カウンターを加算
+		m_nCounter++;
 
-		break;
-	default:
-		break;
-	}
+		if (m_nCounter == 1)
+		{
+			// スコア加算
+			CScore *pScore = CGame::GetScore();
+			pScore->Add(400);
 
-	if (GetLife() <= 0)
-	{// ライフが0
+			// 白フェードの生成
+			CFadeScene::Create(CFadeScene::TYPE_WHITE);
 
-		//死亡アニメーションを再生する
-		m_pattern = PATTERN_DIE;
+			// 敵の死亡フラグを立てる
+			CGame::SetDieBoss(true);
+		}
+		else if (m_nCounter == 40)
+		{
+			// ポーズ解除
+			CManager::SetPause(false);
+		}
+		else if (m_nCounter >= 40)
+		{
+			// 位置を左下に下げる
+			pos += D3DXVECTOR3(-1.0f, 2.0f, 0.0f);
 
-		CObject::SetShake(30);
+			if (m_nCounter % 5 == 0)
+			{
+				// 爆発の生成
+				CExplosion::Create(D3DXVECTOR3((float)LibrarySpace::GetRandNum((int)(pos.x + (size.x / 2)), (int)(pos.x - (size.x / 2))),
+					(float)LibrarySpace::GetRandNum((int)(pos.y + (size.y / 2)), (int)(pos.y - (size.y / 2))), 0.0f),
+					D3DXVECTOR2(size.x / 2, size.y / 2));
+			}
 
-		// 爆発の生成
-		CExplosion::Create(pos, GetSize());
-
-		// スコア加算
-		CScore *pScore = CGame::GetScore();
-		pScore->Add(400);
-		// 破棄
-		Uninit();
-
-		return;
-	}
-
-	//当たり判定
-	Collision(pos);
-	//移動量更新
-	CEnemy::SetMove(move);
-	//アニメーション処理
-	SetAnim();
-	//状態管理
-	State();
-	// 位置の更新
-	CObject2D::SetPosition(pos);
-	// サイズの更新
-	CObject2D::SetSize(size);
-	//頂点座標の設定
-	CObject2D::SetVertex();
-}
-
-//-----------------------------------------------------------------------------------------------
-// 描画
-//-----------------------------------------------------------------------------------------------
-void CEnemyBoss::Draw()
-{
-	//描画処理
-	CEnemy::Draw();
-}
-
-//-----------------------------------------------------------------------------------------------
-// プレイヤーとの当たり判定
-//-----------------------------------------------------------------------------------------------
-bool CEnemyBoss::Collision(D3DXVECTOR3 posStart)
-{
-	return CEnemy::Collision(posStart);
-}
-
-//-----------------------------------------------------------------------------------------------
-// ダメージ処理
-//-----------------------------------------------------------------------------------------------
-void CEnemyBoss::Damage(int nDamage)
-{
-	CEnemy::Damage(nDamage);
-}
-
-//-----------------------------------------------------------------------------------------------
-// 状態
-//-----------------------------------------------------------------------------------------------
-void CEnemyBoss::State()
-{
-	CEnemy::State();
-}
-
-//-----------------------------------------------------------------------------------------------
-// 敵ごとにアニメーション,挙動を設定
-//-----------------------------------------------------------------------------------------------
-void CEnemyBoss::SetAnim()
-{
-	switch (GetType())
-	{
-	case CEnemy::TYPE_RING_BOSS:
-
-		break;
-
-	case CEnemy::TYPE_DARK_BOSS:
-
+			if (LibrarySpace::OutScreen2D(&pos, size) == true)
+			{
+				//画面を揺らす
+				CObject::SetShake(60);
+				// 破棄
+				Uninit();
+				return true;
+			}
+		}
 		break;
 
 	default:
 		break;
 	}
+
+	return false;
 }
 
 //-----------------------------------------------------------------------------------------------

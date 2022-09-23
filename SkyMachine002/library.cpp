@@ -142,7 +142,7 @@ float LibrarySpace::GetRandFloat(int nMax, int nMin, int nNumDiv)
 }
 
 //-----------------------------------------------------------------------------------------------
-// サインベクトルの取得
+// サインの取得
 //-----------------------------------------------------------------------------------------------
 float LibrarySpace::GetSinVec(float fRot, float fNumMul)
 {
@@ -150,9 +150,23 @@ float LibrarySpace::GetSinVec(float fRot, float fNumMul)
 }
 
 //-----------------------------------------------------------------------------------------------
-// コサインベクトルの取得
+// コサインの取得
 //-----------------------------------------------------------------------------------------------
 float LibrarySpace::GetCosVec(float fRot, float fNumMul)
 {
 	return cosf(D3DX_PI * fRot) * fNumMul;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 座標間の距離計算
+//-----------------------------------------------------------------------------------------------
+float LibrarySpace::SphereRange(D3DXVECTOR3 posStart, D3DXVECTOR3 posEnd)
+{
+	//2つの座標差分を求める
+	D3DXVECTOR3 Length = posStart - posEnd;
+
+	//座標差分から距離を求める
+	float fLength = D3DXVec3Length(&Length);
+
+	return fLength;
 }

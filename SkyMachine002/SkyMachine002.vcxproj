@@ -37,6 +37,7 @@
     <ClCompile Include="input_joypad.cpp" />
     <ClCompile Include="input_keyboard.cpp" />
     <ClCompile Include="input_mouse.cpp" />
+    <ClCompile Include="item.cpp" />
     <ClCompile Include="library.cpp" />
     <ClCompile Include="load.cpp" />
     <ClCompile Include="logo.cpp" />
@@ -78,6 +79,7 @@
     <ClInclude Include="input_joypad.h" />
     <ClInclude Include="input_keyboard.h" />
     <ClInclude Include="input_mouse.h" />
+    <ClInclude Include="item.h" />
     <ClInclude Include="library.h" />
     <ClInclude Include="load.h" />
     <ClInclude Include="logo.h" />

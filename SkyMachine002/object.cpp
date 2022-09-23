@@ -10,6 +10,8 @@
 
 #include "object2D.h"
 #include "library.h"
+#include "meshfield.h"
+#include "game.h"
 
 //*****************************************************************************
 //	静的メンバ変数
@@ -18,7 +20,6 @@ CObject* CObject::m_apObject[MAX_OBJECT] = { nullptr };
 int CObject::m_nNumAll = 0;
 int CObject::m_nShakeInterval = 0;
 bool CObject::m_bShake = false;
-D3DXVECTOR3 CObject::m_aShakePos[MAX_OBJECT] = {};
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -87,8 +88,9 @@ void CObject::UpdateAll()
 			}
 		}
 
+		// 画面シェイクフラグが立っているなら
 		if (m_bShake == true)
-		{
+		{//画面シェイクする
 			ShakeAll();
 		}
 	}
@@ -99,9 +101,17 @@ void CObject::UpdateAll()
 		{
 			if (m_apObject[nCntUpdate] != nullptr)
 			{
+				//ポーズ画面のみ更新
 				if (m_apObject[nCntUpdate]->m_nType == OBJ_PAUSE || m_apObject[nCntUpdate]->m_nType == OBJ_PAUSE_MENU)
 				{
-					// ポリゴンの更新処理
+					// 更新処理
+					m_apObject[nCntUpdate]->Update();
+				}
+				//ボスが倒されたらボスのみ更新
+				else if (CGame::GetDieBoss() == true && m_apObject[nCntUpdate]->m_nType == OBJ_ENEMYBOSS ||
+					CGame::GetDieBoss() == true && m_apObject[nCntUpdate]->m_nType == OBJ_FADE)
+				{
+					// 更新処理
 					m_apObject[nCntUpdate]->Update();
 				}
 			}
@@ -182,29 +192,35 @@ void CObject::ShakeAll()
 		return;
 	}
 
+	// 突進する角度を決める
+	float fRot = LibrarySpace::GetRandFloat(3, 0, 100);
+
+	// シェイク(移動)量の設定
+	D3DXVECTOR3 move = D3DXVECTOR3(sinf(fRot) * m_nShakeInterval, cosf(fRot) * m_nShakeInterval, 0);
+
 	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
 	{
 		if (m_apObject[nCntObject] != nullptr)
 		{
-			if (m_apObject[nCntObject]->m_nType != OBJ_PLAYER)
+			if (m_apObject[nCntObject]->m_nType != OBJ_PLAYER &&
+				m_apObject[nCntObject]->m_nType != OBJ_BG_MOVE)
 			{
 				//オブジェクトポインタを敵にキャスト
 				CObject2D *pObject2D = (CObject2D*)m_apObject[nCntObject];
 
-				if (m_nShakeInterval == 0)
-				{//シェイクを終える
-					pObject2D->AddPos(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-					continue;
-				}
-
-				// 突進する角度を決める
-				float fRot = LibrarySpace::GetRandFloat(3, 0, 100);
-
-				pObject2D->AddPos(D3DXVECTOR3(sinf(fRot) * m_nShakeInterval,
+				// シェイク(移動)量の加算
+				pObject2D->SetMove(D3DXVECTOR3(sinf(fRot) * m_nShakeInterval,
 					cosf(fRot) * m_nShakeInterval, 0));
 			}
 		}
 	}
+
+	// ボス戦背景情報の取得
+	CMeshField* pMeshField= CGame::GetMeshField();
+
+	// シェイク(移動)量の加算
+	pMeshField->SetMove(D3DXVECTOR3(sinf(fRot) * m_nShakeInterval,
+		cosf(fRot) * m_nShakeInterval, 0));
 
 	// シェイクする秒数(振れ幅)を減らす
 	m_nShakeInterval--;
@@ -214,21 +230,6 @@ void CObject::SetShake(int nShakeNum)
 {
 	m_bShake = true;
 	m_nShakeInterval = nShakeNum;
-
-	//for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
-	//{
-	//	if (m_apObject[nCntObject] != nullptr)
-	//	{
-	//		if (m_apObject[nCntObject]->m_nType != OBJ_PLAYER)
-	//		{
-	//			オブジェクトポインタを敵にキャスト
-	//			CObject2D *pObject2D = (CObject2D*)m_apObject[nCntObject];
-
-	//			 シェイク前の位置を保存
-	//			m_aShakePos[nCntObject] = pObject2D->GetPosition();
-	//		}
-	//	}
-	//}
 }
 
 //=============================================================================
@@ -244,14 +245,5 @@ void CObject::Release()
 		delete m_apObject[nID];
 		m_apObject[nID] = nullptr;
 		m_nNumAll--;
-	}
-}
-
-void CObject::SetShake(const D3DXVECTOR3& pos)
-{
-	// シェイク前の位置を保存
-	if (m_apObject[m_nID] != nullptr)
-	{
-		m_aShakePos[m_nID] = pos;
 	}
 }

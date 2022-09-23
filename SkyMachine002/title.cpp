@@ -209,21 +209,31 @@ void CTitle::Update()
 	// ジョイパッド情報の取得
 	CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-	for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_MAX; nCnt++)
+	for (int nCntPlayer = 0; nCntPlayer < CPlayer::PLAYER_MAX; nCntPlayer++)
 	{
-		//SPACEキーを押されたら
-		if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, 0) == true)
+		// プレイヤーのENTRY情報取得
+		bool bEntry = CManager::GetEntry(nCntPlayer);
+
+		// エントリーしていれば
+		if (bEntry == true)
 		{
-			if (m_bTitleDraw == false)
+			for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_MAX; nCnt++)
 			{
-				aPosBg[BG_SKY].y = CRenderer::SCREEN_HEIGHT;
-				aPosBg[LOGO_PLAYER].x = 960.0f;
-			}
-			else
-			{
-				// モードの設定
-				CManager::GetFade()->SetFade(CFade::FADE_OUT, CManager::MODE::MODE_GAME);
-				return;
+				// キーを押されたら
+				if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, nCntPlayer) == true)
+				{
+					if (m_bTitleDraw == false)
+					{
+						aPosBg[BG_SKY].y = CRenderer::SCREEN_HEIGHT;
+						aPosBg[LOGO_PLAYER].x = 960.0f;
+					}
+					else
+					{
+						// モードの設定
+						CManager::GetFade()->SetFade(CFade::FADE_OUT, CManager::MODE::MODE_GAME);
+						return;
+					}
+				}
 			}
 		}
 	}

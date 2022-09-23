@@ -11,11 +11,13 @@
 #include "enemy_data.h"
 #include "cloud_data.h"
 
+#include "player.h"
+
 //*****************************************************************************
 // 前方宣言
 //*****************************************************************************
-class CPlayer;
 class CScore;
+class CMeshField;
 
 //-----------------------------------------------------------------------------
 // ベースクラス(派生クラス)
@@ -47,12 +49,18 @@ public:		//メンバ関数
 	static void SetCreateCloud(bool bCreate) { m_bCreateCloud = bCreate; }
 	// 泡の生成状態を設定
 	static void SetCreateBubble(bool bCreate) { m_bCreateBubble = bCreate; }
+	// ボス死亡フラグを設定
+	static void SetDieBoss(bool bDie);
 	// プレイヤー情報の取得
-	static CPlayer *GetPlayer() { return m_pPlayer; }
+	static CPlayer *GetPlayer(int nNum) { return m_pPlayer[nNum]; }
 	// スコア情報の取得
 	static CScore *GetScore() { return m_pScore; }
+	// スコア情報の取得
+	static CMeshField *GetMeshField() { return m_pMeshField; }
 	// 泡の生成状態を取得
 	static bool GetBubble() { return m_bCreateCloud; }
+	// ボス死亡フラグを取得
+	static bool GetDieBoss() { return m_bDieBoss; }
 
 private:
 	// テクスチャ読み込み
@@ -62,13 +70,16 @@ private:
 
 private:	//メンバ変数
 	// プレイヤー情報
-	static CPlayer *m_pPlayer;
+	static CPlayer *m_pPlayer[CPlayer::PLAYER_MAX];
 	static CScore *m_pScore;
+	static CMeshField *m_pMeshField;
 
 	// 雲を生成するかどうか
 	static bool m_bCreateCloud;
 	// 泡を生成するかどうか
 	static bool m_bCreateBubble;
+	// ボスが倒されたかどうか
+	static bool m_bDieBoss;
 
 	// 雲の生成情報
 	CloudInfo m_CloudInfo;

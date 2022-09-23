@@ -21,7 +21,6 @@
 
 #include "bg.h"
 #include "cloud.h"
-#include "player.h"
 #include "enemy.h"
 #include "enemy_boss.h"
 #include "bullet.h"
@@ -42,9 +41,11 @@ using namespace LibrarySpace;
 // 静的メンバ変数
 //-----------------------------------------------------------------------------------------------
 bool CGame::m_bCreateCloud = true; 
-bool CGame::m_bCreateBubble = false; 
-CPlayer *CGame::m_pPlayer = nullptr;
+bool CGame::m_bCreateBubble = false;
+bool CGame::m_bDieBoss = false;
+CPlayer *CGame::m_pPlayer[CPlayer::PLAYER_MAX] = {};
 CScore *CGame::m_pScore = nullptr;
+CMeshField *CGame::m_pMeshField = nullptr;
 
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
@@ -75,8 +76,20 @@ HRESULT CGame::Init()
 	m_EnemyInfo.nWave = LoadSpace::GetWave();
 	// テクスチャ読み込み
 	LoadAll();
+
 	// プレイヤー生成
-	m_pPlayer = CPlayer::Create(D3DXVECTOR3(300.0f, 300.0f, 0.0f));
+	for (int nCntPlayer = 0; nCntPlayer < CPlayer::PLAYER_MAX; nCntPlayer++)
+	{
+		// プレイヤーENTRY情報の取得
+		bool bEntry = CManager::GetEntry(nCntPlayer);
+
+		// エントリーしていれば
+		if (bEntry == true)
+		{// プレイヤー生成
+			m_pPlayer[nCntPlayer] = CPlayer::Create(D3DXVECTOR3(-630.0f, CRenderer::SCREEN_HEIGHT, 0.0f), nCntPlayer);
+		}
+	}
+
 	// 背景の生成
 	CBg::Create(CBg::SET_A);
 	// スコアの生成
@@ -99,6 +112,22 @@ void CGame::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CGame::Update()
 {
+	// プレイヤー生成
+	for (int nCntPlayer = 0; nCntPlayer < CPlayer::PLAYER_MAX; nCntPlayer++)
+	{
+		if (m_pPlayer[nCntPlayer] == nullptr)
+		{
+			// プレイヤーENTRY情報の取得
+			bool bEntry = CManager::GetEntry(nCntPlayer);
+
+			// エントリーしていれば
+			if (bEntry == true)
+			{// プレイヤー生成
+				m_pPlayer[nCntPlayer] = CPlayer::Create(D3DXVECTOR3(-630.0f, CRenderer::SCREEN_HEIGHT, 0.0f), nCntPlayer);
+			}
+		}
+	}
+
 	//雲を生成するかどうか
 	if (m_bCreateCloud == true)
 	{
@@ -117,12 +146,19 @@ void CGame::Update()
 	// ゲームパッド情報の取得
 	CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-	if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_PAUSE) == true|| pJoypad->GetTrigger(CInputJoypad::JOYKEY_START, 0) == true)
+	// ボス死亡フラグが立っていなければ
+	if (m_bDieBoss == false)
 	{
-		bool bPause = CManager::GetPause();
-		if (bPause == false)
+		// ポーズ生成
+		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_PAUSE) == true || pJoypad->GetTrigger(CInputJoypad::JOYKEY_START, 0) == true)
 		{
-			CPause::Create();
+			// ポーズ状態の取得
+			bool bPause = CManager::GetPause();
+			// ポーズ中でなければ
+			if (bPause == false)
+			{//ポーズ画面を生成
+				CPause::Create();
+			}
 		}
 	}
 
@@ -191,8 +227,8 @@ void CGame::CreateEnemy()
 			//敵の連続出現間隔カウンターが最大に達したら
 			if (m_EnemyInfo.count[nCntEnemy].nCreate >= m_EnemyInfo.pCreate[nCntEnemy].nInterval)
 			{
-				//敵の生成(位置、種類、移動情報を引数に設定)
-				CEnemy::Create(m_EnemyInfo.pCreate[nCntEnemy].pos, (CEnemy::TYPE)m_EnemyInfo.pCreate[nCntEnemy].nType, m_EnemyInfo.pCreate[nCntEnemy].nLife, &m_EnemyInfo.pCreate[nCntEnemy].move[0]);
+				//敵の生成(位置、種類、体力、移動情報を引数に設定)
+				CEnemy *pEnemy = CEnemy::Create(m_EnemyInfo.pCreate[nCntEnemy].pos, (CEnemy::TYPE)m_EnemyInfo.pCreate[nCntEnemy].nType, m_EnemyInfo.pCreate[nCntEnemy].nLife, &m_EnemyInfo.pCreate[nCntEnemy].move[0]);
 
 				//敵の生成数カウンターを加算
 				m_EnemyInfo.count[nCntEnemy].nNum++;
@@ -201,7 +237,13 @@ void CGame::CreateEnemy()
 
 				//敵が最大数まで生成したら
 				if (m_EnemyInfo.pCreate[nCntEnemy].nNum <= m_EnemyInfo.count[nCntEnemy].nNum)
-				{//このウェーブの生成をやめる
+				{
+					// 色の設定がされていたら
+					if (m_EnemyInfo.pCreate[nCntEnemy].nColor > 0)
+					{// 最後尾の敵の色を設定
+						pEnemy->SetItemColor((CEnemy::COLORITEM)m_EnemyInfo.pCreate[nCntEnemy].nColor);
+					}
+					// このウェーブの生成をやめる
 					m_EnemyInfo.count[nCntEnemy].bCreate = true;
 				}
 			}
@@ -219,11 +261,11 @@ void CGame::CreateEnemy()
 		CFadeScene::Create(CFadeScene::TYPE_BLACK);
 	}
 
-	// ボスを出現させる
-	if (m_EnemyInfo.nCreatenCount == 1)//420
+	// ボス戦用背景の生成
+	if (m_EnemyInfo.nCreatenCount == 520)
 	{
 		//CBgMove::Create();
-		CMeshField::Create();
+		m_pMeshField = CMeshField::Create();
 	}
 
 	//ロゴの生成
@@ -248,6 +290,17 @@ void CGame::CreateLogo(int nCounter)
 		CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 500.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH - 760.0f, 270.0f),
 			D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_WARNING_SUB, CLogo::ANIM_HORIZONTALLY, 300);
 	}
+}
+
+//-----------------------------------------------------------------------------------------------
+// ボスの死亡フラグ設定
+//-----------------------------------------------------------------------------------------------
+void CGame::SetDieBoss(bool bDie)
+{
+	// ボスの死亡状態を設定
+	m_bDieBoss = bDie;
+	// 画面を止める
+	CManager::SetPause(true);
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -40,7 +40,8 @@ LPDIRECT3DTEXTURE9 CEnemy::m_apTexture[TYPE_MAX] = { nullptr };
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CEnemy::CEnemy() :
-	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_nLife(0), m_nCntState(0), m_nPattern(0), m_nCounter(0), m_nCountAttack(0), m_nNumPatten(0)
+	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_col(COLOR_NONE), m_nLife(0),
+	m_nCntState(0), m_nPattern(0), m_nCounter(0), m_nCountAttack(0), m_nNumPatten(0)
 {
 	SetObjType(EObject::OBJ_ENEMY);
 }
@@ -279,7 +280,7 @@ void CEnemy::Damage(int nDamage)
 }
 
 //-----------------------------------------------------------------------------------------------
-// 状態
+// 状態管理
 //-----------------------------------------------------------------------------------------------
 void CEnemy::State()
 {
@@ -305,12 +306,18 @@ void CEnemy::State()
 		{
 			m_state = STATE_NORMAL;
 
-			if (CGame::GetBubble() == false)
-			{
+			//色付きの敵なら
+			if (m_col != COLOR_NONE)
+			{//色の設定
+				SetItemColor(m_col);
+			}
+			//水中に入っていれば
+			else if (CGame::GetBubble() == false)
+			{//水色にする
 				CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.3f, 1.0f));
 			}
 			else
-			{
+			{//通常色に戻す
 				CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 			}
 		}
@@ -325,20 +332,29 @@ bool CEnemy::Collision(D3DXVECTOR3 posStart)
 {
 	//敵のサイズ取得
 	float fStartLength = GetLength();
-	//プレイヤー情報の取得
-	CPlayer *pPlayer = CGame::GetPlayer();
 
-	if (pPlayer->GetState() == CPlayer::STATE_NORMAL)
+	// プレイヤー生成
+	for (int nCntPlayer = 0; nCntPlayer < CPlayer::PLAYER_MAX; nCntPlayer++)
 	{
-		if (LibrarySpace::SphereCollision2D(posStart, pPlayer->GetPosition(), fStartLength, pPlayer->GetLength() - 30.0f))
-		{//敵と当たったら(球体の当たり判定)
-			//ダメージ処理
-			pPlayer->Damage(1);
-			return true;	//当たった
+		//プレイヤー情報の取得
+		CPlayer *pPlayer = CGame::GetPlayer(nCntPlayer);
+
+		if (pPlayer != nullptr)
+		{
+			// プレイヤーが通常状態だったら
+			if (pPlayer->GetState() == CPlayer::STATE_NORMAL)
+			{
+				//敵と当たったら(球体の当たり判定)
+				if (LibrarySpace::SphereCollision2D(posStart, pPlayer->GetPosition(), fStartLength, pPlayer->GetLength() - 30.0f))
+				{//ダメージ処理
+					pPlayer->Damage(1);
+					return true;	//当たった
+				}
+			}
 		}
 	}
 
-	return false;		//当たってない
+	return false;	//当たってない
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -571,10 +587,75 @@ void CEnemy::SetAnim()
 //-----------------------------------------------------------------------------------------------
 D3DXVECTOR3 CEnemy::SetVector()
 {
-	// プレイヤー情報の取得
-	D3DXVECTOR3 posPlayer = CGame::GetPlayer()->GetPosition();
+	// プレイヤーの位置
+	D3DXVECTOR3 posPlayer;
 	// 位置の取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
+	// プレイヤーのエントリー情報
+	bool bEntry[CPlayer::PLAYER_MAX];
+
+	// プレイヤーENTRY情報の取得
+	for (int nCntPlayer = 0; nCntPlayer < CPlayer::PLAYER_MAX; nCntPlayer++)
+	{
+		bEntry[nCntPlayer] = CManager::GetEntry(nCntPlayer);
+	}
+
+	// 2人プレイをしている場合
+	if (bEntry[CPlayer::PLAYER_1] == true && bEntry[CPlayer::PLAYER_2] == true)
+	{
+		// 距離保存用
+		float nLength[CPlayer::PLAYER_MAX];
+		// プレイヤー情報の取得
+		CPlayer *pPlayer[CPlayer::PLAYER_MAX];
+
+		// 全てのプレイヤーの距離を保存
+		for (int nCntPlayer = 0; nCntPlayer < CPlayer::PLAYER_MAX; nCntPlayer++)
+		{
+			pPlayer[nCntPlayer] = CGame::GetPlayer(nCntPlayer);
+
+			if (pPlayer[nCntPlayer] != nullptr)
+			{
+				// プレイヤーの位置取得
+				posPlayer = pPlayer[nCntPlayer]->GetPosition();
+				// 敵とプレイヤーの距離を保存
+				nLength[nCntPlayer] = LibrarySpace::SphereRange(pos, posPlayer);
+			}
+		}
+
+		// 2Pより1Pの位置が近ければ
+		if (nLength[CPlayer::PLAYER_1] <= nLength[CPlayer::PLAYER_2])
+		{
+			if (pPlayer[CPlayer::PLAYER_1] != nullptr)
+			{
+				// 1Pの位置保存
+				posPlayer = pPlayer[CPlayer::PLAYER_1]->GetPosition();
+			}
+		}
+	}
+	// 1Pプレイなら
+	else if (bEntry[CPlayer::PLAYER_1] == true)
+	{
+		// プレイヤー情報の取得
+		CPlayer *pPlayer = CGame::GetPlayer(CPlayer::PLAYER_1);
+
+		if (pPlayer != nullptr)
+		{
+			// 1Pの位置保存
+			posPlayer = pPlayer->GetPosition();
+		}
+	}
+	// 2Pプレイなら
+	else if (bEntry[CPlayer::PLAYER_2] == true)
+	{
+		// プレイヤー情報の取得
+		CPlayer *pPlayer = CGame::GetPlayer(CPlayer::PLAYER_2);
+
+		if (pPlayer != nullptr)
+		{
+			// 2Pの位置保存
+			posPlayer = pPlayer->GetPosition();
+		}
+	}
 
 	//常にプレイヤーの方向を向く
 	D3DXVECTOR3 vec = posPlayer - pos;
@@ -595,4 +676,32 @@ D3DXVECTOR3 CEnemy::SetVector()
 	}
 
 	return vec;
+}
+
+//-----------------------------------------------------------------------------------------------
+// 色の設定(落とすアイテムの種類を設定)
+//-----------------------------------------------------------------------------------------------
+void CEnemy::SetItemColor(COLORITEM color)
+{
+	// 色の設定
+	m_col = color;
+
+	// 頂点カラーの設定
+	switch (m_col)
+	{
+		//赤
+	case CEnemy::COLOR_RED:
+		CObject2D::SetColor(D3DXCOLOR(0.6f, 0.0f, 0.0f, 1.0f));
+		break;
+		//青
+	case CEnemy::COLOR_BLUE:
+		CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.6f, 1.0f));
+		break;
+		//緑
+	case CEnemy::COLOR_GREEN:
+		CObject2D::SetColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));
+		break;
+	default:
+		break;
+	}
 }

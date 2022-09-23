@@ -105,8 +105,12 @@ HRESULT LoadSpace::LoadEnemy(HWND hWnd)
 					{//敵の数
 						sscanf(cScanf, "%s = %d", &cScanfHead, &g_aEnemyInfo[nIdxEnemy].nInterval);
 					}
+					else if (strcmp(&cScanfHead[0], "COLOR") == 0)
+					{//最後尾の敵の色(落とすアイテム)
+						sscanf(cScanf, "%s = %d", &cScanfHead, &g_aEnemyInfo[nIdxEnemy].nColor);
+					}
 					else if (strcmp(&cScanfHead[0], "MOVESET") == 0)
-					{
+					{//敵の移動情報
 						int nIdxMove = 0;
 						//プレイヤーパーツ情報の読み取りループ処理
 						while (fgets(cScanf, MAX_CHAR, pFile) != NULL)

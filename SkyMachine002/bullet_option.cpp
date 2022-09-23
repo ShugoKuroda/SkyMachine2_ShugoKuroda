@@ -16,7 +16,6 @@
 #include "library.h"
 #include "game.h"
 
-#include "player.h"
 #include "enemy.h"
 #include "explosion.h"
 
@@ -29,7 +28,7 @@ LPDIRECT3DTEXTURE9 CBulletOption::m_apTexture = { nullptr };
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
-CBulletOption::CBulletOption() :m_fRad(0.0f), m_type(TYPE_NONE), m_nDamage(0), m_col(FADE_NONE)
+CBulletOption::CBulletOption() :m_fRad(0.0f), m_nDamage(0), m_col(FADE_NONE)
 {
 	SetObjType(EObject::OBJ_BULLET);
 }
@@ -45,7 +44,7 @@ CBulletOption::~CBulletOption()
 //-----------------------------------------------------------------------------------------------
 // 生成
 //-----------------------------------------------------------------------------------------------
-CBulletOption* CBulletOption::Create(const D3DXVECTOR3& pos, const int& nSize, const int& nDamage, const EType& type)
+CBulletOption* CBulletOption::Create(const D3DXVECTOR3& pos, const CPlayer::PLAYER& parent)
 {
 	// ポインタクラスを宣言
 	CBulletOption* pOption = new CBulletOption;
@@ -56,14 +55,8 @@ CBulletOption* CBulletOption::Create(const D3DXVECTOR3& pos, const int& nSize, c
 		// 位置設定
 		pOption->SetPosition(pos);
 
-		//ダメージの設定
-		pOption->SetSize(D3DXVECTOR2((float)nSize, (float)nSize));
-
-		//ダメージの設定
-		pOption->m_nDamage = nDamage;
-
-		//大きさタイプの設定
-		pOption->m_type = type;
+		//親の設定(所有するプレイヤー)
+		pOption->m_parent = parent;
 
 		// 初期化
 		pOption->Init();
@@ -109,14 +102,20 @@ void CBulletOption::Unload()
 //-----------------------------------------------------------------------------------------------
 HRESULT CBulletOption::Init()
 {
+	//ダメージ量の設定
+	m_nDamage = DAMAGE;
+
+	// 色状態の初期化
+	m_col = FADE_GREEN;
+
+	//サイズの設定
+	CObject2D::SetSize(D3DXVECTOR2((float)SIZE, (float)SIZE));
+
 	// 初期化
 	CObject2D::Init();
 
 	// 色設定
 	CObject2D::SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-
-	// 色状態の初期化
-	m_col = FADE_GREEN;
 
 	return S_OK;
 }
@@ -137,6 +136,7 @@ void CBulletOption::Update()
 	// 色の取得
 	D3DXCOLOR col = GetColor();
 
+	//色を常に変化させる
 	if (m_col == FADE_RED)
 	{
 		col.r += 0.01f;
@@ -165,13 +165,13 @@ void CBulletOption::Update()
 		}
 	}
 
-	// プレイヤー情報の取得
-	CPlayer *pPlayer = CGame::GetPlayer();
-	D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 
 	// 位置の取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
+	// プレイヤー位置の取得
+	D3DXVECTOR3 posPlayer = CGame::GetPlayer(m_parent)->GetPosition();
 
+	// 回転量の加算
 	m_fRad += 0.1f;
 	if (m_fRad >= D3DX_PI * 2)
 	{
@@ -179,8 +179,8 @@ void CBulletOption::Update()
 	}
 
 	// 位置の更新(プレイヤーを中心に回転させる)
-	pos = D3DXVECTOR3(PlayerPos.x - sinf(m_fRad) * 100,
-		PlayerPos.y - cosf(m_fRad) * 100,
+	pos = D3DXVECTOR3(posPlayer.x - sinf(m_fRad) * 100,
+		posPlayer.y - cosf(m_fRad) * 100,
 		0.0f);
 
 	//当たり判定(球体)

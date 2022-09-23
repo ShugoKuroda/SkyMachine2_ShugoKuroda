@@ -22,6 +22,7 @@ namespace LibrarySpace
 	float GetRandFloat(int nMax, int nMin, int nNumDiv);
 	float GetSinVec(float fRot, float fNumMul);
 	float GetCosVec(float fRot, float fNumMul);
+	float SphereRange(D3DXVECTOR3 posStart, D3DXVECTOR3 posEnd);
 };
 
 #endif

@@ -20,12 +20,14 @@ class CBulletOption;
 class CPlayer : public CObject2D
 {
 private:
-	//テクスチャ数
-	static const int MAX_TEX = 2;
 	//プレイヤーのサイズ(X)
 	static const float SIZE_X;
 	//プレイヤーのサイズ(Y)
 	static const float SIZE_Y;
+	//登場時のサイズ(X)
+	static const float ENTRY_SIZE_X;
+	//登場時のサイズ(Y)
+	static const float ENTRY_SIZE_Y;
 	//プレイヤーの基本移動量
 	static const float MOVE_DEFAULT;
 	// アニメーション間隔
@@ -40,10 +42,19 @@ private:
 	static const D3DXCOLOR DEFAULT_COL;
 
 public:
+	// プレイヤー
+	enum PLAYER
+	{
+		PLAYER_1 = 0,	//1P
+		PLAYER_2,		//2P
+		PLAYER_MAX
+	};
+
 	//状態
 	enum STATE
 	{
 		STATE_NORMAL = 0,	//通常
+		STATE_ENTRY,		//登場
 		STATE_RESPAWN,		//無敵(リスポーン)状態
 		STATE_DIE,			//死亡状態
 		STATE_MAX
@@ -62,7 +73,7 @@ public:
 	~CPlayer() override;
 
 	//メンバ関数
-	static CPlayer *Create(const D3DXVECTOR3& pos);	//インスタンス生成処理
+	static CPlayer *Create(const D3DXVECTOR3& pos,const int& nNum);	//インスタンス生成処理
 	static HRESULT Load();		// テクスチャの読み込み
 	static void Unload();		// テクスチャの削除
 
@@ -81,8 +92,9 @@ public:
 	void Die();
 
 private:	//メンバ変数
+
 	// テクスチャのポインタ
-	static LPDIRECT3DTEXTURE9 m_apTexture[2];
+	static LPDIRECT3DTEXTURE9 m_apTexture[PLAYER_MAX];
 
 	// 弾オプションのポインタ
 	CBulletOption *m_pOption;
