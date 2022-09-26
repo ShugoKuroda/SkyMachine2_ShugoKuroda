@@ -21,6 +21,14 @@
 #include "spray.h"
 
 //-----------------------------------------------------------------------------------------------
+// マクロ定義
+//-----------------------------------------------------------------------------------------------
+#define BG_INTERVAL_IN_SEA		(2180)		// 海に入る演出の開始時間
+#define BG_INTERVAL_SEA_WEED	(2360)		// 海藻の描画開始時間
+#define BG_INTERVAL_BUBBLE		(2540)		// 水泡の描画開始時間
+#define BG_INTERVAL_OUT_SEA		(2720)		// 海に入る演出の終了時間
+
+//-----------------------------------------------------------------------------------------------
 // 静的メンバ変数
 //-----------------------------------------------------------------------------------------------
 // テクスチャのポインタ
@@ -229,7 +237,7 @@ void CBg::Update()
 	//背景移動までのカウンターを加算
 	m_nCntBgChange++;
 
-	if (m_nCntBgChange >= 2720)
+	if (m_nCntBgChange >= BG_INTERVAL_OUT_SEA)
 	{
 		//カウンターを止める
 		m_nCntBgChange = m_nCntBgChange;
@@ -243,7 +251,7 @@ void CBg::Update()
 		m_apObject2D[BG_A_SETWEED2]->SetAnimBg(1, 1000, true);
 	}
 	//一定時間経過で海に入る演出を開始する
-	else if (m_nCntBgChange >= 2180)
+	else if (m_nCntBgChange >= BG_INTERVAL_IN_SEA)
 	{
 		//背景位置の取得
 		D3DXVECTOR3 aPosBg[BG_A_MAX];
@@ -256,7 +264,7 @@ void CBg::Update()
 
 		float fMul = 1.5f;
 
-		if (m_nCntBgChange >= 2540)
+		if (m_nCntBgChange >= BG_INTERVAL_BUBBLE)
 		{
 			//泡エフェクトの生成を開始する
 			CGame::SetCreateBubble(true);
@@ -279,7 +287,7 @@ void CBg::Update()
 			//雲の生成を止める
 			CGame::SetCreateCloud(false);
 		}
-		else if (m_nCntBgChange >= 2360)
+		else if (m_nCntBgChange >= BG_INTERVAL_SEA_WEED)
 		{
 			fMul = 3.0f;
 

@@ -219,6 +219,9 @@ void CRank::Update()
 		// キーボードのENTRY処理
 		if (pKeyboard->GetTrigger(nCnt))
 		{
+			// 決定音
+			CSound::Play(CSound::SOUND_LABEL_SE_MENU_OK);
+
 			for (int nCnt = 0; nCnt < MAX_RANKING + MAX_PLAYER_SCORE; nCnt++)
 			{
 				if (m_pScore[nCnt] != nullptr)
@@ -249,6 +252,9 @@ void CRank::Update()
 		{
 			if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, nCntController))
 			{
+				// 決定音
+				CSound::Play(CSound::SOUND_LABEL_SE_MENU_OK);
+
 				for (int nCnt = 0; nCnt < MAX_RANKING + MAX_PLAYER_SCORE; nCnt++)
 				{
 					if (m_pScore[nCnt] != nullptr)

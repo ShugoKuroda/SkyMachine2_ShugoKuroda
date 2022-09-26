@@ -57,6 +57,7 @@ private:
 	int m_nCntLoop;		// タイトル演出をループさせるまでの時間
 	bool m_bEntry[2];
 	bool m_bTutorial;
+	D3DXVECTOR3 m_move;		// 移動量
 };
 
 #endif		// _TITLE_H_

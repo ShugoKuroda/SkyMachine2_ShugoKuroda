@@ -29,6 +29,7 @@ CSound::SOUNDPARAM CSound::m_aParam[CSound::SOUND_LABEL_MAX] =
 
 	{ "data/SE/entry000.wav", 0 },			// 自機登場
 	{ "data/SE/shot000.wav", 0 },			// 弾発射
+	{ "data/SE/shot001.wav", 0 },			// 弾発射
 	{ "data/SE/hit000.wav", 0 },			// 弾ヒット
 	{ "data/SE/explosion000.wav", 0 },		// 爆発
 	{ "data/SE/explosion001.wav", 0 },		// ボス爆破
@@ -36,6 +37,9 @@ CSound::SOUNDPARAM CSound::m_aParam[CSound::SOUND_LABEL_MAX] =
 	{ "data/SE/die001.wav", 0 },			// ボス撃破
 	{ "data/SE/item.wav", 0 },				// アイテム取得
 	{ "data/SE/clear.wav", 0 },				// ゲームクリア
+	{ "data/SE/warning000.wav", 0 },		// 警報サイレン
+	{ "data/SE/warning001.wav", 0 },		// 警報サイレン2
+	{ "data/SE/rush.wav", 0 },				// 敵の突進
 
 	{ "data/SE/menu_in.wav", 0 },			// メニューイン
 	{ "data/SE/menu_out.wav", 0 },			// メニューアウト

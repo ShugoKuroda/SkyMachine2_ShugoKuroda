@@ -9,6 +9,8 @@
 #include "number.h"
 #include "continue.h"
 
+#include "sound.h"
+
 //*****************************************************************************
 // 静的メンバ変数宣言
 //*****************************************************************************
@@ -36,6 +38,8 @@ HRESULT CResult::Init()
 	LoadAll();
 	// ランキングの生成
 	CRank::Create();
+	// リザルトBGM
+	CSound::Play(CSound::SOUND_LABEL_RESULT);
 
 	return S_OK;
 }
@@ -50,6 +54,9 @@ void CResult::Uninit()
 
 	// コンティニュー演出状態の解除
 	CContinue::SetContinue(false);
+
+	// BGMストップ
+	CSound::Stop();
 }
 
 //=============================================================================

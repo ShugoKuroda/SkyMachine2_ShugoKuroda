@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "game.h"
 
+#include "sound.h"
 #include "library.h"
 
 #include "player.h"
@@ -241,6 +242,9 @@ bool CItem::Collision(D3DXVECTOR3 posStart)
 
 				//パワーアップ処理
 				pPlayer->SetLevel(m_type);
+
+				// プレイヤー死亡音
+				CSound::Play(CSound::SOUND_LABEL_SE_ITEM);
 
 				//スコア加算
 				CScore* pScore = pPlayer->GetScore();

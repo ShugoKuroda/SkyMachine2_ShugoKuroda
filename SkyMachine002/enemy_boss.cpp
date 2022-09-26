@@ -13,6 +13,7 @@
 #include "renderer.h"
 
 #include "load.h"
+#include "sound.h"
 
 #include "game.h"
 #include "library.h"
@@ -31,7 +32,7 @@
 // 定数宣言
 //-----------------------------------------------------------------------------------------------
 // 体力
-const int CEnemyBoss::LIFE = 3000;
+const int CEnemyBoss::LIFE = 2000;
 // 幅
 const float CEnemyBoss::SIZE_WIDTH = 300.0f;
 // 高さ
@@ -317,6 +318,9 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 				// 突進する角度を決める
 				m_fAttackRot = LibrarySpace::GetRandFloat(3, 0, 100);
 
+				// 警告音
+				CSound::Play(CSound::SOUND_LABEL_SE_WARNING2);
+
 				// 敵の予測軌道範囲ロゴ
 				CLogo::Create(D3DXVECTOR3(ScreenCenter.x, ScreenCenter.y, 0.0f), D3DXVECTOR2(ScreenCenter.x * 2.5f, SIZE_HEIGHT),
 					D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.7f), m_fAttackRot, CLogo::TYPE_NONE, CLogo::ANIM_NONE, 60);
@@ -331,6 +335,15 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 			}
 			else if (m_nCountOperation <= -180)
 			{
+				if (m_nCountOperation == -180)
+				{
+					// 突進音
+					CSound::Play(CSound::SOUND_LABEL_SE_RUSH);
+
+					// 警告音のストップ
+					CSound::Stop(CSound::SOUND_LABEL_SE_WARNING2);
+				}
+
 				// エフェクト生成
 				CEffect::Create(pos, D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT), CEffect::TYPE_AFTERIMAGE, CEffect::TEX_BOSS);
 				D3DXVECTOR3 vec = D3DXVECTOR3((cosf(m_fAttackRot) * 30.0f), -(sinf(m_fAttackRot) * 30.0f), 0);
@@ -367,6 +380,12 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 
 			m_nCountOperation--;
 			pos.x += m_nCountOperation * 0.1f;
+
+			if(m_nCountOperation==1)
+			{
+				// 突進音
+				CSound::Play(CSound::SOUND_LABEL_SE_RUSH);
+			}
 		}
 
 		break;
@@ -436,6 +455,9 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 					// 通常状態に戻す(変数のリセット)
 					StateReset();
 				}
+
+				// 弾発射音
+				CSound::Play(CSound::SOUND_LABEL_SE_SHOT2);
 			}
 		}
 		break;
@@ -454,6 +476,12 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 
 			// 敵の死亡フラグを立てる
 			CGame::SetDieBoss(true);
+
+			// ボス死亡音
+			CSound::Play(CSound::SOUND_LABEL_SE_DIE_BOSS);
+
+			// ボスBGMを止める
+			CSound::Stop(CSound::SOUND_LABEL_BOSS);
 		}
 		else if (m_nCounter == 40)
 		{
@@ -476,7 +504,9 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 			if (LibrarySpace::OutScreen2D(&pos, size) == true)
 			{
 				//画面を揺らす
-				//CObject::SetShake(60);
+				CObject::SetShake(60);
+				// ボス死亡音
+				CSound::Play(CSound::SOUND_LABEL_SE_EXPLOSION_BOSS);
 				// 破棄
 				Uninit();
 
@@ -493,6 +523,9 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 
 				CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 500.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH / 4, 150.0f),
 					D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_BONUS, CLogo::ANIM_LENGTHWISE, 420);
+
+				// ゲームクリア音
+				CSound::Play(CSound::SOUND_LABEL_SE_CLEAR);
 
 				// ボーナススコア加算
 				for (int nCnt = 0; nCnt < CPlayer::PLAYER_MAX; nCnt++)

@@ -14,6 +14,7 @@
 
 #include "library.h"
 #include "game.h"
+#include "sound.h"
 
 #include "player.h"
 #include "enemy.h"
@@ -250,6 +251,9 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 					// プレイヤー情報の取得
 					CPlayer *pPlayer = CGame::GetPlayer(m_parent);
 
+					// 被弾音
+					CSound::Play(CSound::SOUND_LABEL_SE_HIT);
+
 					//ダメージ処理
 					pEnemy->Damage(m_nDamage, pPlayer);
 					// 弾の破棄
@@ -275,6 +279,9 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 						// プレイヤー情報の取得
 						CPlayer *pPlayer = CGame::GetPlayer(m_parent);
 
+						// 被弾音
+						CSound::Play(CSound::SOUND_LABEL_SE_HIT);
+
 						//ダメージ処理
 						pEnemyBoss->Damage(m_nDamage, pPlayer);
 						// 弾の破棄
@@ -299,6 +306,7 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 					}
 					if (LibrarySpace::SphereCollision2D(posStart, pPlayer->GetPosition(), fStartLength - 10.0f, pPlayer->GetLength() - 30.0f))
 					{//弾と当たったら(球体の当たり判定)
+
 						//ダメージ処理
 						pPlayer->Damage();
 						// 弾の破棄

@@ -11,6 +11,7 @@
 #include "explosion.h"		// プレイヤー
 #include "manager.h"		// アプリケーション
 #include "renderer.h"		// レンダリング
+#include "sound.h"
 
 //-----------------------------------------------------------------------------------------------
 // 定数宣言
@@ -114,6 +115,9 @@ HRESULT CExplosion::Init()
 
 	// テクスチャ更新
 	CObject2D::SetAnimation(m_nPatternAnim, 2, DIVISION_U, DIVISION_V);
+
+	// 爆発音
+	CSound::Play(CSound::SOUND_LABEL_SE_EXPLOSION);
 
 	return S_OK;
 }

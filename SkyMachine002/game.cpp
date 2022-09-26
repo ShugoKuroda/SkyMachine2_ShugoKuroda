@@ -7,6 +7,7 @@
 #include "manager.h"
 #include "game.h"
 #include "object.h"
+#include "sound.h"
 
 #include "library.h"
 #include "load.h"
@@ -131,7 +132,10 @@ HRESULT CGame::Init()
 
 	m_bCreateCloud = true;
 	m_bCreateBubble = false;
-		m_bDieBoss = false;
+	m_bDieBoss = false;
+
+	// 決定音
+	CSound::Play(CSound::SOUND_LABEL_GAME);
 
 	return S_OK;
 }
@@ -146,6 +150,9 @@ void CGame::Uninit()
 
 	// ポーズ状態を解除
 	CManager::SetPause(false);
+
+	// 決定音
+	CSound::Stop();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -192,7 +199,7 @@ void CGame::Update()
 	if (bEntry1P == false && bEntry2P == false)
 	{
 		// コンティニュー演出の生成
-		CContinue::Create(D3DXVECTOR3(700.0f, 300.0f, 0.0f), D3DXVECTOR2(50.0f, 30.0f))->Add(15);
+		CContinue::Create(D3DXVECTOR3(750.0f, 300.0f, 0.0f), D3DXVECTOR2(40.0f, 30.0f))->Add(15);
 	}
 
 	for (int nCntPlayer = 0; nCntPlayer < CPlayer::PLAYER_MAX; nCntPlayer++)
@@ -355,11 +362,8 @@ void CGame::CreateEnemy()
 	if (m_EnemyInfo.nCreatenCount == 5260)
 	{
 		CEnemyBoss::Create(D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT + CEnemyBoss::SIZE_HEIGHT, 0.0f), CEnemy::TYPE_DARK_BOSS);
-	}
-
-	if (m_EnemyInfo.nCreatenCount == 4800)
-	{
-		CFadeScene::Create(CFadeScene::TYPE_BLACK);
+		// 警告音
+		CSound::Play(CSound::SOUND_LABEL_BOSS);
 	}
 
 	// ボス戦用背景の生成
@@ -383,6 +387,11 @@ void CGame::CreateLogo(int nCounter)
 		// ボス接近中のロゴ
 		CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 300.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH - 400.0f, 90.0f),
 			D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_WARNING, CLogo::ANIM_LENGTHWISE, 420);
+
+		// ゲームBGMをストップ
+		CSound::Stop(CSound::SOUND_LABEL_GAME);
+		// 警告音
+		CSound::Play(CSound::SOUND_LABEL_SE_WARNING);
 	}
 
 	if (nCounter == 4920)
@@ -390,6 +399,12 @@ void CGame::CreateLogo(int nCounter)
 		// ボス接近中の説明ロゴ
 		CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 500.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH - 760.0f, 270.0f),
 			D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_WARNING_SUB, CLogo::ANIM_HORIZONTALLY, 300);
+	}
+
+	if (nCounter == 4800)
+	{
+		// ボス接近時の薄暗いフェード
+		CFadeScene::Create(CFadeScene::TYPE_BLACK);
 	}
 }
 
@@ -420,6 +435,9 @@ void CGame::SetPlayerScore()
 			// エントリーしていれば
 			if (bEntry == true)
 			{// プレイヤー生成
+				// プレイヤースコアの初期化
+				CRank::SetScore(0, nCntPlayer);
+
 				CRank::SetScore(m_pPlayer[nCntPlayer]->GetScore()->GetScore(), nCntPlayer);
 			}
 		}

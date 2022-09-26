@@ -5,6 +5,7 @@
 //
 //===============================================================================================
 #include "title.h"
+#include "sound.h"
 
 #include "manager.h"
 #include "input_keyboard.h"
@@ -33,7 +34,7 @@ LPDIRECT3DTEXTURE9 CTitle::m_apTexture[OBJ_MAX] = { nullptr };
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
-CTitle::CTitle() :m_nCountMoveBg(0), m_bTitleDraw(false), m_bPressFade(false), m_nCntLoop(0), m_bEntry{ false }, m_bTutorial(false)
+CTitle::CTitle() :m_nCountMoveBg(0), m_bTitleDraw(false), m_bPressFade(false), m_nCntLoop(0), m_bEntry{ false }, m_bTutorial(false), m_move(0.0f,0.0f,0.0f)
 {
 	for (int nCnt = 0; nCnt < OBJ_MAX - 1; nCnt++)
 	{
@@ -202,6 +203,9 @@ HRESULT CTitle::Init()
 		}
 	}
 
+	// タイトルBGM
+	CSound::Play(CSound::SOUND_LABEL_TITLE);
+
 	return S_OK;
 }
 
@@ -223,6 +227,9 @@ void CTitle::Uninit()
 	CTitle::Unload();
 	//雲テクスチャの破棄
 	CCloud::Unload();
+
+	// タイトルBGM
+	CSound::Stop();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -255,6 +262,9 @@ void CTitle::Update()
 				//キーを押されたら
 				if (pKeyboard->GetTrigger(nCnt) == true)
 				{
+					// 決定音
+					CSound::Play(CSound::SOUND_LABEL_SE_MENU_OK);
+
 					if (m_bTitleDraw == false)
 					{
 						aPosBg[BG_SKY].y = CRenderer::SCREEN_HEIGHT;
@@ -302,6 +312,9 @@ void CTitle::Update()
 				// キーを押されたら
 				if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, nCntPlayer) == true)
 				{
+					// 決定音
+					CSound::Play(CSound::SOUND_LABEL_SE_MENU_OK);
+
 					if (m_bTitleDraw == false)
 					{
 						aPosBg[BG_SKY].y = CRenderer::SCREEN_HEIGHT;
@@ -398,10 +411,10 @@ void CTitle::Update()
 	{// 背景の移動を開始する
 
 		//雲の移動処理
-		CCloud::Move(3.0f);
+		CCloud::Move(5.0f);
 
 		//空を下に移動させる
-		aPosBg[BG_SKY].y += 3.0f;
+		aPosBg[BG_SKY].y += 5.0f;
 	}
 
 	//背景情報の設定
@@ -416,17 +429,20 @@ void CTitle::Update()
 	//雲の生成
 	CreateCloud();
 
-	// タイトル画面をループさせるまでの時間
-	m_nCntLoop++;
-
-	// 50秒経過でタイトル画面リセット
-	if (m_nCntLoop >= 3000)
+	if (m_bTutorial == false)
 	{
-		//カウンターリセット
-		m_nCntLoop = 0;
+		// タイトル画面をループさせるまでの時間
+		m_nCntLoop++;
 
-		// モードの設定
-		CManager::GetFade()->SetFade(CFade::FADE_OUT, CManager::MODE::MODE_TITLE);
+		// 50秒経過でタイトル画面リセット
+		if (m_nCntLoop >= 5580)
+		{
+			//カウンターリセット
+			m_nCntLoop = 0;
+
+			// モードの設定
+			CManager::GetFade()->SetFade(CFade::FADE_OUT, CManager::MODE::MODE_TITLE);
+		}
 	}
 
 	// プレイヤー生成

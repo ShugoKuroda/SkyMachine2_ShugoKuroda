@@ -39,11 +39,34 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # 最大WAVE数
 #------------------------------------------------------------------------------
-MAX_WAVE = 44
+MAX_WAVE = 42
 
 #------------------------------------------------------------------------------
 # WAVE情報
 #------------------------------------------------------------------------------
+
+#---------------------------------------
+# WAVE0の情報(TYPE 10を複数配置)[1]
+#---------------------------------------
+#--------------------
+# 1 
+#--------------------
+ENEMYSET
+	FRAME = 260
+	POS = 1000.0 680.0 0.0
+	TYPE = 10
+	LIFE = 10
+	NUM = 6
+	INTERVAL = 10
+	MOVESET
+		MOVE = 900.0 380.0 15
+		MOVE = 820.0 280.0 15
+		MOVE = 770.0 230.0 15
+		MOVE = 720.0 280.0 15
+		MOVE = 640.0 380.0 15
+		MOVE = 540.0 680.0 15
+	END_MOVESET
+END_ENEMYSET
 
 #---------------------------------------
 # WAVE1の情報(TYPE 4を複数配置)[4]
@@ -52,7 +75,7 @@ MAX_WAVE = 44
 # 1
 #--------------------
 ENEMYSET
-	FRAME = 80
+	FRAME = 380
 	POS = 0.0 720.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -73,7 +96,7 @@ END_ENEMYSET
 # 2
 #--------------------
 ENEMYSET
-	FRAME = 90
+	FRAME = 390
 	POS = 0.0 720.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -94,7 +117,7 @@ END_ENEMYSET
 # 3
 #--------------------
 ENEMYSET
-	FRAME = 100
+	FRAME = 400
 	POS = 0.0 720.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -115,7 +138,7 @@ END_ENEMYSET
 # 4
 #--------------------
 ENEMYSET
-	FRAME = 110
+	FRAME = 410
 	POS = 0.0 720.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -140,7 +163,7 @@ END_ENEMYSET
 # 1
 #--------------------
 ENEMYSET
-	FRAME = 350
+	FRAME = 650
 	POS = 0.0 0.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -161,7 +184,7 @@ END_ENEMYSET
 # 2
 #--------------------
 ENEMYSET
-	FRAME = 360
+	FRAME = 660
 	POS = 0.0 0.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -182,7 +205,7 @@ END_ENEMYSET
 # 3
 #--------------------
 ENEMYSET
-	FRAME = 370
+	FRAME = 670
 	POS = 0.0 0.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -203,7 +226,7 @@ END_ENEMYSET
 # 4
 #--------------------
 ENEMYSET
-	FRAME = 380
+	FRAME = 680
 	POS = 0.0 0.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -228,7 +251,7 @@ END_ENEMYSET
 # 1
 #--------------------
 ENEMYSET
-	FRAME = 620
+	FRAME = 920
 	POS = 0.0 720.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -249,7 +272,7 @@ END_ENEMYSET
 # 2
 #--------------------
 ENEMYSET
-	FRAME = 630
+	FRAME = 930
 	POS = 0.0 720.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -270,7 +293,7 @@ END_ENEMYSET
 # 3
 #--------------------
 ENEMYSET
-	FRAME = 640
+	FRAME = 940
 	POS = 0.0 720.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -291,7 +314,7 @@ END_ENEMYSET
 # 4
 #--------------------
 ENEMYSET
-	FRAME = 650
+	FRAME = 950
 	POS = 0.0 720.0 0.0
 	TYPE = 4
 	LIFE = 10
@@ -316,7 +339,7 @@ END_ENEMYSET
 # 1
 #--------------------
 ENEMYSET
-	FRAME = 1000
+	FRAME = 1150
 	POS = 1280.0 300.0 0.0
 	TYPE = 5
 	LIFE = 100
@@ -335,7 +358,7 @@ END_ENEMYSET
 # 2
 #--------------------
 ENEMYSET
-	FRAME = 1000
+	FRAME = 1150
 	POS = 700.0 0.0 0.0
 	TYPE = 6
 	LIFE = 10
@@ -353,7 +376,7 @@ END_ENEMYSET
 # 1
 #--------------------
 ENEMYSET
-	FRAME = 1300
+	FRAME = 1450
 	POS = 1280.0 100.0 0.0
 	TYPE = 5
 	LIFE = 100
@@ -372,7 +395,7 @@ END_ENEMYSET
 # 2
 #--------------------
 ENEMYSET
-	FRAME = 1360
+	FRAME = 1450
 	POS = 700.0 0.0 0.0
 	TYPE = 6
 	LIFE = 10
@@ -390,10 +413,10 @@ END_ENEMYSET
 # 1
 #--------------------
 ENEMYSET
-	FRAME = 1460
+	FRAME = 1600
 	POS = 1280.0 500.0 0.0
 	TYPE = 2
-	LIFE = 10
+	LIFE = 20
 	NUM = 3
 	INTERVAL = 50
 	MOVESET
@@ -405,13 +428,13 @@ END_ENEMYSET
 # 2
 #--------------------
 ENEMYSET
-	FRAME = 1480
+	FRAME = 1630
 	POS = 1280.0 600.0 0.0
 	TYPE = 2
-	LIFE = 10
+	LIFE = 20
 	NUM = 3
 	INTERVAL = 50
-	COLOR = 1
+	COLOR = 2
 	MOVESET
 		MOVE = 0.0 600.0 240
 	END_MOVESET
@@ -493,8 +516,9 @@ ENEMYSET
 	FRAME = 3000
 	POS = 1280.0 0.0 0.0
 	TYPE = 8
-	LIFE = 30
+	LIFE = 35
 	NUM = 1
+	COLOR = 2
 	MOVESET
 		MOVE = 1100.0 100.0 30
 		MOVE = 1100.0 100.0 300
@@ -509,7 +533,7 @@ ENEMYSET
 	FRAME = 2990
 	POS = 1280.0 360.0 0.0
 	TYPE = 8
-	LIFE = 30
+	LIFE = 35
 	NUM = 1
 	MOVESET
 		MOVE = 1100.0 360.0 30
@@ -525,7 +549,7 @@ ENEMYSET
 	FRAME = 3000
 	POS = 1280.0 720.0 0.0
 	TYPE = 8
-	LIFE = 30
+	LIFE = 35
 	NUM = 1
 	MOVESET
 		MOVE = 1100.0 620.0 30
@@ -764,6 +788,7 @@ ENEMYSET
 	LIFE = 10
 	NUM = 8
 	INTERVAL = 30
+	COLOR = 1
 	MOVESET
 		MOVE = 1100.0 550.0 20
 		MOVE = 1200.0 650.0 20
@@ -851,7 +876,7 @@ ENEMYSET
 	FRAME = 4620
 	POS = 1280.0 360.0 0.0
 	TYPE = 3
-	LIFE = 70
+	LIFE = 50
 	NUM = 1
 	MOVESET
 		MOVE = 1150.0 360.0 10
@@ -887,74 +912,12 @@ ENEMYSET
 	TYPE = 3
 	LIFE = 70
 	NUM = 1
+	COLOR = 3
 	MOVESET
 		MOVE = 1150.0 360.0 10
 		MOVE = 1150.0 360.0 60
 		MOVE = 1050.0 570.0 20
 		MOVE = -50.0 570.0 180
-	END_MOVESET
-END_ENEMYSET
-
-#---------------------------------------
-# WAVE19の情報(TYPE 10を複数配置)[3]
-#---------------------------------------
-#--------------------
-# 1 
-#--------------------
-ENEMYSET
-	FRAME = 20
-	POS = 1000.0 680.0 0.0
-	TYPE = 10
-	LIFE = 10
-	NUM = 2
-	INTERVAL = 10
-	MOVESET
-		MOVE = 900.0 380.0 15
-		MOVE = 820.0 280.0 15
-		MOVE = 770.0 230.0 15
-		MOVE = 720.0 280.0 15
-		MOVE = 640.0 380.0 15
-		MOVE = 540.0 680.0 15
-	END_MOVESET
-END_ENEMYSET
-
-#--------------------
-# 2
-#--------------------
-ENEMYSET
-	FRAME = 50
-	POS = 1000.0 680.0 0.0
-	TYPE = 10
-	LIFE = 10
-	NUM = 2
-	INTERVAL = 10
-	MOVESET
-		MOVE = 900.0 380.0 15
-		MOVE = 820.0 280.0 15
-		MOVE = 770.0 230.0 15
-		MOVE = 720.0 280.0 15
-		MOVE = 640.0 380.0 15
-		MOVE = 540.0 680.0 15
-	END_MOVESET
-END_ENEMYSET
-
-#--------------------
-# 3
-#--------------------
-ENEMYSET
-	FRAME = 80
-	POS = 1000.0 680.0 0.0
-	TYPE = 10
-	LIFE = 10
-	NUM = 2
-	INTERVAL = 10
-	MOVESET
-		MOVE = 900.0 380.0 15
-		MOVE = 820.0 280.0 15
-		MOVE = 770.0 230.0 15
-		MOVE = 720.0 280.0 15
-		MOVE = 640.0 380.0 15
-		MOVE = 540.0 680.0 15
 	END_MOVESET
 END_ENEMYSET
 

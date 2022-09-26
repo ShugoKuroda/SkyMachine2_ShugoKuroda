@@ -54,6 +54,7 @@ private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//頂点バッファのポインタ
 	CNumber *m_apNumber[MAX_CONTINUE];		//ライフに使用する数字
 	CUi *m_pUi[MAX_UI];						//UI情報の格納用
+	CObject2D *m_pFade;						//フェード用
 	int m_nContinue;						//ライフを格納
 	int m_nCountDown;						//コンティニューのカウントダウン
 	static bool m_bContinue;				//コンティニュー中かどうか

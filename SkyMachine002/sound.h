@@ -29,6 +29,7 @@ public:
 		// ゲームSE音
 		SOUND_LABEL_SE_ENTRY,			// 自機登場
 		SOUND_LABEL_SE_SHOT,			// 弾発射
+		SOUND_LABEL_SE_SHOT2,			// 弾発射
 		SOUND_LABEL_SE_HIT,				// 弾ヒット
 		SOUND_LABEL_SE_EXPLOSION,		// 爆発
 		SOUND_LABEL_SE_EXPLOSION_BOSS,	// ボス爆破
@@ -36,6 +37,9 @@ public:
 		SOUND_LABEL_SE_DIE_BOSS,		// ボス撃破
 		SOUND_LABEL_SE_ITEM,			// アイテム取得
 		SOUND_LABEL_SE_CLEAR,			// ゲームクリア
+		SOUND_LABEL_SE_WARNING,			// 警報サイレン
+		SOUND_LABEL_SE_WARNING2,		// 警報サイレン2
+		SOUND_LABEL_SE_RUSH,			// 敵の突進
 		// UI関連SE音
 		SOUND_LABEL_SE_MENU_IN,			// メニューイン
 		SOUND_LABEL_SE_MENU_OUT,		// メニューアウト

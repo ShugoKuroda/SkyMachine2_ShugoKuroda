@@ -28,7 +28,7 @@ bool CContinue::m_bContinue = false;
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CContinue::CContinue() :m_nContinue(0), m_pVtxBuff(nullptr), m_apNumber{ nullptr }, m_pUi{ nullptr }, m_nCountDown(0)
+CContinue::CContinue() :m_nContinue(0), m_pVtxBuff(nullptr), m_apNumber{ nullptr }, m_pUi{ nullptr }, m_nCountDown(0), m_pFade(nullptr)
 {
 }
 
@@ -59,6 +59,8 @@ CContinue *CContinue::Create(const D3DXVECTOR3& pos, const D3DXVECTOR2& size)
 			pContinue->m_apNumber[nCntScore]->SetSize(size);
 			// 初期化
 			pContinue->m_apNumber[nCntScore]->Init();
+			// オブジェクトタイプの設定
+			pContinue->m_apNumber[nCntScore]->SetObjType(OBJ_PAUSE);
 		}
 	}
 
@@ -83,12 +85,21 @@ HRESULT CContinue::Init()
 	SetObjType(EObject::OBJ_PAUSE);
 
 	// コンティニュー？のUI
-	m_pUi[0] = CUi::Create(D3DXVECTOR3(500.0f, 300.0f, 0.0f), D3DXVECTOR2(300.0f, 50.0f),
+	m_pUi[0] = CUi::Create(D3DXVECTOR3(550.0f, 300.0f, 0.0f), D3DXVECTOR2(300.0f, 50.0f),
 		CUi::TYPE_CONTINUE, CUi::ANIM_NONE, CUi::PLAYER_NONE);
+	m_pUi[0]->SetObjType(OBJ_PAUSE);
 	// エントリー待ちUIを生成
 	m_pUi[1] = CUi::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 400.0f, 0.0f), D3DXVECTOR2(400.0f, 50.0f),
 		CUi::TYPE_PRESS_ANY_BUTTON, CUi::ANIM_FLASHING, CUi::PLAYER_NONE);
 	m_pUi[1]->SetObjType(OBJ_PAUSE);
+
+	// フェード
+	m_pFade = new CObject2D;
+	m_pFade->SetPosition(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, CRenderer::SCREEN_HEIGHT / 2, 0.0f));
+	m_pFade->SetSize(D3DXVECTOR2(CRenderer::SCREEN_WIDTH, CRenderer::SCREEN_HEIGHT));
+	m_pFade->Init();
+	m_pFade->SetObjType(OBJ_CONTINUE_FADE);
+	m_pFade->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.7f));
 
 	return S_OK;
 }
@@ -118,6 +129,12 @@ void CContinue::Uninit()
 			m_pUi[nCntUi]->Uninit();
 			m_pUi[nCntUi] = nullptr;
 		}
+	}
+
+	if (m_pFade != nullptr)
+	{
+		m_pFade->Uninit();
+		m_pFade = nullptr;
 	}
 
 	// オブジェクトの破棄

@@ -231,6 +231,9 @@ HRESULT CPlayer::Init()
 	// ライフの設定
 	m_pLife->Add(DEFAULT_LIFE);
 
+	// プレイヤー死亡音
+	CSound::Play(CSound::SOUND_LABEL_SE_ENTRY);
+
 	return S_OK;
 }
 
@@ -261,7 +264,8 @@ void CPlayer::Update()
 		CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
 		if (pKeyboard->GetPress(CInputKeyboard::KEYINFO_ATTACK) == true ||
-			pJoypad->GetPress(CInputJoypad::JOYKEY_A, m_nPlayerNum))
+			pJoypad->GetPress(CInputJoypad::JOYKEY_A, m_nPlayerNum) ||
+			pJoypad->GetPress(CInputJoypad::JOYKEY_B, m_nPlayerNum))
 		{//攻撃キー押下
 
 			//攻撃カウンターの加算
@@ -578,7 +582,7 @@ void CPlayer::SetLevel(CItem::EType type)
 		// オプション弾状態がLEVEL_3(最大強化)以外の場合
 		if (m_BulletLevel != CPlayer::LEVEL_3)
 		{// 強化状態を進める
-			m_BulletLevel = (LEVEL)(m_BarrierLevel + 1);
+			m_BulletLevel = (LEVEL)(m_BulletLevel + 1);
 		}
 
 		break;
@@ -768,6 +772,9 @@ void CPlayer::Damage()
 	{
 		// 死亡処理
 		Die();
+
+		// プレイヤー死亡音
+		CSound::Play(CSound::SOUND_LABEL_SE_DIE_PLAYER);
 	}
 	else
 	{
@@ -804,9 +811,6 @@ void CPlayer::Die()
 		// ライフが0未満
 		if (m_pLife->GetLife() < 0)
 		{
-			// 最終スコアの保存
-			CRank::SetScore(m_pScore->GetScore(), m_nPlayerNum);
-
 			// スコアの破棄
 			if (m_pScore != nullptr)
 			{
