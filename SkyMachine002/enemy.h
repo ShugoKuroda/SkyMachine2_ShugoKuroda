@@ -11,6 +11,11 @@
 #include "enemy_data.h"
 
 //*******************************************************************
+//	前方宣言
+//*******************************************************************
+class CPlayer;
+
+//*******************************************************************
 //	敵クラスの定義
 //*******************************************************************
 class CEnemy : public CObject2D
@@ -75,7 +80,7 @@ public:
 	virtual void State();
 	virtual void SetAnim();
 	virtual bool Collision(D3DXVECTOR3 posStart);
-	virtual void Damage(int nDamage);
+	virtual void Damage(int nDamage, CPlayer* pPlayer);
 	void SetMove();
 	D3DXVECTOR3 SetVector();
 	void SetItemColor(COLORITEM color);

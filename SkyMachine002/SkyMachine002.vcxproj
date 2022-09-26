@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="barrier.cpp" />
     <ClCompile Include="base.cpp" />
     <ClCompile Include="bg.cpp" />
     <ClCompile Include="bg_move.cpp" />
@@ -26,6 +27,7 @@
     <ClCompile Include="bullet.cpp" />
     <ClCompile Include="bullet_option.cpp" />
     <ClCompile Include="cloud.cpp" />
+    <ClCompile Include="continue.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemy_boss.cpp" />
@@ -33,12 +35,14 @@
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="fade_scene.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="gauge.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="input_joypad.cpp" />
     <ClCompile Include="input_keyboard.cpp" />
     <ClCompile Include="input_mouse.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="library.cpp" />
+    <ClCompile Include="life.cpp" />
     <ClCompile Include="load.cpp" />
     <ClCompile Include="logo.cpp" />
     <ClCompile Include="main.cpp" />
@@ -59,6 +63,7 @@
     <ClCompile Include="ui.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="barrier.h" />
     <ClInclude Include="base.h" />
     <ClInclude Include="bg.h" />
     <ClInclude Include="bg_move.h" />
@@ -67,6 +72,7 @@
     <ClInclude Include="bullet_option.h" />
     <ClInclude Include="cloud.h" />
     <ClInclude Include="cloud_data.h" />
+    <ClInclude Include="continue.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemy_boss.h" />
@@ -75,12 +81,14 @@
     <ClInclude Include="fade.h" />
     <ClInclude Include="fade_scene.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="gauge.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="input_joypad.h" />
     <ClInclude Include="input_keyboard.h" />
     <ClInclude Include="input_mouse.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="library.h" />
+    <ClInclude Include="life.h" />
     <ClInclude Include="load.h" />
     <ClInclude Include="logo.h" />
     <ClInclude Include="main.h" />

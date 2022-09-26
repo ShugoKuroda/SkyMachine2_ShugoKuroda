@@ -20,6 +20,8 @@
 #include "game.h"
 #include "result.h"
 
+#include "continue.h"
+
 #include <time.h>
 
 //*****************************************************************************
@@ -224,21 +226,68 @@ void CManager::Update()
 		m_pRenderer->Update();
 	}
 
+	// キーボード情報の取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
 	// ジョイパッド情報の取得
 	CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-	// プレイヤーのエントリー処理
-	for (int nCntController = 0; nCntController < CPlayer::PLAYER_MAX; nCntController++)
+	// コンティニュー演出状態の取得
+	bool bContinue = CContinue::GetContinue();
+
+	// コンティニュー演出中ではないなら
+	if (bContinue == false)
 	{
-		for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_MAX; nCnt++)
+		for (int nCnt = CInputKeyboard::KEYINFO_OK; nCnt < CInputKeyboard::KEYINFO_MAX; nCnt++)
 		{
-			if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, nCntController) && m_bEntry[nCntController] == false)
+			// キーボードのENTRY処理
+			if (pKeyboard->GetTrigger(nCnt) && m_bEntry[CPlayer::PLAYER_1] == false)
+			{
+				// ボタンを押したコントローラーをENTRY状態にする
+				SetEntry(CPlayer::PLAYER_1, true);
+				// エントリー音
+				CSound::Play(CSound::SOUND_LABEL_SE_MENU_IN);
+
+				break;
+			}
+		}
+
+		// プレイヤーのエントリー処理
+		for (int nCntController = 0; nCntController < CPlayer::PLAYER_MAX; nCntController++)
+		{
+			for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_MAX; nCnt++)
+			{
+				if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, nCntController) && m_bEntry[nCntController] == false)
+				{
+					// ボタンを押したコントローラーをENTRY状態にする
+					SetEntry(nCntController, true);
+					// エントリー音
+					CSound::Play(CSound::SOUND_LABEL_SE_MENU_IN);
+					break;
+				}
+			}
+		}
+	}
+	// コンティニュー演出中なら
+	if (bContinue == true)
+	{
+		// キーボードのENTRY処理
+		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_OK) && m_bEntry[CPlayer::PLAYER_1] == false)
+		{
+			// ボタンを押したコントローラーをENTRY状態にする
+			SetEntry(CPlayer::PLAYER_1, true);
+			// エントリー音
+			CSound::Play(CSound::SOUND_LABEL_SE_MENU_IN);
+		}
+
+		// プレイヤーのエントリー処理
+		for (int nCntController = 0; nCntController < CPlayer::PLAYER_MAX; nCntController++)
+		{
+			if (pJoypad->GetTrigger(CInputJoypad::JOYKEY_START, nCntController) && m_bEntry[nCntController] == false)
 			{
 				// ボタンを押したコントローラーをENTRY状態にする
 				SetEntry(nCntController, true);
 				// エントリー音
 				CSound::Play(CSound::SOUND_LABEL_SE_MENU_IN);
-				break;
 			}
 		}
 	}

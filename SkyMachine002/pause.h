@@ -37,7 +37,7 @@ public:
 
 	static HRESULT Load(void);		//テクスチャの読み込み
 	static void Unload(void);		//テクスチャの削除
-	static CPause *Create();
+	static CPause *Create(int nNumPlayer);
 
 	HRESULT Init() override;
 	void Uninit() override;
@@ -48,6 +48,7 @@ public:
 private:
 	bool m_bPause;
 	int m_nPauseSelect;					// ポーズメニューから遷移する場所を保存
+	int m_nNumPlayer;					// ポーズメニューを開いたプレイヤー
 
 	static LPDIRECT3DTEXTURE9 m_apTexture[TYPE_MAX];	//テクスチャのポインタ
 	static CObject2D *m_apObject2D[TYPE_MAX];			//2Dポリゴンへのポインタ

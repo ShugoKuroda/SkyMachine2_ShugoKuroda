@@ -16,6 +16,7 @@
 #include "library.h"
 
 #include "score.h"
+#include "item.h"
 
 #include "player.h"
 #include "bullet.h"
@@ -207,9 +208,12 @@ void CEnemy::Update()
 	if (m_nLife <= 0)
 	{// ライフが0
 
-		// スコア加算
-		CScore *pScore = CGame::GetScore();
-		pScore->Add(400);
+		// 色が通常以外なら
+		if (m_col != COLOR_NONE)
+		{//死亡時にアイテムドロップ
+			CItem::Create(pos, (CItem::EType)m_col);
+		}
+
 		// 爆発の生成
 		CExplosion::Create(pos,GetSize());
 		// 破棄
@@ -237,6 +241,8 @@ void CEnemy::Update()
 
 	//当たり判定
 	Collision(pos);
+
+
 	//アニメーション処理
 	SetAnim();
 	//状態管理
@@ -272,11 +278,19 @@ void CEnemy::Draw()
 //-----------------------------------------------------------------------------------------------
 // ダメージ処理
 //-----------------------------------------------------------------------------------------------
-void CEnemy::Damage(int nDamage)
+void CEnemy::Damage(int nDamage,CPlayer* pPlayer)
 {
 	m_nLife -= nDamage;
 	m_state = STATE_DAMAGE;
 	m_nCntState = 5;
+
+	// ライフが0以下
+	if (m_nLife <= 0)
+	{
+		// スコア加算
+		CScore *pScore = pPlayer->GetScore();
+		pScore->Add(200);
+	}
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -347,7 +361,7 @@ bool CEnemy::Collision(D3DXVECTOR3 posStart)
 				//敵と当たったら(球体の当たり判定)
 				if (LibrarySpace::SphereCollision2D(posStart, pPlayer->GetPosition(), fStartLength, pPlayer->GetLength() - 30.0f))
 				{//ダメージ処理
-					pPlayer->Damage(1);
+					pPlayer->Damage();
 					return true;	//当たった
 				}
 			}

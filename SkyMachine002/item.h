@@ -62,7 +62,6 @@ public:
 private:
 	//メンバ変数
 	static LPDIRECT3DTEXTURE9 m_apTexture[TYPE_MAX];	//テクスチャのポインタ
-	D3DXVECTOR3 m_move;				//移動量
 	float m_fRot;					//回転の角度
 	int m_nCntAnim;					//アニメーションカウンター
 	int m_nPatternAnim;				//アニメーションのパターンNo.

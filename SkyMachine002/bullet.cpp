@@ -13,9 +13,11 @@
 #include "renderer.h"
 
 #include "library.h"
+#include "game.h"
 
 #include "player.h"
 #include "enemy.h"
+#include "enemy_boss.h"
 #include "explosion.h"
 
 //-----------------------------------------------------------------------------------------------
@@ -112,6 +114,9 @@ HRESULT CBullet::Load()
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/bullet002.png",
 		&m_apTexture[TYPE_ENEMY_RED]);
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/bullet004.png",
+		&m_apTexture[TYPE_PLAYER_GREEN]);
 
 	return S_OK;
 }
@@ -233,15 +238,20 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 			CObject::EObject objType = pObject->GetObjType();
 
 			//プレイヤーの弾と敵の判定
-			if (objType == OBJ_ENEMY && m_parent == PARENT_PLAYER)
+			if (objType == OBJ_ENEMY && m_parent == PARENT_PLAYER1||
+				objType == OBJ_ENEMY && m_parent == PARENT_PLAYER2)
 			{
 				//オブジェクトポインタを敵にキャスト
 				CEnemy *pEnemy = (CEnemy*)pObject;
 
 				if (LibrarySpace::SphereCollision2D(posStart, pEnemy->GetPosition(), fStartLength, pEnemy->GetLength()))
 				{//弾と当たったら(球体の当たり判定)
+
+					// プレイヤー情報の取得
+					CPlayer *pPlayer = CGame::GetPlayer(m_parent);
+
 					//ダメージ処理
-					pEnemy->Damage(m_nDamage);
+					pEnemy->Damage(m_nDamage, pPlayer);
 					// 弾の破棄
 					Uninit();
 					return true;	//当たった
@@ -249,18 +259,28 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 			}
 
 			//プレイヤーの弾と敵ボスの判定
-			else if (objType == OBJ_ENEMYBOSS && m_parent == PARENT_PLAYER)
+			else if (objType == OBJ_ENEMYBOSS && m_parent == PARENT_PLAYER1 ||
+					objType == OBJ_ENEMYBOSS && m_parent == PARENT_PLAYER2)
 			{
 				//オブジェクトポインタを敵にキャスト
-				CEnemy *pEnemy = (CEnemy*)pObject;
+				CEnemyBoss *pEnemyBoss = (CEnemyBoss*)pObject;
+				CEnemyBoss::PATTERN pat = pEnemyBoss->GetPattern();
 
-				if (LibrarySpace::SphereCollision2D(posStart, pEnemy->GetPosition(), fStartLength - 60.0f, pEnemy->GetLength()))
-				{//弾と当たったら(球体の当たり判定)
-				 //ダメージ処理
-					pEnemy->Damage(m_nDamage);
-					// 弾の破棄
-					Uninit();
-					return true;	//当たった
+				// ボスが登場中または死亡中以外
+				if (pat != CEnemyBoss::PATTERN_ENTRY && pat != CEnemyBoss::PATTERN_DIE)
+				{
+					if (LibrarySpace::SphereCollision2D(posStart, pEnemyBoss->GetPosition(), fStartLength - 60.0f, pEnemyBoss->GetLength()))
+					{//弾と当たったら(球体の当たり判定)
+
+						// プレイヤー情報の取得
+						CPlayer *pPlayer = CGame::GetPlayer(m_parent);
+
+						//ダメージ処理
+						pEnemyBoss->Damage(m_nDamage, pPlayer);
+						// 弾の破棄
+						Uninit();
+						return true;	//当たった
+					}
 				}
 			}
 
@@ -279,8 +299,8 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 					}
 					if (LibrarySpace::SphereCollision2D(posStart, pPlayer->GetPosition(), fStartLength - 10.0f, pPlayer->GetLength() - 30.0f))
 					{//弾と当たったら(球体の当たり判定)
-					 //ダメージ処理
-						pPlayer->Damage(m_nDamage);
+						//ダメージ処理
+						pPlayer->Damage();
 						// 弾の破棄
 						Uninit();
 						return true;	//当たった

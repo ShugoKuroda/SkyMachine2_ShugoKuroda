@@ -16,6 +16,7 @@
 #include "library.h"
 
 #include "player.h"
+#include "score.h"
 
 //-----------------------------------------------------------------------------------------------
 // 定数定義
@@ -25,7 +26,7 @@ const float CItem::SIZE_WIDTH = 40.0f;
 // 高さ
 const float CItem::SIZE_HEIGHT = 40.0f;
 // 基本移動量
-const float CItem::MOVE_DEFAULT = -5.0f;
+const float CItem::MOVE_DEFAULT = 6.0f;
 // アニメーション間隔
 const int CItem::ANIM_INTERVAL = 5;
 // アニメーション最大数
@@ -45,7 +46,7 @@ LPDIRECT3DTEXTURE9 CItem::m_apTexture[TYPE_MAX] = { nullptr };
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CItem::CItem() :
-	m_move(0.0f, 0.0f, 0.0f), m_fRot(0.0f), m_nCntAnim(0), m_nPatternAnim(0), m_type(TYPE_NONE)
+	m_fRot(0.0f), m_nCntAnim(0), m_nPatternAnim(0), m_type(TYPE_NONE)
 {
 	SetObjType(EObject::OBJ_ITEM);
 }
@@ -64,30 +65,25 @@ CItem::~CItem()
 CItem* CItem::Create(const D3DXVECTOR3& pos, const EType type)
 {
 	// ポインタクラスを宣言
-	CItem* pBullet = new CItem;
+	CItem* pItem = new CItem;
 
-	if (pBullet != nullptr)
+	if (pItem != nullptr)
 	{// もしnullptrではなかったら
 
-		// 位置の保存
-		pBullet->m_move = pos;
-
-		// 位置設定(posの円周上に配置)
-		pBullet->SetPosition(D3DXVECTOR3(pBullet->m_move.x - sinf(pBullet->m_fRot) * 150,
-			pBullet->m_move.y - cosf(pBullet->m_fRot) * 150,
-			0.0f));
+		// 位置の設定
+		pItem->SetPosition(pos);
 
 		//テクスチャ種類の設定
-		pBullet->m_type = type;
+		pItem->m_type = type;
 
 		// 初期化
-		pBullet->Init();
+		pItem->Init();
 
 		// テクスチャの設定
-		pBullet->BindTexture(m_apTexture[pBullet->m_type]);
+		pItem->BindTexture(m_apTexture[pItem->m_type]);
 	}
 
-	return pBullet;
+	return pItem;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -100,16 +96,16 @@ HRESULT CItem::Load()
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet000.png",
+		"data/TEXTURE/item000.png",
 		&m_apTexture[TYPE_RED]);
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet001.png",
+		"data/TEXTURE/item001.png",
 		&m_apTexture[TYPE_BLUE]);
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet002.png",
+		"data/TEXTURE/item002.png",
 		&m_apTexture[TYPE_GREEN]);
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet003.png",
+		"data/TEXTURE/item003.png",
 		&m_apTexture[TYPE_ORANGE]);
 
 	return S_OK;
@@ -157,22 +153,26 @@ void CItem::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CItem::Update()
 {
-	// 移動量の加算
-	m_move.x += MOVE_DEFAULT;
+	// 位置の取得
+	D3DXVECTOR3 pos = GetPosition();
+
 	// 回転量の加算
-	m_fRot += 0.1f;
+	m_fRot += 0.05f;
 	if (m_fRot >= D3DX_PI * 2)
 	{
 		m_fRot = 0.0f;
 	}
 
 	// 移動点を中心に回転させる
-	D3DXVECTOR3 pos = D3DXVECTOR3(m_move.x - sinf(m_fRot) * 150,
-		m_move.y - cosf(m_fRot) * 150,
+	pos += D3DXVECTOR3(sinf(m_fRot) * MOVE_DEFAULT - 2.5f,
+		-cosf(m_fRot) * MOVE_DEFAULT,
 		0.0f);
 
-	if (LibrarySpace::OutScreen2D(&pos, CObject2D::GetSize()))
-	{//画面外に出たら終了
+	// サイズの取得
+	D3DXVECTOR2 size = CObject2D::GetSize();
+
+	if (pos.x + (size.x / 2) <= 0.0f)
+	{//左画面端に出たら終了
 		Uninit();
 		return;
 	}
@@ -240,7 +240,11 @@ bool CItem::Collision(D3DXVECTOR3 posStart)
 			{//アイテムと当たったら(球体の当たり判定)
 
 				//パワーアップ処理
-				//pPlayer->Damage(1);
+				pPlayer->SetLevel(m_type);
+
+				//スコア加算
+				CScore* pScore = pPlayer->GetScore();
+				pScore->Add(200);
 
 				return true;	//当たった
 			}

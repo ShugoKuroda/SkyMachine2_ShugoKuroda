@@ -203,7 +203,8 @@ void CObject::ShakeAll()
 		if (m_apObject[nCntObject] != nullptr)
 		{
 			if (m_apObject[nCntObject]->m_nType != OBJ_PLAYER &&
-				m_apObject[nCntObject]->m_nType != OBJ_BG_MOVE)
+				m_apObject[nCntObject]->m_nType != OBJ_BG_MOVE&&
+				m_apObject[nCntObject]->m_nType != OBJ_PAUSE)
 			{
 				//オブジェクトポインタを敵にキャスト
 				CObject2D *pObject2D = (CObject2D*)m_apObject[nCntObject];

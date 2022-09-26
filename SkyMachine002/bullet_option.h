@@ -8,20 +8,38 @@
 #define _BULLET_OPTION_H_
 
 #include "object2D.h"
-#include "player.h"
 
 //*******************************************************************
 //	弾クラスの定義
 //*******************************************************************
 class CBulletOption : public CObject2D
 {
-public:
+private:
 	// オプションの直径サイズ
 	static const int SIZE = 30;
 	// オプションのダメージ量
-	static const int DAMAGE = 10;
+	static const int DAMAGE = 5;
 
 public:
+	// オプションの最大生成数
+	static const int MAX_NUM = 4;
+
+	// 親プレイヤー
+	enum PARENT
+	{
+		PLAYER_1 = 0,	//1P
+		PLAYER_2,		//2P
+	};
+
+	// 強化状態
+	enum LEVEL
+	{
+		LEVEL_NONE = 0,
+		LEVEL_1,		//1段階目
+		LEVEL_2,		//2段階目
+		LEVEL_3,		//3段階目
+	};
+
 	enum EColor
 	{//色の変化状態
 		FADE_NONE = 0,
@@ -34,7 +52,7 @@ public:
 	~CBulletOption() override;
 
 	//メンバ関数
-	static CBulletOption *Create(const D3DXVECTOR3& pos, const CPlayer::PLAYER& parent);		//インスタンス生成処理
+	static CBulletOption *Create(const float& fRot, const PARENT& parent);		//インスタンス生成処理
 	static HRESULT Load();		//テクスチャの読み込み
 	static void Unload();		//テクスチャの削除
 
@@ -43,15 +61,16 @@ public:
 	void Update() override;
 	void Draw() override;
 
-	bool Collision(D3DXVECTOR3 posStart);
+	void Attack();
+	void SetRad(float fRad) { m_fRad = fRad; }
 
 private:
 	//メンバ変数
-	static LPDIRECT3DTEXTURE9 m_apTexture;		//テクスチャのポインタ
-	float m_fRad;				//角度
-	EColor m_col;				//色の種類
-	int m_nDamage;				//ダメージ量
-	CPlayer::PLAYER m_parent;	//所有するプレイヤー
+	static LPDIRECT3DTEXTURE9 m_apTexture;		// テクスチャのポインタ
+	float m_fRad;				// 角度
+	EColor m_col;				// 色の種類
+	PARENT m_parent;			// 所有するプレイヤー
+	int m_nCounterAttack;		// 攻撃カウンター
 };
 
 #endif		// _BULLET_H_

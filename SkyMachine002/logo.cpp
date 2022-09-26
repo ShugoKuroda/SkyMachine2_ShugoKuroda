@@ -11,6 +11,8 @@
 #include "logo.h"
 #include "manager.h"	// アプリケーション
 #include "renderer.h"	// レンダリング
+#include "fade.h"
+#include "game.h"
 
 //-----------------------------------------------------------------------------------------------
 // 定数宣言
@@ -20,13 +22,13 @@
 // 静的メンバ変数
 //-----------------------------------------------------------------------------------------------
 // テクスチャのポインタ
-LPDIRECT3DTEXTURE9 CLogo::m_pTexture[ANIM_MAX] = {};
+LPDIRECT3DTEXTURE9 CLogo::m_pTexture[TYPE_MAX] = {};
 
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
 CLogo::CLogo()
-	:m_nCountUninit(0), m_AnimType(ANIM_NONE)
+	:m_nCountUninit(0), m_AnimType(ANIM_NONE), m_type(TYPE_NONE)
 {
 	SetObjType(EObject::OBJ_LOGO);
 }
@@ -46,7 +48,7 @@ CLogo::~CLogo()
 // const float& fRot → 生成する角度
 // const D3DXCOLOR& col → 生成する色
 // const LOGOTYPE& type → 生成する種類
-// const LOGOTYPE& AnimType → アニメーションの種類
+// const ANIMTYPE& AnimType → アニメーションの種類
 // const int& nCount → 破棄するまでの時間
 //-----------------------------------------------------------------------------------------------
 CLogo* CLogo::Create(const D3DXVECTOR3& pos, const D3DXVECTOR2& size, const D3DXCOLOR& col, const float& fRot, const LOGOTYPE& type, const ANIMTYPE& AnimType, const int& nCount)
@@ -78,11 +80,11 @@ CLogo* CLogo::Create(const D3DXVECTOR3& pos, const D3DXVECTOR2& size, const D3DX
 		// 色設定
 		pLogo->SetColor(col);
 
-		if (type != TYPE_NONE)
-		{
-			// テクスチャの設定
-			pLogo->BindTexture(m_pTexture[type]);
-		}
+		// 種類の設定
+		pLogo->m_type = type;
+
+		// テクスチャの設定
+		pLogo->BindTexture(m_pTexture[type]);
 	}
 
 	return pLogo;
@@ -106,6 +108,15 @@ HRESULT CLogo::Load()
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/logo_002.png",
 		&m_pTexture[TYPE_REMINDER]);
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/logo_003.png",
+		&m_pTexture[TYPE_CLEAR]);
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/logo_004.png",
+		&m_pTexture[TYPE_BONUS]);
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/logo_005.png",
+		&m_pTexture[TYPE_GAMEOVER]);
 
 	return S_OK;
 }
@@ -169,6 +180,16 @@ void CLogo::Update()
 	// 表示カウンターが0以下
 	if (m_nCountUninit <= 0)
 	{// 破棄
+		if (m_type == TYPE_CLEAR || m_type == TYPE_GAMEOVER)
+		{
+			// モードの設定
+			CManager::GetFade()->SetFade(CFade::FADE_OUT, CManager::MODE::MODE_RESULT);
+
+			// プレイヤーのスコアをランキングに設定
+			CGame::SetPlayerScore();
+		}
+
+		// 破棄
 		Uninit();
 		return;
 	}

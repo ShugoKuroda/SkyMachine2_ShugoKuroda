@@ -58,13 +58,13 @@ bool LibrarySpace::SteyInScreen2D(D3DXVECTOR3 *pPos, D3DXVECTOR2 size)
     }
 
     // 画面の上
-    if (pPos->y < size.y / 2)
-    {
+	if (pPos->y < 100.0f + size.y / 2)
+	{
 		// 押し出す
-        pPos->y = size.y / 2;
-        // 押し出しフラグをtrueに
-        bScreenIn = true;
-    }
+		pPos->y = 100.0f + size.y / 2;
+		// 押し出しフラグをtrueに
+		bScreenIn = true;
+	}
 
     // 画面の下
     if (pPos->y > SCREEN_HEIGHT - size.y / 2)

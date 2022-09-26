@@ -24,7 +24,7 @@ CObject2D *CPause::m_apObject2D[TYPE_MAX] = {};
 //=============================================================================
 // CBulletのコンストラクタ
 //=============================================================================
-CPause::CPause() :m_bPause(false), m_nPauseSelect(0), m_bWait(false)
+CPause::CPause() :m_bPause(false), m_nPauseSelect(0), m_bWait(false), m_nNumPlayer(0)
 {
 	for (int nCnt = 0; nCnt < TYPE_MAX; nCnt++)
 	{
@@ -80,7 +80,7 @@ void CPause::Unload()
 //=============================================================================
 // 生成処理
 //=============================================================================
-CPause *CPause::Create()
+CPause *CPause::Create(int nNumPlayer)
 {
 	// ポインタ変数の生成
 	CPause *pPause = new CPause;
@@ -88,6 +88,9 @@ CPause *CPause::Create()
 	// NULLチェック
 	if (pPause != nullptr)
 	{
+		// ポーズメニューを開いたプレイヤー
+		pPause->m_nNumPlayer = nNumPlayer;
+
 		// 初期化処理
 		pPause->Init();
 	}
@@ -181,7 +184,7 @@ void CPause::Update()
 		// ゲームパッド情報の取得
 		CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_UP) == true || pJoypad->GetTrigger(CInputJoypad::JOYKEY_UP, 0) == true)
+		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_UP) == true || pJoypad->GetTrigger(CInputJoypad::JOYKEY_UP, m_nNumPlayer) == true)
 		{
 			// 現在選択されている項目の色を元に戻す
 			m_apObject2D[m_nPauseSelect]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
@@ -203,7 +206,7 @@ void CPause::Update()
 			// 効果音
 			CSound::Play(CSound::SOUND_LABEL_SE_MENU_SELECT);
 		}
-		else if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_DOWN) || pJoypad->GetTrigger(CInputJoypad::JOYKEY_DOWN, 0))
+		else if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_DOWN) || pJoypad->GetTrigger(CInputJoypad::JOYKEY_DOWN, m_nNumPlayer))
 		{
 			// 現在選択されている項目の色を元に戻す
 			m_apObject2D[m_nPauseSelect]->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
@@ -229,7 +232,7 @@ void CPause::Update()
 		// 現在選択されている項目は色を黄色に設定
 		m_apObject2D[m_nPauseSelect]->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));
 
-		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_OK) || pJoypad->GetTrigger(CInputJoypad::JOYKEY_A, 0))
+		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_OK) || pJoypad->GetTrigger(CInputJoypad::JOYKEY_A, m_nNumPlayer))
 		{
 			// 選択されているUIを参照し、どの処理をするか決定
 			switch (m_nPauseSelect)
@@ -257,7 +260,7 @@ void CPause::Update()
 
 		// ポーズ画面を終える
 		if (pKeyboard->GetTrigger(CInputKeyboard::KEYINFO_PAUSE) ||
-			pJoypad->GetTrigger(CInputJoypad::JOYKEY_START, 0))
+			pJoypad->GetTrigger(CInputJoypad::JOYKEY_START, m_nNumPlayer))
 		{
 			if (m_bWait == true)
 			{

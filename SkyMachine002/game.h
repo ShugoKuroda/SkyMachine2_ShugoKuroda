@@ -54,13 +54,13 @@ public:		//メンバ関数
 	// プレイヤー情報の取得
 	static CPlayer *GetPlayer(int nNum) { return m_pPlayer[nNum]; }
 	// スコア情報の取得
-	static CScore *GetScore() { return m_pScore; }
-	// スコア情報の取得
 	static CMeshField *GetMeshField() { return m_pMeshField; }
 	// 泡の生成状態を取得
 	static bool GetBubble() { return m_bCreateCloud; }
 	// ボス死亡フラグを取得
 	static bool GetDieBoss() { return m_bDieBoss; }
+	// プレイヤーのスコアをランキングに設定
+	static void SetPlayerScore();
 
 private:
 	// テクスチャ読み込み
@@ -71,7 +71,6 @@ private:
 private:	//メンバ変数
 	// プレイヤー情報
 	static CPlayer *m_pPlayer[CPlayer::PLAYER_MAX];
-	static CScore *m_pScore;
 	static CMeshField *m_pMeshField;
 
 	// 雲を生成するかどうか

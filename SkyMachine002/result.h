@@ -1,7 +1,7 @@
 //=============================================================================
 //
 // リザルト画面処理 [result.h]
-// Author : itsuki takaiwa
+// Author : SHUGO KURODA
 //
 //=============================================================================
 #ifndef _RESULT_H_
@@ -21,6 +21,12 @@ public:
 	HRESULT Init() override;
 	void Uninit() override;
 	void Update() override;
+
+private:
+	// テクスチャ読み込み
+	static void LoadAll();
+	// テクスチャ破棄
+	static void UnloadAll();
 };
 
 #endif

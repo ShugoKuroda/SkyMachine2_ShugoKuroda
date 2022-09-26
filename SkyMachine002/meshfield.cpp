@@ -233,6 +233,7 @@ void CMeshField::Update()
 		}
 	}
 
+	// I—¹ƒtƒ‰ƒO‚ª—§‚Á‚½‚ç
 	if (m_bUninit == true)
 	{
 		m_col.a -= 0.01f;

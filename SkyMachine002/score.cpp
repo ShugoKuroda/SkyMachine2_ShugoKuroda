@@ -8,10 +8,7 @@
 //*****************************************************************************
 // インクルード
 //*****************************************************************************
-#include "main.h"
 #include "object2D.h"
-#include "renderer.h"
-#include "manager.h"
 #include "score.h"
 #include "number.h"
 
@@ -25,6 +22,8 @@ LPDIRECT3DTEXTURE9 CScore::m_pTexture = nullptr;
 //=============================================================================
 CScore::CScore() :m_nScore(0)
 {
+	//オブジェクトの種類設定
+	SetObjType(EObject::OBJ_PAUSE);
 }
 
 //=============================================================================
@@ -36,8 +35,11 @@ CScore::~CScore()
 
 //=============================================================================
 // 生成
+// const D3DXVECTOR3& pos → 生成する位置
+// const D3DXVECTOR2& size → 生成するサイズ
+// const int& nNumSpace → 数字の間隔
 //=============================================================================
-CScore *CScore::Create()
+CScore *CScore::Create(const D3DXVECTOR3& pos, const D3DXVECTOR2& size,const int& nNumSpace)
 {
 	CScore *pScore = new CScore;
 
@@ -46,16 +48,16 @@ CScore *CScore::Create()
 		for (int nCntScore = 0; nCntScore < MAX_SCORE; nCntScore++)
 		{
 			// 数字ポリゴン生成
-			pScore->pNumber[nCntScore] = new CNumber;
+			pScore->m_apNumber[nCntScore] = new CNumber;
 
-			if (pScore->pNumber[nCntScore] != nullptr)
+			if (pScore->m_apNumber[nCntScore] != nullptr)
 			{
 				// 位置設定
-				pScore->pNumber[nCntScore]->SetPosition(D3DXVECTOR3(900.0f + (nCntScore * 20.0f), 50.0f, 0.0f));
+				pScore->m_apNumber[nCntScore]->SetPosition(D3DXVECTOR3(pos.x + (nCntScore * nNumSpace), pos.y, pos.z));
 				// サイズ設定
-				pScore->pNumber[nCntScore]->SetSize(D3DXVECTOR2(30.0f, 30.0f));
+				pScore->m_apNumber[nCntScore]->SetSize(size);
 				// 初期化
-				pScore->pNumber[nCntScore]->Init();
+				pScore->m_apNumber[nCntScore]->Init();
 			}
 		}
 	}
@@ -78,6 +80,19 @@ HRESULT CScore::Init()
 //=============================================================================
 void CScore::Uninit()
 {
+	for (int nCntNumber = 0; nCntNumber < MAX_SCORE; nCntNumber++)
+	{
+		// 中身があるなら
+		if (m_apNumber[nCntNumber] != nullptr)
+		{
+			// 数字情報の終了処理
+			m_apNumber[nCntNumber]->Uninit();
+			m_apNumber[nCntNumber] = nullptr;
+		}
+	}
+
+	// オブジェクトの破棄
+	Release();
 }
 
 //=============================================================================
@@ -106,6 +121,35 @@ void CScore::Add(const int& nScore)
 //=============================================================================
 // スコアの設定
 //=============================================================================
+void CScore::Set(const int & nScore)
+{
+	m_nScore = nScore;
+	Set();
+}
+
+//=============================================================================
+// 色の設定
+//=============================================================================
+void CScore::SetColor(D3DXCOLOR col)
+{
+	for (int nCntNumber = 0; nCntNumber < MAX_SCORE; nCntNumber++)
+	{
+		// 中身があるなら
+		if (m_apNumber[nCntNumber] != nullptr)
+		{// 数字情報の色を設定
+			m_apNumber[nCntNumber]->SetColor(col);
+		}
+	}
+}
+
+D3DXCOLOR CScore::GetColor()
+{
+	return m_apNumber[0]->GetColor();
+}
+
+//=============================================================================
+// スコアの設定
+//=============================================================================
 void CScore::Set()
 {
 	//各桁の数値を格納(pPostexU[桁ごとの数値])
@@ -123,6 +167,6 @@ void CScore::Set()
 	//テクスチャを更新する
 	for (int nCntScore = 0; nCntScore < MAX_SCORE; nCntScore++)
 	{
-		pNumber[nCntScore]->SetAnimation(aPosTexU[nCntScore], 0, CNumber::DIVISION_U, CNumber::DIVISION_V);
+		m_apNumber[nCntScore]->SetAnimation(aPosTexU[nCntScore], 0, CNumber::DIVISION_U, CNumber::DIVISION_V);
 	}
 }

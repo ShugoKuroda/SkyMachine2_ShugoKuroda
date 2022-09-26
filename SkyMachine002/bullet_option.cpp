@@ -28,7 +28,7 @@ LPDIRECT3DTEXTURE9 CBulletOption::m_apTexture = { nullptr };
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
-CBulletOption::CBulletOption() :m_fRad(0.0f), m_nDamage(0), m_col(FADE_NONE)
+CBulletOption::CBulletOption() :m_fRad(0.0f), m_col(FADE_NONE), m_nCounterAttack(0)
 {
 	SetObjType(EObject::OBJ_BULLET);
 }
@@ -44,7 +44,7 @@ CBulletOption::~CBulletOption()
 //-----------------------------------------------------------------------------------------------
 // 生成
 //-----------------------------------------------------------------------------------------------
-CBulletOption* CBulletOption::Create(const D3DXVECTOR3& pos, const CPlayer::PLAYER& parent)
+CBulletOption* CBulletOption::Create(const float& fRot, const PARENT& parent)
 {
 	// ポインタクラスを宣言
 	CBulletOption* pOption = new CBulletOption;
@@ -52,8 +52,8 @@ CBulletOption* CBulletOption::Create(const D3DXVECTOR3& pos, const CPlayer::PLAY
 	if (pOption != nullptr)
 	{// もしnullptrではなかったら
 
-		// 位置設定
-		pOption->SetPosition(pos);
+		// 角度の設定
+		pOption->m_fRad = fRot;
 
 		//親の設定(所有するプレイヤー)
 		pOption->m_parent = parent;
@@ -102,8 +102,13 @@ void CBulletOption::Unload()
 //-----------------------------------------------------------------------------------------------
 HRESULT CBulletOption::Init()
 {
-	//ダメージ量の設定
-	m_nDamage = DAMAGE;
+	// プレイヤー位置の取得
+	D3DXVECTOR3 posPlayer = CGame::GetPlayer(m_parent)->GetPosition();
+
+	// 位置設定
+	CObject2D::SetPosition(D3DXVECTOR3(posPlayer.x - sinf(m_fRad) * 100,
+		posPlayer.y - cosf(m_fRad) * 100,
+		0.0f));
 
 	// 色状態の初期化
 	m_col = FADE_GREEN;
@@ -165,11 +170,27 @@ void CBulletOption::Update()
 		}
 	}
 
-
 	// 位置の取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
+
 	// プレイヤー位置の取得
-	D3DXVECTOR3 posPlayer = CGame::GetPlayer(m_parent)->GetPosition();
+	D3DXVECTOR3 posPlayer;
+
+	CPlayer* pPlayer = CGame::GetPlayer(m_parent);
+	if (pPlayer != nullptr)
+	{
+		posPlayer = CGame::GetPlayer(m_parent)->GetPosition();
+
+		// 位置の更新(プレイヤーを中心に回転させる)
+		pos = D3DXVECTOR3(posPlayer.x - sinf(m_fRad) * 100,
+			posPlayer.y - cosf(m_fRad) * 100,
+			0.0f);
+	}
+	else
+	{
+		Uninit();
+		return;
+	}
 
 	// 回転量の加算
 	m_fRad += 0.1f;
@@ -177,14 +198,6 @@ void CBulletOption::Update()
 	{
 		m_fRad = 0.0f;
 	}
-
-	// 位置の更新(プレイヤーを中心に回転させる)
-	pos = D3DXVECTOR3(posPlayer.x - sinf(m_fRad) * 100,
-		posPlayer.y - cosf(m_fRad) * 100,
-		0.0f);
-
-	//当たり判定(球体)
-	Collision(pos);
 
 	// 位置の更新
 	CObject2D::SetPosition(pos);
@@ -205,47 +218,24 @@ void CBulletOption::Draw()
 }
 
 //-----------------------------------------------------------------------------------------------
-// 当たり判定
+// 攻撃処理
 //-----------------------------------------------------------------------------------------------
-bool CBulletOption::Collision(D3DXVECTOR3 posStart)
+void CBulletOption::Attack()
 {
-	//弾のサイズ取得
-	float fStartLength = GetLength();
+	// カウンター加算
+	m_nCounterAttack++;
 
-	for (int nCntObject = 0; nCntObject < CObject::MAX_OBJECT; nCntObject++)
+	// カウンターが一定数以上
+	if (m_nCounterAttack >= 5)
 	{
-		CObject *pObject = CObject::GetObject(nCntObject);
-		if (pObject != nullptr)
-		{
-			CObject::EObject objType = pObject->GetObjType();
+		//カウンター初期化
+		m_nCounterAttack = 0;
 
-			//プレイヤーの弾と敵の判定
-			if (objType == OBJ_ENEMY)
-			{
-				//オブジェクトポインタを敵にキャスト
-				CEnemy *pEnemy = (CEnemy*)pObject;
+		// 位置の取得
+		D3DXVECTOR3 pos = GetPosition();
 
-				if (LibrarySpace::SphereCollision2D(posStart, pEnemy->GetPosition(), fStartLength, pEnemy->GetLength()))
-				{//弾と当たったら(球体の当たり判定)
-				 //ダメージ処理
-					pEnemy->Damage(m_nDamage);
-				}
-			}
-
-			//プレイヤーの弾と敵ボスの判定
-			else if (objType == OBJ_ENEMYBOSS)
-			{
-				//オブジェクトポインタを敵にキャスト
-				CEnemy *pEnemy = (CEnemy*)pObject;
-
-				if (LibrarySpace::SphereCollision2D(posStart, pEnemy->GetPosition(), fStartLength - 60.0f, pEnemy->GetLength()))
-				{//弾と当たったら(球体の当たり判定)
-				 //ダメージ処理
-					pEnemy->Damage(m_nDamage);
-				}
-			}
-		}
+		//弾の設定
+		CBullet::Create(pos, D3DXVECTOR3(15.0f, 0.0f, 0.0f),
+			DAMAGE, CBullet::TYPE_PLAYER_GREEN)->SetParent((CBullet::EParent)m_parent);
 	}
-
-	return false;		//当たってない
 }

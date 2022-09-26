@@ -8,6 +8,7 @@
 #include "load.h"
 #include "enemy_data.h"
 #include "game.h"
+#include "rank.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -20,6 +21,8 @@
 EnemyInfo g_aEnemyInfo[MAX_WAVE];	//敵情報の取得
 ParentEnemyInfo g_aParentEnemyInfo[MAX_WAVE];	//ボスが生成する敵情報の取得
 int g_nMaxWave;
+// スコア格納用
+int g_aScore[CRank::MAX_RANKING];
 
 //-----------------------------------------------------------------------------
 //	敵のセットロード
@@ -234,4 +237,56 @@ ParentEnemyInfo *LoadSpace::GetParentEnemy()
 int LoadSpace::GetWave()
 {
 	return g_nMaxWave;
+}
+
+//-----------------------------------------------------------------------------
+//	ランキングスコアのロード
+//-----------------------------------------------------------------------------
+int *LoadSpace::LoadScore()
+{
+	//ファイルを開く
+	FILE *pFile = fopen("data/TEXT/Rank.txt", "r");			//ファイルポインター宣言
+
+	if (pFile != NULL)
+	{
+		// テキストからスコア数値を読み込み
+		for (int nCnt = 0; nCnt < CRank::MAX_RANKING; nCnt++)
+		{
+			fscanf(pFile, "%d", &g_aScore[nCnt]);
+		}
+	}
+	else
+	{
+		printf("ファイルが開けませんでした\n");
+	}
+
+	//ファイルを閉じる
+ 	fclose(pFile);
+
+	return &g_aScore[0];
+}
+
+//-----------------------------------------------------------------------------
+//	ランキングスコアのセーブ
+//-----------------------------------------------------------------------------
+void LoadSpace::SaveScore(int *pScore)
+{
+	//ファイルを開く
+	FILE *pFile = fopen("data/TEXT/Rank.txt", "w");			//ファイルポインター宣言
+
+	if (pFile != NULL)
+	{
+		// テキストへスコア数値を書き込み
+		for (int nCnt = 0; nCnt < CRank::MAX_RANKING; nCnt++)
+		{
+			fprintf(pFile, "%d\n", pScore[nCnt]);
+		}
+	}
+	else
+	{
+		printf("ファイルが開けませんでした\n");
+	}
+
+	//ファイルを閉じる
+	fclose(pFile);
 }

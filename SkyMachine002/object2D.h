@@ -49,6 +49,9 @@ public:
 	void SetAnimation(int nAnimU, int nAnimV, int nPartU, int nPartV);
 	void SetAnimation(int nAnimU, int nAnimV, float fPartU, float fPartV);
 	void SetAnimBg(int nSpeed, int nPattern, bool bRightToLeft);
+	void SetAnimBgLeftUp(int nSpeed, int nPattern, bool bRightToLeft);
+
+	void SetTextureRange(int nRange, int nPattern);
 	// テクスチャの設定
 	void BindTexture(LPDIRECT3DTEXTURE9 Texture) { m_pTexture = Texture; }
 

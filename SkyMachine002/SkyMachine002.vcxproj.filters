@@ -39,6 +39,10 @@
     <ClCompile Include="bg_move.cpp" />
     <ClCompile Include="bullet_option.cpp" />
     <ClCompile Include="item.cpp" />
+    <ClCompile Include="barrier.cpp" />
+    <ClCompile Include="gauge.cpp" />
+    <ClCompile Include="life.cpp" />
+    <ClCompile Include="continue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="input.h" />
@@ -81,5 +85,9 @@
     <ClInclude Include="bg_move.h" />
     <ClInclude Include="bullet_option.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="barrier.h" />
+    <ClInclude Include="gauge.h" />
+    <ClInclude Include="life.h" />
+    <ClInclude Include="continue.h" />
   </ItemGroup>
 </Project>

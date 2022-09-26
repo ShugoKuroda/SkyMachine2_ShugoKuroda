@@ -57,7 +57,7 @@ private:
 	int m_nCounterAnim;
 	int m_nPatternAnim;
 	bool m_bCol;			//色変更フラグ
-	bool m_bUninit;			//終了するかどうか
+	bool m_bUninit;	//終了するかどうか
 };
 
 #endif		// _MESHFIELD_H_

@@ -27,6 +27,8 @@ public:
 		LOGO_PLAYER,	// プレイヤーロゴ
 		LOGO_TITLE,		// タイトルロゴ
 		LOGO_PRESS,		// PRESSロゴ
+		BG_FADE,		// 画面を薄暗くする用
+		LOGO_TUTORIAL,	// チュートリアル
 		LOGO_SHADOW,	// プレイヤーロゴ(黒)
 		OBJ_MAX			// 背景の最大数
 	};
@@ -52,6 +54,9 @@ private:
 	int m_nCountMoveBg;
 	bool m_bTitleDraw;
 	bool m_bPressFade;
+	int m_nCntLoop;		// タイトル演出をループさせるまでの時間
+	bool m_bEntry[2];
+	bool m_bTutorial;
 };
 
 #endif		// _TITLE_H_

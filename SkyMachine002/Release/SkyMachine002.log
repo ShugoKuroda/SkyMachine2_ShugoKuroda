@@ -1,7 +1,16 @@
-﻿  enemy_boss.cpp
+﻿  bullet.cpp
+  effect.cpp
+  enemy_boss.cpp
+enemy_boss.cpp(491): warning C4244: '引数': 'const int' から 'FLOAT' への変換です。データが失われる可能性があります。
+  game.cpp
+game.cpp(99): warning C4244: '引数': 'const int' から 'FLOAT' への変換です。データが失われる可能性があります。
+game.cpp(209): warning C4244: '引数': 'const int' から 'FLOAT' への変換です。データが失われる可能性があります。
+  main.cpp
+  player.cpp
+  title.cpp
   コード生成しています。
-  1 of 344 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
+  5 of 527 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\SkyMachine2_ShugoKuroda\SkyMachine002\SkyMachine002.exe

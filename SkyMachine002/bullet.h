@@ -33,7 +33,8 @@ private:
 public:
 	enum EParent
 	{//íeÇÃê∂ê¨å≥(èäóLé“)
-		PARENT_PLAYER = 0,
+		PARENT_PLAYER1 = 0,
+		PARENT_PLAYER2,
 		PARENT_ENEMY,
 		PARENT_MAX
 	};
@@ -44,6 +45,7 @@ public:
 		TYPE_ENEMY_ORANGE,
 		TYPE_ENEMY_LASER,
 		TYPE_ENEMY_RED,
+		TYPE_PLAYER_GREEN,
 		TYPE_MAX
 	};
 

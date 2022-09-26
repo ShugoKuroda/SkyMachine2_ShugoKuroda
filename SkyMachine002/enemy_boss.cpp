@@ -24,12 +24,14 @@
 #include "player.h"
 #include "bullet.h"
 #include "explosion.h"
+#include "meshfield.h"
+#include "logo.h"
 
 //-----------------------------------------------------------------------------------------------
 // 定数宣言
 //-----------------------------------------------------------------------------------------------
 // 体力
-const int CEnemyBoss::LIFE = 100;
+const int CEnemyBoss::LIFE = 3000;
 // 幅
 const float CEnemyBoss::SIZE_WIDTH = 300.0f;
 // 高さ
@@ -186,7 +188,7 @@ bool CEnemyBoss::Collision(D3DXVECTOR3 posStart)
 //-----------------------------------------------------------------------------------------------
 // ダメージ処理
 //-----------------------------------------------------------------------------------------------
-void CEnemyBoss::Damage(int nDamage)
+void CEnemyBoss::Damage(int nDamage, CPlayer* pPlayer)
 {
 	// ボスの死亡フラグ取得
 	bool bDie = CGame::GetDieBoss();
@@ -194,7 +196,7 @@ void CEnemyBoss::Damage(int nDamage)
 	// ボスが死亡していなければ
 	if (bDie == false)
 	{
-		CEnemy::Damage(nDamage);
+		CEnemy::Damage(nDamage, pPlayer);
 	}
 }
 
@@ -447,10 +449,6 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 
 		if (m_nCounter == 1)
 		{
-			// スコア加算
-			CScore *pScore = CGame::GetScore();
-			pScore->Add(400);
-
 			// 白フェードの生成
 			CFadeScene::Create(CFadeScene::TYPE_WHITE);
 
@@ -478,9 +476,33 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 			if (LibrarySpace::OutScreen2D(&pos, size) == true)
 			{
 				//画面を揺らす
-				CObject::SetShake(60);
+				//CObject::SetShake(60);
 				// 破棄
 				Uninit();
+
+				// メッシュ背景の破棄
+				CMeshField *pMesh = CGame::GetMeshField();
+				if (pMesh != nullptr)
+				{
+					pMesh->SetUninit(true);
+				}
+
+				// ゲームクリアロゴの生成
+				CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 300.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH, 100.0f), 
+					D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_CLEAR, CLogo::ANIM_LENGTHWISE, 420);
+
+				CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 500.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH / 4, 150.0f),
+					D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_BONUS, CLogo::ANIM_LENGTHWISE, 420);
+
+				// ボーナススコア加算
+				for (int nCnt = 0; nCnt < CPlayer::PLAYER_MAX; nCnt++)
+				{
+					CPlayer *pPlayer = CGame::GetPlayer(nCnt);
+					if (pPlayer != nullptr)
+					{
+						pPlayer->GetScore()->Add(30000);
+					}
+				}
 				return true;
 			}
 		}

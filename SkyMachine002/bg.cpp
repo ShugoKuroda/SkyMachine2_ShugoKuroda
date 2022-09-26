@@ -32,13 +32,8 @@ CObject2D *CBg::m_apObject2D[BG_A_MAX] = {};
 //-----------------------------------------------------------------------------------------------
 CBg::CBg() :m_set(SET_NONE), m_nCntBgChange(0)
 {
-	for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
-	{
-		m_apObject2D[nCnt] = nullptr;
-	}
-
 	//オブジェクトの種類設定
-	SetObjType(EObject::OBJ_BG);
+	SetObjType(EObject::OBJ_BG_MOVE);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -125,6 +120,8 @@ HRESULT CBg::Init()
 		for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
 		{// 生成
 			m_apObject2D[nCnt] = new CObject2D;
+			//オブジェクトの種類設定
+			m_apObject2D[nCnt]->SetObjType(EObject::OBJ_BG);
 		}
 		
 		//波の背景のみ前で描画する
