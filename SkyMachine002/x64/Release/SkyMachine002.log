@@ -1,0 +1,109 @@
+﻿  barrier.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  base.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\renderer.h(13): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  bg.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  bg_move.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  bubble.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  bullet.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  bullet_option.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  cloud.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  continue.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  effect.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  enemy.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  enemy_boss.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  explosion.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  fade.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  fade_scene.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\renderer.h(13): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  game.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  gauge.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  input.cpp
+  input_joypad.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\renderer.h(13): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  input_keyboard.cpp
+  コンパイル中...
+  input_mouse.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\renderer.h(13): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  item.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  library.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\renderer.h(13): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  life.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  load.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\renderer.h(13): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  logo.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  main.cpp
+main.cpp(11): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  manager.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  meshfield.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  number.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  object.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  object2D.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  pause.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  player.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  rank.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  renderer.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\renderer.h(13): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  result.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  score.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  sound.cpp
+sound.cpp(79): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [34]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(79): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(91): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [29]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(91): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(121): error C2664: 'HANDLE CreateFileW(LPCWSTR,DWORD,DWORD,LPSECURITY_ATTRIBUTES,DWORD,DWORD,HANDLE)': 引数 1 を 'char *' から 'LPCWSTR' へ変換できません。
+  sound.cpp(121): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(124): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [40]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(124): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(129): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [40]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(129): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(137): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [34]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(137): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(143): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [34]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(143): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(148): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [34]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(148): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(156): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [32]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(156): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(162): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [32]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(162): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(170): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [36]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(170): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(177): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [36]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(177): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+sound.cpp(185): error C2664: 'int MessageBoxW(HWND,LPCWSTR,LPCWSTR,UINT)': 引数 2 を 'const char [27]' から 'LPCWSTR' へ変換できません。
+  sound.cpp(185): note: 指示された型は関連がありません。変換には reinterpret_cast、C スタイル キャストまたは関数スタイルのキャストが必要です。
+  spray.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  コンパイル中...
+  title.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\renderer.h(13): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory
+  ui.cpp
+c:\users\student\desktop\gitフォルダ\gamelibrary_shugokuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_skymachine2\01_開発環境\skymachine002\object.h(10): fatal error C1083: include ファイルを開けません。'd3dx9.h':No such file or directory

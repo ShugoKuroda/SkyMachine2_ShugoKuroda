@@ -248,7 +248,10 @@ bool CItem::Collision(D3DXVECTOR3 posStart)
 
 				//ƒXƒRƒA‰ÁŽZ
 				CScore* pScore = pPlayer->GetScore();
-				pScore->Add(200);
+				if (pScore != nullptr)
+				{
+					pScore->Add(200);
+				}
 
 				return true;	//“–‚½‚Á‚½
 			}

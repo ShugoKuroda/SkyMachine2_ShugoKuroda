@@ -289,7 +289,11 @@ void CEnemy::Damage(int nDamage,CPlayer* pPlayer)
 	{
 		// ƒXƒRƒA‰ÁŽZ
 		CScore *pScore = pPlayer->GetScore();
-		pScore->Add(200);
+
+		if (pScore != nullptr)
+		{
+			pScore->Add(200);
+		}
 	}
 }
 

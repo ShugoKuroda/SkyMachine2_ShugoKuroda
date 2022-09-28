@@ -504,7 +504,7 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 			if (LibrarySpace::OutScreen2D(&pos, size) == true)
 			{
 				//‰æ–Ê‚ğ—h‚ç‚·
-				CObject::SetShake(60);
+				//CObject::SetShake(60);
 				// ƒ{ƒX€–S‰¹
 				CSound::Play(CSound::SOUND_LABEL_SE_EXPLOSION_BOSS);
 				// ”jŠü
@@ -518,10 +518,10 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 				}
 
 				// ƒQ[ƒ€ƒNƒŠƒAƒƒS‚Ì¶¬
-				CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 300.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH, 100.0f), 
+				CLogo::Create(D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH / 2, 300.0f, 0.0f), D3DXVECTOR2((float)CRenderer::SCREEN_WIDTH, 100.0f),
 					D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_CLEAR, CLogo::ANIM_LENGTHWISE, 420);
 
-				CLogo::Create(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, 500.0f, 0.0f), D3DXVECTOR2(CRenderer::SCREEN_WIDTH / 4, 150.0f),
+				CLogo::Create(D3DXVECTOR3((float)CRenderer::SCREEN_WIDTH / 2, 500.0f, 0.0f), D3DXVECTOR2((float)CRenderer::SCREEN_WIDTH / 4, 150.0f),
 					D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, CLogo::TYPE_BONUS, CLogo::ANIM_LENGTHWISE, 420);
 
 				// ƒQ[ƒ€ƒNƒŠƒA‰¹
@@ -533,7 +533,13 @@ bool CEnemyBoss::Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move)
 					CPlayer *pPlayer = CGame::GetPlayer(nCnt);
 					if (pPlayer != nullptr)
 					{
-						pPlayer->GetScore()->Add(30000);
+						// ƒXƒRƒA
+						CScore* pScore = pPlayer->GetScore();
+							
+						if (pScore != nullptr)
+						{
+							pScore->Add(30000);
+						}
 					}
 				}
 				return true;

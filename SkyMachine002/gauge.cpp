@@ -158,7 +158,7 @@ void CGauge::Update()
 		size.x = SIZE_X / ((float)MAX_LEVEL / ((float)nPlayerLevel + 1.0f));
 
 		// ‰æ‘œ‚Ì•`‰æ”ÍˆÍ‚ğ’²®
-		CObject2D::SetTextureRange(nPlayerLevel + 1.0f, MAX_LEVEL);
+		CObject2D::SetTextureRange(nPlayerLevel + 1, MAX_LEVEL);
 		break;
 
 		// ƒIƒvƒVƒ‡ƒ“’e

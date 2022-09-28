@@ -1,6 +1,0 @@
-﻿  library.cpp
-  enemy_boss.cpp
-c:\users\student\desktop\gitフォルダ\skymachine2_shugokuroda\skymachine002\enemy_boss.cpp(491): warning C4244: '引数': 'const int' から 'FLOAT' への変換です。データが失われる可能性があります。
-  コードを生成中...
-  SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\SkyMachine2_ShugoKuroda\SkyMachine002\SkyMachine002.exe
-  SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\SkyMachine2_ShugoKuroda\SkyMachine002\SkyMachine002.pdb (Full PDB)

@@ -97,7 +97,7 @@ HRESULT CGame::Init()
 		// エントリーしていれば
 		if (bEntry == true)
 		{// プレイヤー生成
-			m_pPlayer[nCntPlayer] = CPlayer::Create(D3DXVECTOR3(-630.0f, CRenderer::SCREEN_HEIGHT, 0.0f), nCntPlayer);
+			m_pPlayer[nCntPlayer] = CPlayer::Create(D3DXVECTOR3(-630.0f, (float)CRenderer::SCREEN_HEIGHT, 0.0f), nCntPlayer);
 		}
 		// エントリーしていなければ
 		else if (bEntry == false)
@@ -130,6 +130,9 @@ HRESULT CGame::Init()
 	// 背景の生成
 	CBg::Create(CBg::SET_A);
 
+	//ポインタの初期化
+	m_pPlayer[CPlayer::PLAYER_MAX] = { nullptr };
+	m_pMeshField = nullptr;
 	m_bCreateCloud = true;
 	m_bCreateBubble = false;
 	m_bDieBoss = false;
@@ -153,6 +156,24 @@ void CGame::Uninit()
 
 	// 決定音
 	CSound::Stop();
+
+	// プレイヤー破棄
+	for (int nCntPlayer = 0; nCntPlayer < CPlayer::PLAYER_MAX; nCntPlayer++)
+	{
+		if (m_pPlayer[nCntPlayer] != nullptr)
+		{
+			m_pPlayer[nCntPlayer]->Uninit();
+			m_pPlayer[nCntPlayer] = nullptr;
+		}
+	}
+
+	// メッシュ破棄
+	if (m_pMeshField != nullptr)
+	{
+		m_pMeshField->Uninit();
+		m_pMeshField = nullptr;
+	}
+	
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -213,7 +234,7 @@ void CGame::Update()
 			// エントリーしていれば
 			if (bEntry == true)
 			{// プレイヤー生成
-				m_pPlayer[nCntPlayer] = CPlayer::Create(D3DXVECTOR3(-630.0f, CRenderer::SCREEN_HEIGHT, 0.0f), nCntPlayer);
+				m_pPlayer[nCntPlayer] = CPlayer::Create(D3DXVECTOR3(-630.0f, (float)CRenderer::SCREEN_HEIGHT, 0.0f), nCntPlayer);
 			}
 		}
 		// プレイヤー破棄
@@ -438,7 +459,12 @@ void CGame::SetPlayerScore()
 				// プレイヤースコアの初期化
 				CRank::SetScore(0, nCntPlayer);
 
-				CRank::SetScore(m_pPlayer[nCntPlayer]->GetScore()->GetScore(), nCntPlayer);
+				CScore* pScore = m_pPlayer[nCntPlayer]->GetScore();
+				if (pScore != nullptr)
+				{
+					int nSocre = pScore->GetScore();
+					CRank::SetScore(nSocre, nCntPlayer);
+				}
 			}
 		}
 	}

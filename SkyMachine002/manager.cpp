@@ -254,7 +254,7 @@ void CManager::Update()
 		// プレイヤーのエントリー処理
 		for (int nCntController = 0; nCntController < CPlayer::PLAYER_MAX; nCntController++)
 		{
-			for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_MAX; nCnt++)
+			for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_LEFT_STICK; nCnt++)
 			{
 				if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, nCntController) && m_bEntry[nCntController] == false)
 				{

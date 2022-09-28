@@ -4,6 +4,7 @@
 // Author : SHUGO KURODA
 //
 //=============================================================================
+#include "manager.h"
 #include "result.h"
 #include "rank.h"
 #include "number.h"
@@ -57,6 +58,11 @@ void CResult::Uninit()
 
 	// BGMストップ
 	CSound::Stop();
+
+	// ボタンを押したコントローラーをENTRY状態にする
+	CManager::SetEntry(0, false);
+	// ボタンを押したコントローラーをENTRY状態にする
+	CManager::SetEntry(1, false);
 }
 
 //=============================================================================

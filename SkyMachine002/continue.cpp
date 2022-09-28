@@ -96,7 +96,7 @@ HRESULT CContinue::Init()
 	// フェード
 	m_pFade = new CObject2D;
 	m_pFade->SetPosition(D3DXVECTOR3(CRenderer::SCREEN_WIDTH / 2, CRenderer::SCREEN_HEIGHT / 2, 0.0f));
-	m_pFade->SetSize(D3DXVECTOR2(CRenderer::SCREEN_WIDTH, CRenderer::SCREEN_HEIGHT));
+	m_pFade->SetSize(D3DXVECTOR2((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT));
 	m_pFade->Init();
 	m_pFade->SetObjType(OBJ_CONTINUE_FADE);
 	m_pFade->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.7f));
