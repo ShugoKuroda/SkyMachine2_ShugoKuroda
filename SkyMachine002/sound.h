@@ -72,4 +72,4 @@ private:
 	static SOUNDPARAM m_aParam[SOUND_LABEL_MAX];
 };
 
-#endif
+#endif		// _SOUND_H_

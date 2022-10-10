@@ -77,20 +77,34 @@ public:
 	virtual void Update() override;
 	virtual void Draw() override;
 
+	// 状態管理
 	virtual void State();
-	virtual void SetAnim();
+	// 当たり判定
 	virtual bool Collision(D3DXVECTOR3 posStart);
+	// ダメージ処理
 	virtual void Damage(int nDamage, CPlayer* pPlayer);
+	// 挙動管理
+	void SetAnim();
+	// 移動情報の設定
 	void SetMove();
+	// ベクトル管理
 	D3DXVECTOR3 SetVector();
+	// 色の設定(落とすアイテムの種類を設定)
 	void SetItemColor(COLORITEM color);
 
+	// 種類の設定
 	void SetType(TYPE type) { m_type = type; }
+	// ライフの設定
 	void SetLife(int nLife) { m_nLife = nLife; }
+	// 移動量の設定
 	void SetMove(D3DXVECTOR3 move) { m_move = move; }
+	// 種類の取得
 	TYPE GetType() { return m_type; }
+	// ライフの取得
 	int GetLife() { return m_nLife; }
+	// 移動量の取得
 	D3DXVECTOR3 GetMove() { return m_move; }
+	// テクスチャポインタの取得
 	LPDIRECT3DTEXTURE9 GetTexture(int nNum) { return m_apTexture[nNum]; }
 
 private:

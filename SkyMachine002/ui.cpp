@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------------------------
 //
-// ロゴ処理[logo.cpp]
+// UI処理[ui.cpp]
 // Author : SHUGO KURODA
 //
 //-----------------------------------------------------------------------------------------------
@@ -38,7 +38,6 @@ CUi::CUi() :m_nCountUninit(0), m_AnimType(ANIM_NONE)
 //-----------------------------------------------------------------------------------------------
 CUi::~CUi()
 {
-
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -88,42 +87,18 @@ HRESULT CUi::Load()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI000.png",
-		&m_pTexture[TYPE_AREA_A]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI001.png",
-		&m_pTexture[TYPE_PLAYER1]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI002.png",
-		&m_pTexture[TYPE_PLAYER2]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI003.png",
-		&m_pTexture[TYPE_PRESS_ANY_BUTTON]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI004.png",
-		&m_pTexture[TYPE_TO_START]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI005.png",
-		&m_pTexture[TYPE_LIFE1]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI006.png",
-		&m_pTexture[TYPE_LIFE2]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI007.png",
-		&m_pTexture[TYPE_BULLET]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI008.png",
-		&m_pTexture[TYPE_BULLET_OPTION]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI009.png",
-		&m_pTexture[TYPE_BARRIER]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI011.png",
-		&m_pTexture[TYPE_OK]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/UI012.png",
-		&m_pTexture[TYPE_CONTINUE]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI000.png", &m_pTexture[TYPE_AREA_A]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI001.png", &m_pTexture[TYPE_PLAYER1]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI002.png", &m_pTexture[TYPE_PLAYER2]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI003.png", &m_pTexture[TYPE_PRESS_ANY_BUTTON]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI004.png", &m_pTexture[TYPE_TO_START]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI005.png", &m_pTexture[TYPE_LIFE1]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI006.png", &m_pTexture[TYPE_LIFE2]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI007.png", &m_pTexture[TYPE_BULLET]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI008.png", &m_pTexture[TYPE_BULLET_OPTION]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI009.png", &m_pTexture[TYPE_BARRIER]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI011.png", &m_pTexture[TYPE_OK]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/UI012.png", &m_pTexture[TYPE_CONTINUE]);
 
 	return S_OK;
 }

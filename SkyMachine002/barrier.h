@@ -1,9 +1,9 @@
-//===================================================================
+//-------------------------------------------------------------------
 //
-//	オプション弾の処理[bullet_option.h]
-//	Author:SHUGO KURODA
+// バリア処理[barrier.h]
+// Author : SHUGO KURODA
 //
-//===================================================================
+//-------------------------------------------------------------------
 #ifndef _BARRIER_H_
 #define _BARRIER_H_
 
@@ -61,14 +61,16 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	// テクスチャアニメーション
+	void Animation();
+	// バリア強化状態の設定
 	void SetBarrier(LEVEL col);
 
 private:
 	//メンバ変数
 	static LPDIRECT3DTEXTURE9 m_apTexture[LEVEL_MAX];		// テクスチャのポインタ
-	float m_fRad;				// 角度
-	LEVEL m_col;				// 色の種類
-	int m_nDamage;				// ダメージ量
+	float m_fRad;		// 角度
+	LEVEL m_level;		// 強化段階
 	PARENT m_parent;	// 所有するプレイヤー
 
 	// アニメーション用カウンター

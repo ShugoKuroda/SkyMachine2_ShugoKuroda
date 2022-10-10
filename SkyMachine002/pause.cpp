@@ -40,7 +40,6 @@ CPause::CPause() :m_bPause(false), m_nPauseSelect(0), m_bWait(false), m_nNumPlay
 //=============================================================================
 CPause::~CPause()
 {
-
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -103,8 +102,10 @@ CPause *CPause::Create(int nNumPlayer)
 //=============================================================================
 HRESULT CPause::Init()
 {
+	// ポーズ状態の設定
 	SetPause();
 
+	
 	for (int nCnt = 0; nCnt < TYPE_MAX; nCnt++)
 	{// 生成
 		m_apObject2D[nCnt] = new CObject2D;
@@ -116,7 +117,7 @@ HRESULT CPause::Init()
 	// スクリーンサイズの保存
 	D3DXVECTOR2 ScreenSize = D3DXVECTOR2((float)CRenderer::SCREEN_WIDTH, (float)CRenderer::SCREEN_HEIGHT);
 
-	// 
+	// ポーズ番号の設定
 	m_nPauseSelect = TYPE_RESUME;
 
 	// ポーズ画面枠

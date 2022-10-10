@@ -23,6 +23,9 @@
 //-----------------------------------------------------------------------------------------------
 // マクロ定義
 //-----------------------------------------------------------------------------------------------
+#define DEFAULT_COL				(D3DXCOLOR(0.7f, 0.7f, 1.0f, 1.0f))		// 背景の初期色
+#define DEFAULT_FADE_COL		(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f))		// フェード背景の初期色
+
 #define BG_INTERVAL_IN_SEA		(2180)		// 海に入る演出の開始時間
 #define BG_INTERVAL_SEA_WEED	(2360)		// 海藻の描画開始時間
 #define BG_INTERVAL_BUBBLE		(2540)		// 水泡の描画開始時間
@@ -137,6 +140,7 @@ HRESULT CBg::Init()
 		m_apObject2D[BG_A_WAVE2]->SetObjType(CObject::OBJ_WAVE2);
 		m_apObject2D[BG_A_WAVE3]->SetObjType(CObject::OBJ_WAVE3);
 
+		/* 各背景の位置とサイズを設定 */
 		//空
 		m_apObject2D[BG_A_SKY]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, (ScreenSize.y / 2) - 100.0f, 0.0f));
 		m_apObject2D[BG_A_SKY]->SetSize(D3DXVECTOR2(ScreenSize.x, ScreenSize.y - 200.0f));
@@ -171,31 +175,30 @@ HRESULT CBg::Init()
 		m_apObject2D[BG_A_FADEBLACK]->SetPosition(D3DXVECTOR3(ScreenSize.x / 2, ScreenSize.y / 2, 0.0f));
 		m_apObject2D[BG_A_FADEBLACK]->SetSize(D3DXVECTOR2(ScreenSize.x, ScreenSize.y));
 
+		// 初期化とテクスチャの設定
 		for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
-		{// 初期化とテクスチャの設定
+		{
 			m_apObject2D[nCnt]->Init();
 			m_apObject2D[nCnt]->BindTexture(m_apTexture[nCnt]);
 		}
 
+		// 色の設定
 		for (int nCnt = BG_A_ROCK; nCnt < BG_A_FADEBLACK; nCnt++)
-		{// 初期化とテクスチャの設定
-			//色の設定
-			m_apObject2D[nCnt]->SetColor(D3DXCOLOR(0.7f, 0.7f, 1.0f, 1.0f));
+		{
+			m_apObject2D[nCnt]->SetColor(DEFAULT_COL);
 		}
-		m_apObject2D[BG_A_FADEBLACK]->SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+		// フェード背景だけ別色に設定
+		m_apObject2D[BG_A_FADEBLACK]->SetColor(DEFAULT_FADE_COL);
 
 		break;
 
 	case SET_B:		// ZONE_B
-
 		break;
 
 	case SET_C:		// ZONE_C
-
 		break;
 
 	default:
-
 		break;
 	}
 
@@ -207,6 +210,7 @@ HRESULT CBg::Init()
 //-----------------------------------------------------------------------------------------------
 void CBg::Uninit()
 {
+	// 背景ポリゴンの終了
 	for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
 	{
 		if (m_apObject2D[nCnt] != nullptr)
@@ -216,6 +220,7 @@ void CBg::Uninit()
 		}
 	}
 
+	// 背景オブジェクトの終了
 	Release();
 }
 
@@ -224,55 +229,94 @@ void CBg::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CBg::Update()
 {
+	// 背景フェード
+	FadeBack();
+
+	// 背景全体のアニメーション処理
+	AnimationBgAll();
+}
+
+//-----------------------------------------------------------------------------------------------
+//	描画
+//-----------------------------------------------------------------------------------------------
+void CBg::Draw()
+{
+}
+
+//-----------------------------------------------------------------------------------------------
+//	背景フェード
+//-----------------------------------------------------------------------------------------------
+void CBg::FadeBack()
+{
+	// フェード背景の色を取得
 	D3DXCOLOR col = m_apObject2D[BG_A_FADEBLACK]->GetColor();
+	// 透明にする
 	col.a -= 0.01f;
+
 	if (col.a > 0.0f)
-	{
+	{// 完全透明になるまで色設定
 		m_apObject2D[BG_A_FADEBLACK]->SetColor(col);
 	}
+}
 
-	//海を常に横アニメーションする
+//-----------------------------------------------------------------------------------------------
+//	背景全体のアニメーション処理
+//-----------------------------------------------------------------------------------------------
+void CBg::AnimationBgAll()
+{
+	// 海を常に横アニメーションする
 	m_apObject2D[BG_A_SEA]->SetAnimBg(1, 1000, true);
 
-	//背景移動までのカウンターを加算
+	// 背景移動までのカウンターを加算
 	m_nCntBgChange++;
 
+	// 一定時間経過で海に入る演出を止める
 	if (m_nCntBgChange >= BG_INTERVAL_OUT_SEA)
 	{
-		//カウンターを止める
+		// カウンターを止める
 		m_nCntBgChange = m_nCntBgChange;
-		//床のアニメーション
+		// 床のアニメーション
 		m_apObject2D[BG_A_FLOOR]->SetAnimBg(1, 1000, true);
-		//岩のアニメーション
+		// 岩のアニメーション
 		m_apObject2D[BG_A_ROCK]->SetAnimBg(1, 2000, true);
-		//海藻のアニメーション
+		// 海藻のアニメーション
 		m_apObject2D[BG_A_SETWEED]->SetAnimBg(1, 1500, true);
-		//海藻2のアニメーション
+		// 海藻2のアニメーション
 		m_apObject2D[BG_A_SETWEED2]->SetAnimBg(1, 1000, true);
 	}
-	//一定時間経過で海に入る演出を開始する
+	// 一定時間経過で海に入る演出を開始する
 	else if (m_nCntBgChange >= BG_INTERVAL_IN_SEA)
 	{
-		//背景位置の取得
+		// 背景位置の保存用
 		D3DXVECTOR3 aPosBg[BG_A_MAX];
 		for (int nCnt = 0; nCnt < BG_A_MAX; nCnt++)
-		{
+		{// 背景位置の取得
 			aPosBg[nCnt] = m_apObject2D[nCnt]->GetPosition();
 		}
-		//海のサイズを取得
+
+		// 海のサイズを取得
 		D3DXVECTOR2 sizeSea = m_apObject2D[BG_A_SEA]->GetSize();
 
+		// 背景ポリゴンの移動倍率を設定
 		float fMul = 1.5f;
 
+		// 一定時間経過で泡の生成を開始
 		if (m_nCntBgChange >= BG_INTERVAL_BUBBLE)
 		{
 			//泡エフェクトの生成を開始する
 			CGame::SetCreateBubble(true);
 
+			// 背景ポリゴンの移動倍率を設定
 			fMul = 0.75f;
-			sizeSea.y += 0.5f;
+
+			/* 各背景ポリゴンの高さを変える */
+			// 海
 			aPosBg[BG_A_SEA].y += 0.5f;
+			// サイズも変える
+			sizeSea.y += 0.5f;
+			// 海中
 			aPosBg[BG_A_UNDERWATER].y += 0.25f;
+			// 空
 			aPosBg[BG_A_SKY].y += 0.25f;
 
 			//床のアニメーション
@@ -287,8 +331,10 @@ void CBg::Update()
 			//雲の生成を止める
 			CGame::SetCreateCloud(false);
 		}
+		// 一定時間経過で海中背景のアニメーションを開始
 		else if (m_nCntBgChange >= BG_INTERVAL_SEA_WEED)
 		{
+			// 背景ポリゴンの移動倍率を設定
 			fMul = 3.0f;
 
 			//岩のアニメーション
@@ -301,30 +347,43 @@ void CBg::Update()
 
 		//雲を背景に合わせて動かす
 		CCloud::AddPos(fMul);
-		
+
 		//背景に合わせて他オブジェクトを移動
 		CCloud::Move(-0.5f * fMul);		//雲
 		CSpray::Move(-1.0f * fMul);		//水しぶき
 
+		/* 各背景ポリゴンの高さを変える */
+		// 空
 		aPosBg[BG_A_SKY].y -= 0.5f * fMul;
+		// 海中
 		aPosBg[BG_A_UNDERWATER].y -= 0.5f * fMul;
-		//海のみサイズも変える
-		aPosBg[BG_A_SEA].y -= 0.75f * fMul;
-		sizeSea.y -= 0.5f * fMul;
+
+		// 海中の床
 		aPosBg[BG_A_FLOOR].y -= 1.0f * fMul;
+		// 海中の岩
 		aPosBg[BG_A_ROCK].y -= 1.0f * fMul;
+		// 海藻1
 		aPosBg[BG_A_SETWEED].y -= 1.0f * fMul;
+		// 海藻2
 		aPosBg[BG_A_SETWEED2].y -= 1.0f * fMul;
 
+		// 波1
 		aPosBg[BG_A_WAVE1].y -= 1.0f * fMul;
+		// 波2
 		aPosBg[BG_A_WAVE2].y -= 1.0f * fMul;
+		// 波3
 		aPosBg[BG_A_WAVE3].y -= 1.0f * fMul;
 
+		// 海
+		aPosBg[BG_A_SEA].y -= 0.75f * fMul;
+		// サイズも変える
+		sizeSea.y -= 0.5f * fMul;
+
 		if (sizeSea.y <= 0.0f)
-		{
+		{// 海面のテクスチャ設定
 			m_apObject2D[BG_A_SEA]->BindTexture(m_apTexture[BG_A_SEA_OTHER]);
 		}
-
+		// 海面のサイズ設定
 		m_apObject2D[BG_A_SEA]->SetSize(sizeSea);
 
 		//背景位置の設定
@@ -339,11 +398,4 @@ void CBg::Update()
 		m_apObject2D[BG_A_WAVE2]->SetAnimBg(4, 200, true);
 		m_apObject2D[BG_A_WAVE3]->SetAnimBg(2, 200, true);
 	}
-}
-
-//-----------------------------------------------------------------------------------------------
-//	描画
-//-----------------------------------------------------------------------------------------------
-void CBg::Draw()
-{
 }

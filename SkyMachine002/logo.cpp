@@ -15,10 +15,6 @@
 #include "game.h"
 
 //-----------------------------------------------------------------------------------------------
-// 定数宣言
-//-----------------------------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------------------------
 // 静的メンバ変数
 //-----------------------------------------------------------------------------------------------
 // テクスチャのポインタ
@@ -30,6 +26,7 @@ LPDIRECT3DTEXTURE9 CLogo::m_pTexture[TYPE_MAX] = {};
 CLogo::CLogo()
 	:m_nCountUninit(0), m_AnimType(ANIM_NONE), m_type(TYPE_NONE)
 {
+	// オブジェクトタイプの設定
 	SetObjType(EObject::OBJ_LOGO);
 }
 
@@ -38,7 +35,6 @@ CLogo::CLogo()
 //-----------------------------------------------------------------------------------------------
 CLogo::~CLogo()
 {
-
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -99,24 +95,12 @@ HRESULT CLogo::Load()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/logo_000.png",
-		&m_pTexture[TYPE_WARNING]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/logo_001.png",
-		&m_pTexture[TYPE_WARNING_SUB]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/logo_002.png",
-		&m_pTexture[TYPE_REMINDER]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/logo_003.png",
-		&m_pTexture[TYPE_CLEAR]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/logo_004.png",
-		&m_pTexture[TYPE_BONUS]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/logo_005.png",
-		&m_pTexture[TYPE_GAMEOVER]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/logo_000.png", &m_pTexture[TYPE_WARNING]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/logo_001.png", &m_pTexture[TYPE_WARNING_SUB]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/logo_002.png", &m_pTexture[TYPE_REMINDER]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/logo_003.png", &m_pTexture[TYPE_CLEAR]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/logo_004.png", &m_pTexture[TYPE_BONUS]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/logo_005.png", &m_pTexture[TYPE_GAMEOVER]);
 
 	return S_OK;
 }
@@ -174,6 +158,29 @@ void CLogo::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CLogo::Update()
 {
+	// 終了処理の管理
+	UninitControl();
+
+	// 挙動管理
+	SetMove();
+
+	//頂点座標の設定
+	CObject2D::SetVertex();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 描画
+//-----------------------------------------------------------------------------------------------
+void CLogo::Draw()
+{
+	CObject2D::Draw();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 終了処理の管理
+//-----------------------------------------------------------------------------------------------
+void CLogo::UninitControl()
+{
 	// カウントを減らす
 	m_nCountUninit--;
 
@@ -193,7 +200,13 @@ void CLogo::Update()
 		Uninit();
 		return;
 	}
+}
 
+//-----------------------------------------------------------------------------------------------
+// 挙動管理
+//-----------------------------------------------------------------------------------------------
+void CLogo::SetMove()
+{
 	// サイズの取得
 	D3DXVECTOR2 size = GetSize();
 
@@ -233,15 +246,4 @@ void CLogo::Update()
 
 	//サイズの設定
 	CObject2D::SetSize(size);
-
-	//頂点座標の設定
-	CObject2D::SetVertex();
-}
-
-//-----------------------------------------------------------------------------------------------
-// 描画
-//-----------------------------------------------------------------------------------------------
-void CLogo::Draw()
-{
-	CObject2D::Draw();
 }

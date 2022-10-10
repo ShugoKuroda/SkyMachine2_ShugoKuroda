@@ -15,7 +15,7 @@
 class CPlayer;
 
 //*******************************************************************
-//	敵クラスの定義
+//	敵ボスクラスの定義
 //*******************************************************************
 class CEnemyBoss : public CEnemy
 {
@@ -68,7 +68,6 @@ public:
 	bool Collision(D3DXVECTOR3 posStart) override;
 	void Damage(int nDamage, CPlayer* pPlayer) override;
 	void State() override;
-	void SetAnim() override;
 	bool Pattern(D3DXVECTOR3& pos, D3DXVECTOR2& size, D3DXVECTOR3& move);
 	void ChangeSize(D3DXVECTOR2 *pSize, const float& fSize);
 	void StateReset();

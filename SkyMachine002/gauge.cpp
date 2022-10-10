@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------------------------
 //
-// ロゴ処理[logo.cpp]
+// 能力ゲージ処理[gauge.cpp]
 // Author : SHUGO KURODA
 //
 //-----------------------------------------------------------------------------------------------
@@ -34,6 +34,7 @@ LPDIRECT3DTEXTURE9 CGauge::m_pTexture = {};
 //-----------------------------------------------------------------------------------------------
 CGauge::CGauge() :m_type(TYPE_NONE), m_parent(PLAYER_1)
 {
+	// オブジェクトタイプの設定
 	SetObjType(EObject::OBJ_UI);
 }
 
@@ -143,54 +144,8 @@ void CGauge::Update()
 		return;
 	}
 
-	// 変数宣言
-	D3DXVECTOR2 size = GetSize();
-	int nPlayerLevel = 0;
-
-	switch (m_type)
-	{
-		// メイン弾
-	case CGauge::TYPE_BULLET:
-		// メイン弾の強化段階の取得
-		nPlayerLevel = pPlayer->GetBulletLevel();
-
-		// 横サイズ調整
-		size.x = SIZE_X / ((float)MAX_LEVEL / ((float)nPlayerLevel + 1.0f));
-
-		// 画像の描画範囲を調整
-		CObject2D::SetTextureRange(nPlayerLevel + 1, MAX_LEVEL);
-		break;
-
-		// オプション弾
-	case CGauge::TYPE_BULLET_OPTION:
-
-		// オプション弾の強化段階の取得
-		nPlayerLevel = pPlayer->GetOptionLevel();
-
-		// 横サイズ調整
-		size.x = SIZE_X / ((float)MAX_LEVEL / ((float)nPlayerLevel));
-
-		// 画像の描画範囲を調整
-		CObject2D::SetTextureRange(nPlayerLevel, MAX_LEVEL);
-		break;
-
-		// バリア
-	case CGauge::TYPE_BARRIER:
-		// バリアの強化段階の取得
-		nPlayerLevel = pPlayer->GetBarrierLevel();
-
-		// 横サイズ調整
-		size.x = SIZE_X / ((float)MAX_LEVEL / ((float)nPlayerLevel));
-
-		// 画像の描画範囲を調整
-		CObject2D::SetTextureRange(nPlayerLevel, MAX_LEVEL);
-		break;
-	default:
-		break;
-	}
-
-	//サイズの設定
-	CObject2D::SetSize(size);
+	// 状態管理
+	State(pPlayer);
 
 	//頂点座標の設定
 	CObject2D::SetVertex();
@@ -202,4 +157,62 @@ void CGauge::Update()
 void CGauge::Draw()
 {
 	CObject2D::Draw();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 状態管理
+//-----------------------------------------------------------------------------------------------
+void CGauge::State(CPlayer *pPlayer)
+{
+	if (pPlayer != nullptr)
+	{
+		// 変数宣言
+		D3DXVECTOR2 size = GetSize();
+		int nPlayerLevel = 0;
+
+		switch (m_type)
+		{
+			// メイン弾
+		case CGauge::TYPE_BULLET:
+			// メイン弾の強化段階の取得
+			nPlayerLevel = pPlayer->GetBulletLevel();
+
+			// 横サイズ調整
+			size.x = SIZE_X / ((float)MAX_LEVEL / ((float)nPlayerLevel + 1.0f));
+
+			// 画像の描画範囲を調整
+			CObject2D::SetTextureRange(nPlayerLevel + 1, MAX_LEVEL);
+			break;
+
+			// オプション弾
+		case CGauge::TYPE_BULLET_OPTION:
+
+			// オプション弾の強化段階の取得
+			nPlayerLevel = pPlayer->GetOptionLevel();
+
+			// 横サイズ調整
+			size.x = SIZE_X / ((float)MAX_LEVEL / ((float)nPlayerLevel));
+
+			// 画像の描画範囲を調整
+			CObject2D::SetTextureRange(nPlayerLevel, MAX_LEVEL);
+			break;
+
+			// バリア
+		case CGauge::TYPE_BARRIER:
+			// バリアの強化段階の取得
+			nPlayerLevel = pPlayer->GetBarrierLevel();
+
+			// 横サイズ調整
+			size.x = SIZE_X / ((float)MAX_LEVEL / ((float)nPlayerLevel));
+
+			// 画像の描画範囲を調整
+			CObject2D::SetTextureRange(nPlayerLevel, MAX_LEVEL);
+			break;
+		default:
+			break;
+		}
+
+		//サイズの設定
+		CObject2D::SetSize(size);
+	}
 }

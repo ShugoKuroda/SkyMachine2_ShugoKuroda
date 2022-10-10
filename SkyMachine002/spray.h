@@ -66,4 +66,4 @@ private:
 	int m_nPatterAnimV;
 };
 
-#endif		// _EXPLOSION_H_
+#endif		// _SPRAY_H_

@@ -51,6 +51,7 @@ LPDIRECT3DTEXTURE9 CBullet::m_apTexture[TYPE_MAX] = { nullptr };
 CBullet::CBullet() :
 	m_move(0.0f, 0.0f, 0.0f), m_nDamage(0), m_nCntAnim(0), m_nPatternAnim(0)
 {
+	// オブジェクトの種類設定
 	SetObjType(EObject::OBJ_BULLET);
 }
 
@@ -59,7 +60,6 @@ CBullet::CBullet() :
 //-----------------------------------------------------------------------------------------------
 CBullet::~CBullet()
 {
-
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -72,6 +72,7 @@ CBullet* CBullet::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, const 
 
 	if (pBullet != nullptr)
 	{// もしnullptrではなかったら
+
 		// 位置設定
 		pBullet->SetPosition(pos);
 
@@ -103,21 +104,11 @@ HRESULT CBullet::Load()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet000.png",
-		&m_apTexture[TYPE_PLAYER_BLUE]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet001.png",
-		&m_apTexture[TYPE_ENEMY_ORANGE]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet003.png",
-		&m_apTexture[TYPE_ENEMY_LASER]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet002.png",
-		&m_apTexture[TYPE_ENEMY_RED]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/bullet004.png",
-		&m_apTexture[TYPE_PLAYER_GREEN]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bullet000.png", &m_apTexture[TYPE_PLAYER_BLUE]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bullet001.png", &m_apTexture[TYPE_ENEMY_ORANGE]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bullet003.png", &m_apTexture[TYPE_ENEMY_LASER]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bullet002.png", &m_apTexture[TYPE_ENEMY_RED]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/bullet004.png", &m_apTexture[TYPE_PLAYER_GREEN]);
 
 	return S_OK;
 }
@@ -144,16 +135,15 @@ void CBullet::Unload()
 HRESULT CBullet::Init()
 {
 	if (m_type == TYPE_ENEMY_LASER)
-	{
-		// サイズ
+	{// サイズ設定
 		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH / 2, SIZE_HEIGHT * 3));
 	}
 	else
-	{
-		// サイズ
+	{// サイズ設定
 		CObject2D::SetSize(D3DXVECTOR2(SIZE_WIDTH, SIZE_HEIGHT));
 	}
 
+	// 初期化
 	CObject2D::Init();
 
 	return S_OK;
@@ -191,27 +181,11 @@ void CBullet::Update()
 		// 位置の更新
 		CObject2D::SetPosition(pos);
 
-		// カウントを増やす
-		m_nCntAnim++;
-		if (m_nCntAnim % ANIM_INTERVAL == 0)
-		{
-			// 今のアニメーションを1つ進める
-			m_nPatternAnim++;
-		}
+		// テクスチャアニメーション
+		Animation();
 
-		if (m_nPatternAnim == MAX_ANIM)
-		{// アニメーションが終わったら
-			// 終了する
-			m_nPatternAnim = 0;
-		}
-		else
-		{
-			//頂点座標の設定
-			CObject2D::SetVertex();
-
-			//テクスチャアニメーション
-			CObject2D::SetAnimation(m_nPatternAnim, 1, DIVISION_U, DIVISION_V);
-		}
+		//頂点座標の設定
+		CObject2D::SetVertex();
 	}
 }
 
@@ -224,6 +198,30 @@ void CBullet::Draw()
 }
 
 //-----------------------------------------------------------------------------------------------
+// テクスチャアニメーション
+//-----------------------------------------------------------------------------------------------
+void CBullet::Animation()
+{
+	// カウントを増やす
+	m_nCntAnim++;
+
+	// カウンターが一定数以上
+	if (m_nCntAnim % ANIM_INTERVAL == 0)
+	{// 今のアニメーションを1つ進める
+		m_nPatternAnim++;
+	}
+
+	// アニメーションが終わったら
+	if (m_nPatternAnim == MAX_ANIM)
+	{// カウンターの初期化
+		m_nPatternAnim = 0;
+	}
+
+	//テクスチャアニメーション
+	CObject2D::SetAnimation(m_nPatternAnim, 1, DIVISION_U, DIVISION_V);
+}
+
+//-----------------------------------------------------------------------------------------------
 // 当たり判定
 //-----------------------------------------------------------------------------------------------
 bool CBullet::Collision(D3DXVECTOR3 posStart)
@@ -231,6 +229,7 @@ bool CBullet::Collision(D3DXVECTOR3 posStart)
 	//弾のサイズ取得
 	float fStartLength = GetLength();
 
+	// 当たり判定
 	for (int nCntObject = 0; nCntObject < CObject::MAX_OBJECT; nCntObject++)
 	{
 		CObject *pObject = CObject::GetObject(nCntObject);

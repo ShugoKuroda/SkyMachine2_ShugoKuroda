@@ -61,7 +61,13 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	// F•Ï‰»ˆ—
+	void ChangeCol();
+	// Šp“x‚Ìİ’è
+	void SetRad();
+	// UŒ‚ˆ—
 	void Attack();
+	// Šp“x‚Ìİ’è
 	void SetRad(float fRad) { m_fRad = fRad; }
 
 private:

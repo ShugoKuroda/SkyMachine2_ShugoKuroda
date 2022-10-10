@@ -60,6 +60,11 @@ public:
 	// 描画
 	void Draw() override;
 
+	// 終了処理の管理
+	void UninitControl();
+	// 挙動管理
+	void SetMove();
+
 private:
 	// テクスチャのポインタ
 	static LPDIRECT3DTEXTURE9 m_pTexture[TYPE_MAX];
@@ -69,7 +74,7 @@ private:
 	int m_nCountUninit;
 	// 元のサイズ記憶用
 	D3DXVECTOR2 m_DefaultSize;
-
+	// 種類
 	LOGOTYPE m_type;
 };
 

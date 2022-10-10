@@ -37,6 +37,7 @@ LPDIRECT3DTEXTURE9 CExplosion::m_pTexture = nullptr;
 CExplosion::CExplosion()
 	:m_nCntAnim(0), m_nPatternAnim(0), m_nPatterAnimV(0)
 {
+	// オブジェクトタイプの設定
 	SetObjType(EObject::OBJ_EXPLOSION);
 }
 
@@ -45,7 +46,6 @@ CExplosion::CExplosion()
 //-----------------------------------------------------------------------------------------------
 CExplosion::~CExplosion()
 {
-
 }
 
 //-----------------------------------------------------------------------------------------------

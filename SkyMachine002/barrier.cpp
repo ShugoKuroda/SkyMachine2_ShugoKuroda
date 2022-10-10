@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------------------------
 //
-// 弾の処理[bullet.cpp]
-// Author : SHUGO kURODA
+// バリア処理[barrier.cpp]
+// Author : SHUGO KURODA
 //
 //-----------------------------------------------------------------------------------------------
 
@@ -18,6 +18,11 @@
 
 #include "enemy.h"
 #include "explosion.h"
+
+//-----------------------------------------------------------------------------------------------
+// マクロ定義
+//-----------------------------------------------------------------------------------------------
+#define BARRIER_POS_X		(10.0f)		// バリアの相対生成位置(X)
 
 //-----------------------------------------------------------------------------------------------
 // 定数宣言
@@ -45,8 +50,9 @@ LPDIRECT3DTEXTURE9 CBarrier::m_apTexture[LEVEL_MAX] = { nullptr };
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
-CBarrier::CBarrier() :m_fRad(0.0f), m_nDamage(0), m_col(LEVEL_GREEN), m_nCntAnim(0), m_nPatternAnim(0), m_nPatterAnimV(0)
+CBarrier::CBarrier() :m_fRad(0.0f), m_level(LEVEL_GREEN), m_nCntAnim(0), m_nPatternAnim(0), m_nPatterAnimV(0)
 {
+	// オブジェクト種類の設定
 	SetObjType(EObject::OBJ_BARRIER);
 }
 
@@ -55,7 +61,6 @@ CBarrier::CBarrier() :m_fRad(0.0f), m_nDamage(0), m_col(LEVEL_GREEN), m_nCntAnim
 //-----------------------------------------------------------------------------------------------
 CBarrier::~CBarrier()
 {
-
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -70,7 +75,7 @@ CBarrier* CBarrier::Create(const D3DXVECTOR3& pos, const PARENT& parent)
 	{// もしnullptrではなかったら
 
 		// 位置設定
-		pBarrier->SetPosition(D3DXVECTOR3(pos.x - 10.0f, pos.y, pos.z));
+		pBarrier->SetPosition(D3DXVECTOR3(pos.x - BARRIER_POS_X, pos.y, pos.z));
 
 		//親の設定(所有するプレイヤー)
 		pBarrier->m_parent = parent;
@@ -94,15 +99,9 @@ HRESULT CBarrier::Load()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/barrier000.png",
-		&m_apTexture[LEVEL_GREEN]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/barrier001.png",
-		&m_apTexture[LEVEL_SILVER]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/barrier002.png",
-		&m_apTexture[LEVEL_GOLD]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/barrier000.png", &m_apTexture[LEVEL_GREEN]);		//レベル1(緑)
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/barrier001.png", &m_apTexture[LEVEL_SILVER]);		//レベル2(銀)
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/barrier002.png", &m_apTexture[LEVEL_GOLD]);		//レベル3(金)
 
 	return S_OK;
 }
@@ -149,40 +148,17 @@ void CBarrier::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CBarrier::Update()
 {
-	// カウントを増やす
-	m_nCntAnim++;
+	// テクスチャアニメーション
+	Animation();
 
-	if (m_nCntAnim % ANIM_INTERVAL == 0)
-	{
-		// カウンターの初期化
-		m_nCntAnim = 0;
-		// 今のアニメーションを1つ進める
-		m_nPatternAnim++;
-	}
-
-	// アニメーションが終わったら
-	if (m_nPatternAnim == MAX_ANIM)
-	{// アニメーションの初期化
-		m_nPatternAnim = 0;
-		m_nPatterAnimV = 0;
-	}
-
-	if (m_nPatternAnim >= DIVISION_U && m_nPatterAnimV <= 0)
-	{
-		m_nPatterAnimV++;
-	}
-
-	// 位置の取得
+	// 親プレイヤー位置の取得
 	D3DXVECTOR3 pos = CGame::GetPlayer(m_parent)->GetPosition();
 
 	// 位置の更新(常に親プレイヤーの位置に設定)
-	CObject2D::SetPosition(D3DXVECTOR3(pos.x - 10.0f, pos.y, pos.z));
+	CObject2D::SetPosition(D3DXVECTOR3(pos.x - BARRIER_POS_X, pos.y, pos.z));
 
 	//頂点座標の設定
 	CObject2D::SetVertex();
-
-	// テクスチャ更新
-	CObject2D::SetAnimation(m_nPatternAnim, m_nPatterAnimV, DIVISION_U, DIVISION_V);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -194,11 +170,46 @@ void CBarrier::Draw()
 }
 
 //-----------------------------------------------------------------------------------------------
+// テクスチャアニメーション
+//-----------------------------------------------------------------------------------------------
+void CBarrier::Animation()
+{
+	// カウントを増やす
+	m_nCntAnim++;
+
+	// カウンターが一定以上
+	if (m_nCntAnim % ANIM_INTERVAL == 0)
+	{
+		// カウンターの初期化
+		m_nCntAnim = 0;
+		// 今のアニメーションを1つ進める
+		m_nPatternAnim++;
+
+		// アニメーションが終わったら
+		if (m_nPatternAnim == MAX_ANIM)
+		{// アニメーションの初期化
+			m_nPatternAnim = 0;
+			m_nPatterAnimV = 0;
+		}
+
+		// アニメーションの横列が再生し終えたら
+		if (m_nPatternAnim >= DIVISION_U && m_nPatterAnimV <= 0)
+		{// 縦列を１つ下げる
+			m_nPatterAnimV++;
+		}
+	}
+
+	// テクスチャ更新
+	CObject2D::SetAnimation(m_nPatternAnim, m_nPatterAnimV, DIVISION_U, DIVISION_V);
+}
+
+//-----------------------------------------------------------------------------------------------
 // バリア色の設定
 //-----------------------------------------------------------------------------------------------
-void CBarrier::SetBarrier(LEVEL col)
+void CBarrier::SetBarrier(LEVEL level)
 {
-	m_col = col;
-
-	BindTexture(m_apTexture[m_col]);
+	// バリア強化段階の保存
+	m_level = level;
+	// テクスチャの割り当て
+	BindTexture(m_apTexture[m_level]);
 }

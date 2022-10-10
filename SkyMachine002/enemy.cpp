@@ -44,6 +44,7 @@ CEnemy::CEnemy() :
 	m_move(0.0f, 0.0f, 0.0f), m_state(STATE_NORMAL), m_type(TYPE_NONE), m_col(COLOR_NONE), m_nLife(0),
 	m_nCntState(0), m_nPattern(0), m_nCounter(0), m_nCountAttack(0), m_nNumPatten(0)
 {
+	// オブジェクトタイプの設定
 	SetObjType(EObject::OBJ_ENEMY);
 }
 
@@ -280,8 +281,11 @@ void CEnemy::Draw()
 //-----------------------------------------------------------------------------------------------
 void CEnemy::Damage(int nDamage,CPlayer* pPlayer)
 {
+	// ライフを減らす
 	m_nLife -= nDamage;
+	// ダメージ状態にする
 	m_state = STATE_DAMAGE;
+	// 状態カウンター
 	m_nCntState = 5;
 
 	// ライフが0以下
@@ -291,7 +295,7 @@ void CEnemy::Damage(int nDamage,CPlayer* pPlayer)
 		CScore *pScore = pPlayer->GetScore();
 
 		if (pScore != nullptr)
-		{
+		{// スコア加算
 			pScore->Add(200);
 		}
 	}
@@ -304,9 +308,9 @@ void CEnemy::State()
 {
 	switch (m_state)
 	{
-	case STATE_NORMAL:			//エネミーの状態が通常の場合
+	case STATE_NORMAL:			// 通常状態の場合
 		break;
-	case STATE_DAMAGE:			//エネミーがダメージ状態の場合
+	case STATE_DAMAGE:			// ダメージ状態の場合
 		//状態カウンターの減算
 		m_nCntState--;
 		//点滅させる
@@ -380,12 +384,14 @@ bool CEnemy::Collision(D3DXVECTOR3 posStart)
 //-----------------------------------------------------------------------------------------------
 void CEnemy::SetMove()
 {
+	// 移動情報ポインタを進める
 	m_pMoveInfo++;
+	// 移動時間の保存
 	m_nRestTime = m_pMoveInfo->nFrameMove;
 }
 
 //-----------------------------------------------------------------------------------------------
-// 敵ごとにアニメーション,挙動を設定
+// 挙動管理
 //-----------------------------------------------------------------------------------------------
 void CEnemy::SetAnim()
 {

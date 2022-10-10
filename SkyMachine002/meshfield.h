@@ -10,13 +10,7 @@
 #include "object.h"
 
 //-------------------------------------------
-//	マクロ定義
-//-------------------------------------------
-#define MESHFIELD_X_BLOCK			(1)			//X方向のブロック数
-#define MESHFIELD_Y_BLOCK			(20)		//Y方向のブロック数
-
-//-------------------------------------------
-// ロゴクラス
+// メッシュフィールドクラス
 //-------------------------------------------
 class CMeshField : public CObject
 {
@@ -41,6 +35,14 @@ public:
 	void Update() override;
 	// 描画
 	void Draw() override;
+
+	// 色変化
+	void ChangeCol();
+	// アニメーション
+	void Animation();
+	// 頂点座標の更新
+	void UpdateVtx();
+
 	// 移動量の設定
 	void SetMove(const D3DXVECTOR3& move) { m_move = move; }
 	// 終了フラグの設定
@@ -48,16 +50,16 @@ public:
 
 private:
 	// テクスチャのポインタ
-	static LPDIRECT3DTEXTURE9 m_pTexture;
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;				//頂点バッファへのポインタ
-	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff;		//インデックスバッファへのポインタ
-	D3DXVECTOR3 m_pos;		//位置
-	D3DXVECTOR3 m_move;		//移動量(画面シェイク用)
-	D3DXCOLOR m_col;		//色
-	int m_nCounterAnim;
-	int m_nPatternAnim;
-	bool m_bCol;			//色変更フラグ
-	bool m_bUninit;	//終了するかどうか
+	static LPDIRECT3DTEXTURE9 m_pTexture;	// テクスチャのポインタ
+	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		// 頂点バッファへのポインタ
+	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff;		// インデックスバッファへのポインタ
+	D3DXVECTOR3 m_pos;		// 位置
+	D3DXVECTOR3 m_move;		// 移動量(画面シェイク用)
+	D3DXCOLOR m_col;		// 色
+	int m_nCounterAnim;		// アニメーション用カウンター
+	int m_nPatternAnim;		// 現在のアニメーション番号
+	bool m_bCol;			// 色変更フラグ
+	bool m_bUninit;			// 終了するかどうか
 };
 
 #endif		// _MESHFIELD_H_

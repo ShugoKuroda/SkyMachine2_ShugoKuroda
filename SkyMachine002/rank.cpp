@@ -214,21 +214,21 @@ void CRank::Update()
 	// ゲームパッド情報の取得
 	CInputJoypad *pJoypad = CManager::GetInputJoypad();
 
-	for (int nCnt = CInputKeyboard::KEYINFO_OK; nCnt < CInputKeyboard::KEYINFO_MAX; nCnt++)
+	for (int nKey = CInputKeyboard::KEYINFO_OK; nKey < CInputKeyboard::KEYINFO_MAX; nKey++)
 	{
 		// キーボードのENTRY処理
-		if (pKeyboard->GetTrigger(nCnt))
+		if (pKeyboard->GetTrigger(nKey))
 		{
 			// 決定音
 			CSound::Play(CSound::SOUND_LABEL_SE_MENU_OK);
 
-			for (int nCnt = 0; nCnt < MAX_RANKING + MAX_PLAYER_SCORE; nCnt++)
+			for (int nCntScore = 0; nCntScore < MAX_RANKING + MAX_PLAYER_SCORE; nCntScore++)
 			{
-				if (m_pScore[nCnt] != nullptr)
+				if (m_pScore[nCntScore] != nullptr)
 				{// スコア設定
-					if (m_aScore[nCnt] > m_pScore[nCnt]->GetScore())
+					if (m_aScore[nCntScore] > m_pScore[nCntScore]->GetScore())
 					{
-						m_pScore[nCnt]->Set(m_aScore[nCnt]);
+						m_pScore[nCntScore]->Set(m_aScore[nCntScore]);
 					}
 				}
 			}
@@ -248,20 +248,20 @@ void CRank::Update()
 	// プレイヤーのエントリー処理
 	for (int nCntController = 0; nCntController < CPlayer::PLAYER_MAX; nCntController++)
 	{
-		for (int nCnt = CInputJoypad::JOYKEY_UP; nCnt < CInputJoypad::JOYKEY_MAX; nCnt++)
+		for (int nKey = CInputJoypad::JOYKEY_UP; nKey < CInputJoypad::JOYKEY_MAX; nKey++)
 		{
-			if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nCnt, nCntController))
+			if (pJoypad->GetTrigger((CInputJoypad::JOYKEY)nKey, nCntController))
 			{
 				// 決定音
 				CSound::Play(CSound::SOUND_LABEL_SE_MENU_OK);
 
-				for (int nCnt = 0; nCnt < MAX_RANKING + MAX_PLAYER_SCORE; nCnt++)
+				for (int nCntScore = 0; nCntScore < MAX_RANKING + MAX_PLAYER_SCORE; nCntScore++)
 				{
-					if (m_pScore[nCnt] != nullptr)
+					if (m_pScore[nCntScore] != nullptr)
 					{// スコア設定
-						if (m_aScore[nCnt] > m_pScore[nCnt]->GetScore())
+						if (m_aScore[nCntScore] > m_pScore[nCntScore]->GetScore())
 						{
-							m_pScore[nCnt]->Set(m_aScore[nCnt]);
+							m_pScore[nCntScore]->Set(m_aScore[nCntScore]);
 						}
 					}
 				}

@@ -162,7 +162,6 @@ void CGame::Uninit()
 	{
 		if (m_pPlayer[nCntPlayer] != nullptr)
 		{
-			m_pPlayer[nCntPlayer]->Uninit();
 			m_pPlayer[nCntPlayer] = nullptr;
 		}
 	}
@@ -170,7 +169,6 @@ void CGame::Uninit()
 	// ƒƒbƒVƒ…”jŠü
 	if (m_pMeshField != nullptr)
 	{
-		m_pMeshField->Uninit();
 		m_pMeshField = nullptr;
 	}
 	

@@ -62,7 +62,11 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	// テクスチャアニメーション
+	void Animation();
+	// 親プレイヤーの設定
 	void SetParent(EParent parent) { m_parent = parent; }
+	// 当たり判定
 	bool Collision(D3DXVECTOR3 posStart);
 
 private:

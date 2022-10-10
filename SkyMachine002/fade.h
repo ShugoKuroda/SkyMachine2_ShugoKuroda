@@ -50,4 +50,4 @@ private:
 	D3DXCOLOR m_colorFade;
 };
 
-#endif
+#endif		// _FADE_H_

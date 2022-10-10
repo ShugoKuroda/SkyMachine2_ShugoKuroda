@@ -1,11 +1,42 @@
-﻿  score.cpp
-  rank.cpp
-  player.cpp
+﻿  ui.cpp
+  title.cpp
+  spray.cpp
+  pause.cpp
+  object2D.cpp
   number.cpp
+  meshfield.cpp
+  manager.cpp
+  main.cpp
+  logo.cpp
+  life.cpp
+  library.cpp
   item.cpp
-  game.cpp
+  gauge.cpp
+  fade_scene.cpp
+  explosion.cpp
   enemy_boss.cpp
   enemy.cpp
+  effect.cpp
+  cloud.cpp
+  コードを生成中...
+  コンパイル中...
+  sound.cpp
+  score.cpp
+  result.cpp
+  renderer.cpp
+  rank.cpp
+  player.cpp
+  object.cpp
+  load.cpp
+  game.cpp
+  fade.cpp
+  continue.cpp
+  bullet_option.cpp
+  bullet.cpp
+  bubble.cpp
+  bg_move.cpp
+  bg.cpp
+  barrier.cpp
   コードを生成中...
   SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\GameLibrary_ShugoKuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_SkyMachine2\01_開発環境\SkyMachine002\x64\Debug\SkyMachine002.exe
   SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\GameLibrary_ShugoKuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_SkyMachine2\01_開発環境\SkyMachine002\x64\Debug\SkyMachine002.pdb (Full PDB)

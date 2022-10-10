@@ -1,6 +1,6 @@
 //===============================================
 //
-// エフェクト処理 (effect.cpp)
+// エフェクト処理[effect.cpp]
 // Author : SHUGO KURODA
 //
 //===============================================
@@ -20,6 +20,11 @@
 #include "bg.h"
 #include "enemy_boss.h"
 
+//========================
+// マクロ定義
+//========================
+#define DEFAULT_COL		(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f))		// 初期色
+
 //=======================================
 // 静的メンバ変数宣言
 //=======================================
@@ -30,6 +35,7 @@ LPDIRECT3DTEXTURE9 CEffect::m_apTexture[TEX_MAX] = {};
 //========================================
 CEffect::CEffect() :m_move(0.0f, 0.0f, 0.0f), m_nLife(0), m_type(TYPE_SPHERE)
 {
+	// オブジェクトタイプの設定
 	CObject2D::SetObjType(EObject::OBJ_EFFECT);
 }
 
@@ -114,7 +120,7 @@ HRESULT CEffect::Init()
 	CObject2D::Init();
 
 	// 色の設定
-	CObject2D::SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+	CObject2D::SetColor(DEFAULT_COL);
 
 	// テクスチャ座標の設定
 	CObject2D::SetAnimation(0, 0, CEnemyBoss::DIVISION_U, CEnemyBoss::DIVISION_V);
@@ -139,6 +145,7 @@ void CEffect::Update()
     // 色の取得
     D3DXCOLOR col = GetColor();
 
+	// 透明にする
 	col.a -= 0.1f;
 
 	// 完全に透明になったら

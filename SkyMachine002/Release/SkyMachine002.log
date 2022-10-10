@@ -1,8 +1,51 @@
-﻿  manager.cpp
+﻿  barrier.cpp
+  base.cpp
+  bg.cpp
+  bg_move.cpp
+  bubble.cpp
+  bullet.cpp
+  bullet_option.cpp
+  cloud.cpp
+  continue.cpp
+  effect.cpp
+  enemy.cpp
+  enemy_boss.cpp
+  explosion.cpp
+  fade.cpp
+  fade_scene.cpp
+  game.cpp
+  gauge.cpp
+  input.cpp
+  input_joypad.cpp
+  input_keyboard.cpp
+  コンパイル中...
+  input_mouse.cpp
+  item.cpp
+  library.cpp
+  life.cpp
+  load.cpp
+  logo.cpp
+  main.cpp
+  manager.cpp
+  meshfield.cpp
+  number.cpp
+  object.cpp
+  object2D.cpp
+  pause.cpp
+  player.cpp
+  rank.cpp
+  renderer.cpp
+  result.cpp
+  score.cpp
+  sound.cpp
+  spray.cpp
+  コンパイル中...
+  title.cpp
+  ui.cpp
   コード生成しています。
-  1 of 529 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+  149 of 541 functions (27.5%) were compiled, the rest were copied from previous compilation.
+    15 functions were new in current compilation
+    11 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\GameLibrary_ShugoKuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_SkyMachine2\01_開発環境\SkyMachine002\SkyMachine002.exe
   SkyMachine002.vcxproj -> C:\Users\student\Desktop\Gitフォルダ\GameLibrary_ShugoKuroda\吉田学園情報ビジネス専門学校_黒田周吾\01_SkyMachine2\01_開発環境\SkyMachine002\SkyMachine002.pdb (Full PDB)

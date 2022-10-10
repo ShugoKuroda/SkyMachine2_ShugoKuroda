@@ -19,24 +19,6 @@ class CObject2D;
 //*******************************************************************
 class CBg : public CObject
 {
-private:
-	// 寿命
-	static const int LIFE = 50;
-	//プレイヤーのサイズ(X)
-	static const float SIZE_WIDTH;
-	//プレイヤーのサイズ(Y)
-	static const float SIZE_HEIGHT;
-	//プレイヤーの基本移動量
-	static const float MOVE_DEFAULT;
-	// アニメーション間隔
-	static const int ANIM_INTERVAL;
-	// アニメーション最大数
-	static const int MAX_ANIM;
-	// U座標の最大分割数
-	static const int DIVISION_U;
-	// V座標の最大分割数
-	static const int DIVISION_V;
-
 public:
 	// 背景のセット
 	enum ESet
@@ -79,6 +61,11 @@ public:
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
+
+	// 背景のフェード処理
+	void FadeBack();
+	// 背景全体のアニメーション処理
+	void AnimationBgAll();
 
 private:
 	//メンバ変数

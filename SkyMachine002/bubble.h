@@ -1,6 +1,6 @@
 //====================================================================
 //
-// 泡エフェクト処理 (bubble.h)
+// 泡エフェクト処理[bubble.h]
 // Author : SHUGO KURODA
 //
 //====================================================================
@@ -36,7 +36,7 @@ public:
 private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;   // 読み込んだテクスチャを保存する
 	static int m_nReverseCount;				// 泡の揺れを反転させる用
-	int m_nReverse;
+	int m_nReverse;			// 反転係数
 	D3DXVECTOR3 m_move;     // 移動量
 };
 

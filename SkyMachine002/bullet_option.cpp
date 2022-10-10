@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------------------------
 //
-// 弾の処理[bullet.cpp]
+// オプション弾の処理[bullet_option.cpp]
 // Author : SHUGO kURODA
 //
 //-----------------------------------------------------------------------------------------------
@@ -20,6 +20,12 @@
 #include "explosion.h"
 
 //-----------------------------------------------------------------------------------------------
+// マクロ定義
+//-----------------------------------------------------------------------------------------------
+#define PLAYER_SPACE	(100)		// プレイヤーとの距離
+#define DEFAULT_COL		(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f))		// 初期色
+
+//-----------------------------------------------------------------------------------------------
 // 静的メンバ変数
 //-----------------------------------------------------------------------------------------------
 // テクスチャのポインタ
@@ -28,8 +34,9 @@ LPDIRECT3DTEXTURE9 CBulletOption::m_apTexture = { nullptr };
 //-----------------------------------------------------------------------------------------------
 // コンストラクタ
 //-----------------------------------------------------------------------------------------------
-CBulletOption::CBulletOption() :m_fRad(0.0f), m_col(FADE_NONE), m_nCounterAttack(0)
+CBulletOption::CBulletOption() :m_fRad(0.0f), m_col(FADE_NONE), m_nCounterAttack(0), m_parent(PLAYER_1)
 {
+	// オブジェクトの種類設定
 	SetObjType(EObject::OBJ_BULLET);
 }
 
@@ -38,7 +45,6 @@ CBulletOption::CBulletOption() :m_fRad(0.0f), m_col(FADE_NONE), m_nCounterAttack
 //-----------------------------------------------------------------------------------------------
 CBulletOption::~CBulletOption()
 {
-
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -106,8 +112,8 @@ HRESULT CBulletOption::Init()
 	D3DXVECTOR3 posPlayer = CGame::GetPlayer(m_parent)->GetPosition();
 
 	// 位置設定
-	CObject2D::SetPosition(D3DXVECTOR3(posPlayer.x - sinf(m_fRad) * 100,
-		posPlayer.y - cosf(m_fRad) * 100,
+	CObject2D::SetPosition(D3DXVECTOR3(posPlayer.x - sinf(m_fRad) * PLAYER_SPACE,
+		posPlayer.y - cosf(m_fRad) * PLAYER_SPACE,
 		0.0f));
 
 	// 色状態の初期化
@@ -120,7 +126,7 @@ HRESULT CBulletOption::Init()
 	CObject2D::Init();
 
 	// 色設定
-	CObject2D::SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	CObject2D::SetColor(DEFAULT_COL);
 
 	return S_OK;
 }
@@ -138,72 +144,37 @@ void CBulletOption::Uninit()
 //-----------------------------------------------------------------------------------------------
 void CBulletOption::Update()
 {
-	// 色の取得
-	D3DXCOLOR col = GetColor();
-
-	//色を常に変化させる
-	if (m_col == FADE_RED)
-	{
-		col.r += 0.01f;
-		col.b -= 0.01f;
-		if (col.r >= 1.0f)
-		{
-			m_col = FADE_GREEN;
-		}
-	}
-	else if (m_col == FADE_GREEN)
-	{
-		col.g += 0.01f;
-		col.r -= 0.01f;
-		if (col.g >= 1.0f)
-		{
-			m_col = FADE_BLUE;
-		}
-	}
-	else if (m_col == FADE_BLUE)
-	{
-		col.b += 0.01f;
-		col.g -= 0.01f;
-		if (col.b >= 1.0f)
-		{
-			m_col = FADE_RED;
-		}
-	}
+	// 色変化処理
+	ChangeCol();
 
 	// 位置の取得
 	D3DXVECTOR3 pos = CObject2D::GetPosition();
-
-	// プレイヤー位置の取得
+	// プレイヤー位置
 	D3DXVECTOR3 posPlayer;
-
+	// プレイヤーのポインタ取得
 	CPlayer* pPlayer = CGame::GetPlayer(m_parent);
+
 	if (pPlayer != nullptr)
 	{
+		// プレイヤー位置取得
 		posPlayer = CGame::GetPlayer(m_parent)->GetPosition();
 
 		// 位置の更新(プレイヤーを中心に回転させる)
-		pos = D3DXVECTOR3(posPlayer.x - sinf(m_fRad) * 100,
-			posPlayer.y - cosf(m_fRad) * 100,
+		pos = D3DXVECTOR3(posPlayer.x - sinf(m_fRad) * PLAYER_SPACE,
+			posPlayer.y - cosf(m_fRad) * PLAYER_SPACE,
 			0.0f);
 	}
 	else
-	{
+	{// 終了
 		Uninit();
 		return;
 	}
 
-	// 回転量の加算
-	m_fRad += 0.1f;
-	if (m_fRad >= D3DX_PI * 2)
-	{
-		m_fRad = 0.0f;
-	}
+	// 角度の設定
+	SetRad();
 
 	// 位置の更新
 	CObject2D::SetPosition(pos);
-
-	// 色の設定
-	SetColor(col);
 
 	//頂点座標の設定
 	CObject2D::SetVertex();
@@ -215,6 +186,61 @@ void CBulletOption::Update()
 void CBulletOption::Draw()
 {
 	CObject2D::Draw();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 色変化処理
+//-----------------------------------------------------------------------------------------------
+void CBulletOption::ChangeCol()
+{
+	// 色の取得
+	D3DXCOLOR col = GetColor();
+
+	/* 色を常に変化させる */
+	if (m_col == FADE_RED)
+	{// 赤色の場合
+		col.r += 0.01f;
+		col.b -= 0.01f;
+		if (col.r >= 1.0f)
+		{// 緑色に変える
+			m_col = FADE_GREEN;
+		}
+	}
+	else if (m_col == FADE_GREEN)
+	{// 緑色の場合
+		col.g += 0.01f;
+		col.r -= 0.01f;
+		if (col.g >= 1.0f)
+		{// 青色に変える
+			m_col = FADE_BLUE;
+		}
+	}
+	else if (m_col == FADE_BLUE)
+	{// 青色の場合
+		col.b += 0.01f;
+		col.g -= 0.01f;
+		if (col.b >= 1.0f)
+		{// 赤色に変える
+			m_col = FADE_RED;
+		}
+	}
+
+	// 色の設定
+	CObject2D::SetColor(col);
+}
+
+//-----------------------------------------------------------------------------------------------
+// 角度の設定
+//-----------------------------------------------------------------------------------------------
+void CBulletOption::SetRad()
+{
+	// 回転量の加算
+	m_fRad += 0.1f;
+	
+	if (m_fRad >= D3DX_PI * 2)
+	{// 回転量の正規化
+		m_fRad = 0.0f;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -56,6 +56,10 @@ public:
 	void Update() override;
 	void Draw() override;
 
+	// テクスチャアニメーション
+	void Animation();
+	// 角度の設定
+	void SetRot();
 	//当たり判定
 	bool Collision(D3DXVECTOR3 posStart);
 

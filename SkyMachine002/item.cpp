@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------------------------
 //
-// 弾の処理[bullet.cpp]
+// アイテム処理[item.cpp]
 // Author : SHUGO kURODA
 //
 //-----------------------------------------------------------------------------------------------
@@ -49,6 +49,7 @@ LPDIRECT3DTEXTURE9 CItem::m_apTexture[TYPE_MAX] = { nullptr };
 CItem::CItem() :
 	m_fRot(0.0f), m_nCntAnim(0), m_nPatternAnim(0), m_type(TYPE_NONE)
 {
+	// オブジェクトタイプの設定
 	SetObjType(EObject::OBJ_ITEM);
 }
 
@@ -96,18 +97,10 @@ HRESULT CItem::Load()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/item000.png",
-		&m_apTexture[TYPE_RED]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/item001.png",
-		&m_apTexture[TYPE_BLUE]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/item002.png",
-		&m_apTexture[TYPE_GREEN]);
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/item003.png",
-		&m_apTexture[TYPE_ORANGE]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/item000.png", &m_apTexture[TYPE_RED]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/item001.png", &m_apTexture[TYPE_BLUE]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/item002.png", &m_apTexture[TYPE_GREEN]);
+	D3DXCreateTextureFromFile(pDevice, "data/TEXTURE/item003.png", &m_apTexture[TYPE_ORANGE]);
 
 	return S_OK;
 }
@@ -157,12 +150,8 @@ void CItem::Update()
 	// 位置の取得
 	D3DXVECTOR3 pos = GetPosition();
 
-	// 回転量の加算
-	m_fRot += 0.05f;
-	if (m_fRot >= D3DX_PI * 2)
-	{
-		m_fRot = 0.0f;
-	}
+	// 回転量の設定
+	SetRot();
 
 	// 移動点を中心に回転させる
 	pos += D3DXVECTOR3(sinf(m_fRot) * MOVE_DEFAULT - 2.5f,
@@ -172,15 +161,9 @@ void CItem::Update()
 	// サイズの取得
 	D3DXVECTOR2 size = CObject2D::GetSize();
 
-	if (pos.x + (size.x / 2) <= 0.0f)
-	{//左画面端に出たら終了
-		Uninit();
-		return;
-	}
-
-	//当たり判定
-	if (Collision(pos))
-	{// 当たったら終了	
+	//左画面端に出たら || 当たり判定をして当たったら
+	if (pos.x + (size.x / 2) <= 0.0f || Collision(pos))
+	{//終了
 		Uninit();
 		return;
 	}
@@ -188,6 +171,26 @@ void CItem::Update()
 	// 位置の更新
 	CObject2D::SetPosition(pos);
 
+	// テクスチャアニメーション
+	Animation();
+
+	//頂点座標の設定
+	CObject2D::SetVertex();
+}
+
+//-----------------------------------------------------------------------------------------------
+// 描画
+//-----------------------------------------------------------------------------------------------
+void CItem::Draw()
+{
+	CObject2D::Draw();
+}
+
+//-----------------------------------------------------------------------------------------------
+// テクスチャアニメーション
+//-----------------------------------------------------------------------------------------------
+void CItem::Animation()
+{
 	// カウントを増やす
 	m_nCntAnim++;
 
@@ -204,22 +207,23 @@ void CItem::Update()
 		// アニメーション枚数を初期化
 		m_nPatternAnim = 0;
 	}
-	else
-	{
-		//頂点座標の設定
-		CObject2D::SetVertex();
 
-		//テクスチャアニメーション
-		CObject2D::SetAnimation(m_nPatternAnim, 1, DIVISION_U, DIVISION_V);
-	}
+	//テクスチャアニメーション
+	CObject2D::SetAnimation(m_nPatternAnim, 1, DIVISION_U, DIVISION_V);
 }
 
 //-----------------------------------------------------------------------------------------------
-// 描画
+// 角度の設定
 //-----------------------------------------------------------------------------------------------
-void CItem::Draw()
+void CItem::SetRot()
 {
-	CObject2D::Draw();
+	// 回転量の加算
+	m_fRot += 0.05f;
+
+	if (m_fRot >= D3DX_PI * 2)
+	{// 回転量の正規化
+		m_fRot = 0.0f;
+	}
 }
 
 //-----------------------------------------------------------------------------------------------

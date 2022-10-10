@@ -55,4 +55,4 @@ private:
 	bool m_bWait;		//連続ボタン押下防止用
 };
 
-#endif
+#endif		// _PAUSE_H_

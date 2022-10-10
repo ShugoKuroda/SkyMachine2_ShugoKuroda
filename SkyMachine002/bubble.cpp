@@ -1,7 +1,7 @@
 //=============================================================================
 //
-// 泡エフェクト処理 (bubble.cpp)
-// Author : 後藤慎之助
+// 泡エフェクト処理[bubble.cpp]
+// Author : SHUGO KURODA
 //
 //=============================================================================
 #include "bubble.h"
@@ -20,8 +20,9 @@ int CBubble::m_nReverseCount = 0;
 //-----------------------------------------------------------------------------
 CBubble::CBubble() :m_move(0.0f, 0.0f, 0.0f),m_nReverse(0)
 {
-	//タイプの設定
+	// オブジェクトの種類設定
 	SetObjType(EObject::OBJ_BUBBLE);
+	// 移動量反転カウントの設定
 	m_nReverseCount++;
 }
 
@@ -44,6 +45,7 @@ CBubble *CBubble::Create(const D3DXVECTOR3& pos, const D3DXVECTOR2& size)
 	{
 		//位置設定
 		pBubble->SetPosition(pos);
+
 		//サイズ設定
 		pBubble->SetSize(size);
 
@@ -84,6 +86,9 @@ void CBubble::Unload()
 		m_pTexture->Release();
 		m_pTexture = nullptr;
 	}
+
+	// 反転カウンターの初期化
+	m_nReverseCount = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -96,15 +101,17 @@ HRESULT CBubble::Init()
 
 	//揺れを反転させる
 	if (m_nReverseCount % 2 == 0)
-	{
+	{// 反転係数の設定
 		m_nReverse = -1;
 	}
 	else
-	{
+	{// 反転係数の設定
 		m_nReverse = 1;
 	}
 
+	// 初期化
 	CObject2D::Init();
+
 	return S_OK;
 }
 
@@ -121,12 +128,14 @@ void CBubble::Uninit()
 //-----------------------------------------------------------------------------
 void CBubble::Update()
 {
-	//位置の取得
+	// 位置の取得
 	D3DXVECTOR3 pos = GetPosition();
+	// 色の取得
 	D3DXCOLOR col = GetColor();
 
+	// α値の減算
 	col.a -= 0.01f;
-
+	// 移動量の加算
 	m_move.x += 1.0f;
 
 	//移動量を加算
@@ -137,7 +146,7 @@ void CBubble::Update()
 
 	// α値が0以下または画面外で破棄
 	if (col.a <= 0 || LibrarySpace::OutScreen2D(&pos, CObject2D::GetSize()))
-	{
+	{// 終了
 		Uninit();
 		return;
 	}
@@ -165,6 +174,7 @@ void CBubble::Draw()
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 
+	// 描画
 	CObject2D::Draw();
 
 	// レンダーステート(加算合成を戻す)
